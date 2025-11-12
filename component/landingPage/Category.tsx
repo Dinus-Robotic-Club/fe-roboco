@@ -9,7 +9,7 @@ function Category() {
         alt="Category Background"
         width={1921}
         height={950}
-        className="w-full h-full absolute inset-0 -z-10 object-cover hidden xl:block"
+        className="w-full h-full absolute inset-0 -z-10 hidden xl:block"
       />
       <div className="flex flex-col justify-center items-center font-plus-jakarta-sans w-full px-10 gap-4">
         <h1 className="font-extrabold text-3xl lg:text-5xl 2xl:text-[53px]">KATEGORI LOMBA</h1>
