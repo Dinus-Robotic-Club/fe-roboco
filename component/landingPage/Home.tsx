@@ -20,16 +20,16 @@ function Home() {
           alt="logo-title"
           width={488}
           height={234}
-          className="w-full max-w-[340px] md:max-w-[400px] lg:max-w-[500px] 2xl:max-w-[550px] h-auto px-2"
+          className="w-full max-w-[340px] md:max-w-[400px] lg:max-w-[450px] 2xl:max-w-[550px] h-auto px-2"
         />
 
-        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-center font-plus-jakarta-sans leading-relaxed max-w-2xl">
+        <p className="text-base sm:text-lg md:text-xl 2xl:text-2xl text-center font-plus-jakarta-sans leading-relaxed max-w-2xl">
           Buktikan lah diri anda bahwa anda adalah seorang penggiat teknologi dengan mental yang kuat dalam kompetisi DN Roboco
           2026.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-5 w-full justify-center items-center max-w-md sm:max-w-none">
-          <button className="border-2 bg-[#FBFF00] px-4 sm:px-5 md:px-7 lg:px-12 py-3 sm:py-4 text-sm sm:text-base md:text-lg lg:text-xl w-full sm:w-fit font-plus-jakarta-sans flex items-center justify-center gap-2 sm:gap-2.5 transition-all cursor-pointer hover:scale-105">
+          <button className="border-2 bg-[#FBFF00] px-4 sm:px-5 md:px-7 lg:px-12 py-3 sm:py-4 text-sm sm:text-base md:text-lg w-full sm:w-fit font-plus-jakarta-sans flex items-center justify-center gap-2 sm:gap-2.5 transition-all cursor-pointer hover:scale-105">
             <p>daftar sekarang</p>
             <Image
               src="/arrow-left.svg"
@@ -40,7 +40,7 @@ function Home() {
             />
           </button>
 
-          <button className="border-2 bg-[#FBFF00] px-4 sm:px-5 md:px-6 lg:px-12 py-3 sm:py-4 text-sm sm:text-base md:text-lg lg:text-xl w-full sm:w-fit font-plus-jakarta-sans flex items-center justify-center gap-2 sm:gap-2.5 transition-all cursor-pointer hover:scale-105">
+          <button className="border-2 bg-[#FBFF00] px-4 sm:px-5 md:px-6 lg:px-12 py-3 sm:py-4 text-sm sm:text-base md:text-lg w-full sm:w-fit font-plus-jakarta-sans flex items-center justify-center gap-2 sm:gap-2.5 transition-all cursor-pointer hover:scale-105">
             <p>jurnal kompetisi</p>
             <Image
               src="/arrow-left.svg"
