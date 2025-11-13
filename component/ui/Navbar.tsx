@@ -42,7 +42,6 @@ function Navbar({ left, right }: NavData) {
           </a>
         ))}
       </div>
-      {/* tengah */}
       <div className="hidden md:flex relative w-[210px] items-center justify-center">
         <Image
           src="/bg-navbar.svg"
@@ -66,9 +65,10 @@ function Navbar({ left, right }: NavData) {
           </a>
         ))}
       </div>
-      {/* Reponsif */}
+      <a href={pathname} className="">
+        <Image src="/logo-only.svg" alt="logo" width={55} height={55} className="h-9 w-auto md:hidden block" />
+      </a>
 
-      <Image src="/logo-only.svg" alt="logo" width={55} height={55} className="h-9 w-auto md:hidden block" />
       <FiAlignRight className="w-9 h-9 md:hidden block" onClick={toggleMenu} />
 
       <div
@@ -77,15 +77,17 @@ function Navbar({ left, right }: NavData) {
       ></div>
 
       <div
-        className={`fixed top-0 right-0 transition-all duration-300 w-[75%] h-screen bg-white shadow-2xl z-50 flex flex-col p-6 gap-6 ${
+        className={`fixed top-0 right-0 transition-all duration-300 w-[75%] sm:w-[60%] h-screen bg-white shadow-2xl z-50 flex flex-col p-6 gap-6 ${
           menuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <button onClick={() => setMenuOpen(false)} className="self-end text-gray-600 hover:text-black">
           <FiX size={28} />
         </button>
+        <a href={pathname} className="self-center">
+          <Image src="/logo-only.svg" alt="logo" width={55} height={55} className="h-14 w-auto md:hidden block mb-4" />
+        </a>
 
-        {/* Daftar menu */}
         <nav className="flex flex-col gap-4 text-base font-medium text-gray-700 uppercase">
           {[...left, ...right].map((item) => (
             <a
@@ -100,7 +102,6 @@ function Navbar({ left, right }: NavData) {
             </a>
           ))}
         </nav>
-
         <div className="mt-auto text-xs text-gray-400 text-center">© {new Date().getFullYear()} Dinus Robotic Club</div>
       </div>
     </nav>
