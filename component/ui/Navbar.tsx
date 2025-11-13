@@ -29,7 +29,7 @@ function Navbar({ left, right }: NavData) {
         scrolled ? "bg-white shadow-md" : "bg-transparent"
       }`}
     >
-      <div className="hidden md:flex gap-6 text-sm 2xl:text-base ">
+      <div className="hidden md:flex gap-7 text-sm 2xl:text-base ">
         {left.map((item) => (
           <a
             key={item.title}
@@ -53,7 +53,7 @@ function Navbar({ left, right }: NavData) {
         />
         <Image src="/logo-only.svg" alt="Logo Only" width={40} height={40} className="absolute h-16 w-16" />
       </div>
-      <div className="hidden md:flex gap-6 text-sm 2xl:text-base">
+      <div className="hidden md:flex gap-7 text-sm 2xl:text-base">
         {right.map((item) => (
           <a
             key={item.title}
