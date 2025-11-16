@@ -10,3 +10,14 @@ export const nav_home = {
     { title: "Sponsorship", href: "#" },
   ],
 };
+
+export const nav_register = {
+  left: [
+    { title: "Profile", href: "#" },
+    { title: "Riwayat", href: "#" },
+  ],
+  right: [
+    { title: "Leagueboard", href: "#" },
+    { title: "Standings", href: "#" },
+  ],
+};

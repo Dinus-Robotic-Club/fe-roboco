@@ -11,3 +11,8 @@
   background-size: cover;
   background-position: center;
 }
+
+.bg-registation-page {
+  background-image: url("/bg-registration.png");
+  background-position: center;
+}
