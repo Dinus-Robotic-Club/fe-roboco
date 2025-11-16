@@ -29,7 +29,7 @@ function Navbar({ left, right }: NavData) {
         scrolled ? "bg-white shadow-md" : "bg-transparent"
       }`}
     >
-      <div className="hidden md:flex gap-7 text-sm 2xl:text-base ">
+      <div className="hidden md:flex gap-4 lg:gap-7 text-sm 2xl:text-base w-full justify-end">
         {left.map((item) => (
           <a
             key={item.title}
@@ -42,7 +42,7 @@ function Navbar({ left, right }: NavData) {
           </a>
         ))}
       </div>
-      <div className="hidden md:flex relative w-[210px] items-center justify-center">
+      <div className="hidden md:flex relative min-w-[210px] items-center justify-center">
         <Image
           src="/bg-navbar.svg"
           alt="Background"
@@ -52,7 +52,7 @@ function Navbar({ left, right }: NavData) {
         />
         <Image src="/logo-only.svg" alt="Logo Only" width={40} height={40} className="absolute h-16 w-16" />
       </div>
-      <div className="hidden md:flex gap-7 text-sm 2xl:text-base">
+      <div className="hidden md:flex gap-4 lg:gap-7 text-sm 2xl:text-base w-full justify-start">
         {right.map((item) => (
           <a
             key={item.title}
@@ -65,8 +65,8 @@ function Navbar({ left, right }: NavData) {
           </a>
         ))}
       </div>
-      <a href={pathname} className="">
-        <Image src="/logo-only.svg" alt="logo" width={55} height={55} className="h-9 w-auto md:hidden block" />
+      <a href={pathname} className="md:hidden block">
+        <Image src="/logo-only.svg" alt="logo" width={55} height={55} className="h-9 w-auto " />
       </a>
 
       <FiAlignRight className="w-9 h-9 md:hidden block" onClick={toggleMenu} />
