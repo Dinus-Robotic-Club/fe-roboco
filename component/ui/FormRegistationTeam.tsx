@@ -56,8 +56,8 @@ function FormRegistationTeam({
                 }
               }}
             />
-            <p className="text-red-500 text-xs">please fill your name</p>
           </label>
+          <p className="text-red-500 text-xs">please fill your name</p>
         </div>
 
         <div className="flex flex-col gap-1">
