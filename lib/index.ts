@@ -21,3 +21,14 @@ export const nav_register = {
     { title: "Standings", href: "#" },
   ],
 };
+
+export const nav_dashboard = {
+  left: [
+    { title: "Profile", href: "#" },
+    { title: "Riwayat", href: "#" },
+  ],
+  right: [
+    { title: "Leagueboard", href: "#" },
+    { title: "Standings", href: "#" },
+  ],
+};
