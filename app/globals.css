@@ -1,1 +1,31 @@
 @import "tailwindcss";
+
+@theme inline {
+  --font-fira-code: var(--font-fira-code);
+  --font-plus-jakarta-sans: var(--font-plus-jakarta-sans);
+  --spacing-8xl: 1580px;
+}
+
+.bg-home {
+  background-image: url("/bg-home.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.bg-grid {
+  background-image: url("/bg-grid.png");
+  background-position: center;
+}
+
+.bg-logo-team {
+  background-image: url("/bg-logo-team.svg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.bg-player {
+  background-image: url("/bg-player.svg");
+  background-position: bottom;
+  background-repeat: no-repeat;
+}
