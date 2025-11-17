@@ -3,7 +3,7 @@ import React from "react";
 
 function Footer() {
   return (
-    <section className="relative h-[150px] lg:h-[200px] w-full flex justify-center items-end py-10 z-20">
+    <section className="relative h-[150px] lg:h-[200px] w-full flex justify-center items-end py-10 z-20 bg-white">
       <svg
         className="w-full h-auto filter drop-shadow-[0_-10px_5px_rgba(0,0,0,0.07)] absolute top-0 left-0 right-0 -z-10 "
         width="2115"
