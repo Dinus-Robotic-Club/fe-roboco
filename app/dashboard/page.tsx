@@ -1,7 +1,6 @@
 import CardMatch from "@/component/ui/CardMatch";
 import HeaderDashboard from "@/component/ui/HeaderDashboard";
 import Image from "next/image";
-import React from "react";
 
 function Dashboard() {
   const items = [1, 2, 3];
