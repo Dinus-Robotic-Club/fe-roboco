@@ -21,7 +21,7 @@ function BasisRank() {
             </div>
 
             {leaderboard_dumy.map((item, i) => (
-              <div key={i} className="grid grid-cols-12 px-4 py-4 items-center hover:bg-gray-50 transition">
+              <div key={i} className="grid grid-cols-12 px-4 py-4 items-center hover:bg-gray-50 transition border-b">
                 <div className="col-span-7 flex items-center gap-4">
                   <span className="text-lg font-semibold w-6">{item.rank}.</span>
                   <div className="flex bg-logo-team w-12 h-12 items-center justify-center">
