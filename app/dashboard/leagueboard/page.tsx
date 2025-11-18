@@ -1,0 +1,43 @@
+"use client";
+import BasisRank from "@/component/leagueboard/BasisRank";
+import HeaderDashboard from "@/component/ui/HeaderDashboard";
+import { nav_legaueboard } from "@/lib";
+import React, { useState } from "react";
+
+function Leagueboard() {
+  const [activeNav, setActiveNav] = useState("basis-rank");
+  let ComponentToRender;
+
+  if (activeNav === "basis-rank") {
+    ComponentToRender = <BasisRank />;
+  } else {
+    ComponentToRender = null;
+  }
+
+  const handleClickNav = (key: string) => {
+    setActiveNav(key);
+  };
+  return (
+    <>
+      <HeaderDashboard title="LEAGUEBOARD" />
+      <div className="w-full h-auto py-12 px-3 flex flex-col items-center font-plus-jakarta-sans mb-20">
+        <nav className="flex flex-wrap gap-6 justify-center text-sm lg:text-base">
+          {nav_legaueboard.map((data) => (
+            <p
+              key={data.key}
+              className={`cursor-pointer px-4 py-1 rounded-sm hover:bg-[#FBFF00] transition-all duration-400 ${
+                activeNav === data.key ? "bg-[#FBFF00]" : "bg-transparent"
+              }`}
+              onClick={() => handleClickNav(data.key)}
+            >
+              {data.label}
+            </p>
+          ))}
+        </nav>
+        <div className="w-full h-auto flex flex-col items-center gap-20 mt-20">{ComponentToRender}</div>
+      </div>
+    </>
+  );
+}
+
+export default Leagueboard;
