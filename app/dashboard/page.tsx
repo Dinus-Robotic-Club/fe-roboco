@@ -3,7 +3,6 @@ import Footer from "@/component/ui/Footer";
 import Navbar from "@/component/ui/Navbar";
 import { nav_dashboard } from "@/lib";
 import Image from "next/image";
-import React from "react";
 
 function Dashboard() {
   const items = [1, 2, 3];
