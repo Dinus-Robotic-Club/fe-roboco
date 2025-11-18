@@ -1,18 +1,12 @@
 import CardMatch from "@/component/ui/CardMatch";
-import Footer from "@/component/ui/Footer";
-import Navbar from "@/component/ui/Navbar";
-import { nav_dashboard } from "@/lib";
+import HeaderDashboard from "@/component/ui/HeaderDashboard";
 import Image from "next/image";
 
 function Dashboard() {
   const items = [1, 2, 3];
   return (
-    <main className="bg-grid">
-      <Navbar left={nav_dashboard.left} right={nav_dashboard.right} />
-      <div className="h-[300px] md:h-[400px] bg-white w-full flex flex-col justify-center items-center pt-[70px] 2xl:pt-20 font-plus-jakarta-sans shadow-xl">
-        <h1 className="font-extrabold text-3xl lg:text-5xl 2xl:text-[53px]">DASHBOARD TEAM</h1>
-        <p className="text-base lg:text-xl 2xl:text-2xl">Selamat datang, Team Nee Guzz</p>
-      </div>
+    <>
+      <HeaderDashboard title="TEAM PROFILE" />
       <div className="w-full h-auto py-12 px-3 flex flex-col items-center font-plus-jakarta-sans">
         <div className="flex flex-col gap-16 items-center">
           <h1 className="text-xl">TEAM PROFILE</h1>
@@ -93,8 +87,7 @@ function Dashboard() {
           </div>
         </div>
       </div>
-      <Footer />
-    </main>
+    </>
   );
 }
 
