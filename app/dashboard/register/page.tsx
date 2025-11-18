@@ -1,5 +1,4 @@
 "use client";
-import Footer from "@/component/ui/Footer";
 import FormRegistationTeam from "@/component/ui/FormRegistationTeam";
 import FormRegistrationPlayer from "@/component/ui/FormRegistrationPlayer";
 import Navbar from "@/component/ui/Navbar";
@@ -70,10 +69,6 @@ function Register() {
             SUBMIT NOW
           </button>
         </div>
-      </div>
-
-      <div className="w-full h-auto pt-20 bg-white">
-        <Footer />
       </div>
     </main>
   );
