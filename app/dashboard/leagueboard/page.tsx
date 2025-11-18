@@ -1,6 +1,7 @@
 "use client";
 import BasisRank from "@/component/leagueboard/BasisRank";
 import GroupRankSoccer from "@/component/leagueboard/GroupRankSoccer";
+import GroupRankSumo from "@/component/leagueboard/GroupRankSumo";
 import HeaderDashboard from "@/component/ui/HeaderDashboard";
 import { nav_legaueboard } from "@/lib";
 import React, { useState } from "react";
@@ -13,6 +14,8 @@ function Leagueboard() {
     ComponentToRender = <BasisRank />;
   } else if (activeNav === "group-rank-soccer") {
     ComponentToRender = <GroupRankSoccer />;
+  } else if (activeNav === "group-rank-sumo") {
+    ComponentToRender = <GroupRankSumo />;
   } else {
     ComponentToRender = null;
   }
