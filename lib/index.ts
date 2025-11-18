@@ -71,3 +71,93 @@ export const leaderboard_dumy = [
     stats: { MP: 4, W: 4, D: 1, L: 3, P: 3 },
   },
 ];
+
+export const groups_dummy = [
+  {
+    name: "Group A",
+    teams: [
+      {
+        team: "TEAM Nee Guzz",
+        school: "SMKN 71 Kota Semarang's Basis",
+        logo: "/logo-only.svg",
+        stats: { MP: 4, GS: 23, GC: 4, GD: 19, P: 15 },
+      },
+      {
+        team: "TEAM Nee Guzz",
+        school: "SMKN 71 Kota Semarang's Basis",
+        logo: "/logo-only.svg",
+        stats: { MP: 4, GS: 23, GC: 4, GD: 19, P: 12 },
+      },
+      {
+        team: "TEAM Nee Guzz",
+        school: "SMKN 71 Kota Semarang's Basis",
+        logo: "/logo-only.svg",
+        stats: { MP: 4, GS: 23, GC: 4, GD: 19, P: 12 },
+      },
+      {
+        team: "TEAM Nee Guzz",
+        school: "SMKN 71 Kota Semarang's Basis",
+        logo: "/logo-only.svg",
+        stats: { MP: 4, GS: 23, GC: 4, GD: 19, P: 12 },
+      },
+    ],
+  },
+  {
+    name: "Group B",
+    teams: [
+      {
+        team: "TEAM Nee Guzz",
+        school: "SMKN 71 Kota Semarang's Basis",
+        logo: "/logo-only.svg",
+        stats: { MP: 4, GS: 23, GC: 4, GD: 19, P: 15 },
+      },
+      {
+        team: "TEAM Nee Guzz",
+        school: "SMKN 71 Kota Semarang's Basis",
+        logo: "/logo-only.svg",
+        stats: { MP: 4, GS: 23, GC: 4, GD: 19, P: 12 },
+      },
+      {
+        team: "TEAM Nee Guzz",
+        school: "SMKN 71 Kota Semarang's Basis",
+        logo: "/logo-only.svg",
+        stats: { MP: 4, GS: 23, GC: 4, GD: 19, P: 12 },
+      },
+      {
+        team: "TEAM Nee Guzz",
+        school: "SMKN 71 Kota Semarang's Basis",
+        logo: "/logo-only.svg",
+        stats: { MP: 4, GS: 23, GC: 4, GD: 19, P: 12 },
+      },
+    ],
+  },
+  {
+    name: "Group C",
+    teams: [
+      {
+        team: "TEAM Nee Guzz",
+        school: "SMKN 71 Kota Semarang's Basis",
+        logo: "/logo-only.svg",
+        stats: { MP: 4, GS: 23, GC: 4, GD: 19, P: 15 },
+      },
+      {
+        team: "TEAM Nee Guzz",
+        school: "SMKN 71 Kota Semarang's Basis",
+        logo: "/logo-only.svg",
+        stats: { MP: 4, GS: 23, GC: 4, GD: 19, P: 12 },
+      },
+      {
+        team: "TEAM Nee Guzz",
+        school: "SMKN 71 Kota Semarang's Basis",
+        logo: "/logo-only.svg",
+        stats: { MP: 4, GS: 23, GC: 4, GD: 19, P: 12 },
+      },
+      {
+        team: "TEAM Nee Guzz",
+        school: "SMKN 71 Kota Semarang's Basis",
+        logo: "/logo-only.svg",
+        stats: { MP: 4, GS: 23, GC: 4, GD: 19, P: 12 },
+      },
+    ],
+  },
+];

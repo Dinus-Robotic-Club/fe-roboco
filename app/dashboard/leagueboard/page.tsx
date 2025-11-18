@@ -1,5 +1,6 @@
 "use client";
 import BasisRank from "@/component/leagueboard/BasisRank";
+import GroupRankSoccer from "@/component/leagueboard/GroupRankSoccer";
 import HeaderDashboard from "@/component/ui/HeaderDashboard";
 import { nav_legaueboard } from "@/lib";
 import React, { useState } from "react";
@@ -10,6 +11,8 @@ function Leagueboard() {
 
   if (activeNav === "basis-rank") {
     ComponentToRender = <BasisRank />;
+  } else if (activeNav === "group-rank-soccer") {
+    ComponentToRender = <GroupRankSoccer />;
   } else {
     ComponentToRender = null;
   }
@@ -34,7 +37,7 @@ function Leagueboard() {
             </p>
           ))}
         </nav>
-        <div className="w-full h-auto flex flex-col items-center gap-20 mt-20">{ComponentToRender}</div>
+        <div className="w-full h-auto flex flex-col items-center gap-20 mt-20 lg:px-10 ">{ComponentToRender}</div>
       </div>
     </>
   );
