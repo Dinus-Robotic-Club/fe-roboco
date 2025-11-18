@@ -9,3 +9,4 @@ export const useTournaments =  () => {
         queryFn:  getAllTournaments,
     })
 }
+

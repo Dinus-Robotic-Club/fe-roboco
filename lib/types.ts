@@ -36,3 +36,27 @@ export interface IGetAllTournaments {
 export interface IResponseGetTour {
     data: IGetAllTournaments[]
 }
+
+export enum PlayoffType {
+    DOUBLE_ELIM = 'DOUBLE_ELIM',
+    SINGLE_ELIM = 'SINGLE_ELIM',
+}
+
+export enum StageType {
+    DOUBLE_STAGE = 'DOUBLE_STAGE',
+    SINGLE_STAGE = 'SINGLE_STAGE',
+}
+
+export interface ICreateTournament {
+    name: string | null
+    slug: string | null
+    description?: string | null
+    startDate: string
+    endDate?: string | null
+    playoffType?: PlayoffType | null
+    stageType: StageType | null
+}
+
+export interface IBodyCreateTournament {
+    data: ICreateTournament
+}
