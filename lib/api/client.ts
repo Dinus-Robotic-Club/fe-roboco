@@ -10,6 +10,10 @@ export async function apiFetch<T>(url: string, options?: RequestInit): Promise<T
         cache: 'no-store',
     })
 
-    if (!res.ok) throw new Error(`API error: ${res.status}`)
-    return res.json()
+    if (!res.ok) {
+        const errorBody = await res.json().catch(() => ({}))
+        throw new Error(errorBody?.message || `API Error: ${res.status}`)
+    }
+
+    return res.json() as Promise<T>
 }
