@@ -1,159 +1,114 @@
-import { FormDataPlayer } from "@/lib/types";
-import React from "react";
+'use client'
 
-function FormRegistrationPlayer({
-  data,
-  setData,
-}: {
-  data: FormDataPlayer;
-  setData: React.Dispatch<React.SetStateAction<FormDataPlayer>>;
-}) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-28 w-full max-w-[1176px] px-3 md:px-6 ">
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-1">
-          <label htmlFor="player1_name" className="text-sm lg:text-base font-fira-code">
-            PLAYER 1 NAME (TEAM LEADER)
-          </label>
-          <input
-            value={data.player1_name}
-            id="player1_name"
-            type="text"
-            placeholder="player 1 name"
-            className="p-4 bg-white rounded-xs w-full outline-none text-sm lg:text-base font-plus-jakarta-sans shadow-md border-2"
-            onChange={(e) => setData({ ...data, player1_name: e.target.value })}
-          />
-          <p className="text-red-500 text-xs">please fill your name</p>
-        </div>
+import { IParticipantsBody } from '@/lib/types/team'
 
-        <div className="flex flex-col gap-1">
-          <label htmlFor="player1_picture" className="text-sm lg:text-base font-fira-code">
-            PLAYER 1 PICTURE
-          </label>
-          <input
-            id="player1_picture"
-            type="file"
-            accept=".jpg, .png, .jpeg"
-            placeholder="player 1 picture"
-            className="p-4 bg-white rounded-xs w-full outline-none text-sm lg:text-base font-plus-jakarta-sans shadow-md border-2"
-            onChange={(e) => {
-              const file = (e.target as HTMLInputElement).files?.[0];
-              if (file) {
-                setData({ ...data, player1_picture: file });
-              }
-            }}
-          />
-          <p className="text-red-500 text-xs">please fill your name</p>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label htmlFor="player1_twibon" className="text-sm lg:text-base font-fira-code">
-            PLAYER 1 TWIBON
-          </label>
-          <input
-            value={data.player1_twibbon}
-            id="player1_twibon"
-            type="url"
-            placeholder="link"
-            className="p-4 bg-white rounded-xs w-full outline-none text-sm lg:text-base font-plus-jakarta-sans shadow-md border-2"
-            onChange={(e) => setData({ ...data, player1_twibbon: e.target.value })}
-          />
-          <p className="text-red-500 text-xs">please fill your name</p>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label htmlFor="player1_phone" className="text-sm lg:text-base font-fira-code">
-            PLAYER 1 PHONE NUMBER
-          </label>
-          <input
-            value={data.player1_phone}
-            id="player1_phone"
-            type="tel"
-            placeholder="08123456789"
-            className="p-4 bg-white rounded-xs w-full outline-none text-sm lg:text-base font-plus-jakarta-sans shadow-md border-2"
-            onChange={(e) => setData({ ...data, player1_phone: e.target.value })}
-          />
-          <p className="text-red-500 text-xs">please fill your name</p>
-        </div>
-
-        <button className="bg-[#FBFF00] hover:bg-yellow-300 transition font-fira-code font-medium py-3 mt-2 shadow-md">
-          DOWNLOAD TWIBON
-        </button>
-      </div>
-
-      {/* PLAYER 2 */}
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-1">
-          <label htmlFor="player2_name" className="text-sm lg:text-base font-fira-code text-start md:text-right">
-            PLAYER 2 NAME
-          </label>
-          <input
-            value={data.player2_name}
-            id="player2_name"
-            type="text"
-            placeholder="player 2 name"
-            className="p-4 bg-white rounded-xs w-full outline-none text-sm lg:text-base font-plus-jakarta-sans shadow-md border-2"
-            onChange={(e) => setData({ ...data, player2_name: e.target.value })}
-          />
-          <p className="text-red-500 text-xs text-start md:text-right">please fill your name</p>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label htmlFor="player2_picture" className="text-sm lg:text-base font-fira-code text-start md:text-right">
-            PLAYER 2 PICTURE
-          </label>
-          <input
-            id="player2_picture"
-            type="file"
-            accept=".jpg, .png, .jpeg"
-            placeholder="player 1 picture"
-            className="p-4 bg-white rounded-xs w-full outline-none text-sm lg:text-base font-plus-jakarta-sans shadow-md border-2"
-            onChange={(e) => {
-              const file = (e.target as HTMLInputElement).files?.[0];
-              if (file) {
-                setData({ ...data, player2_picture: file });
-              }
-            }}
-          />
-          <p className="text-red-500 text-xs text-start md:text-right">please fill your name</p>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label htmlFor="player2_twibon" className="text-sm lg:text-base font-fira-code text-start md:text-right">
-            PLAYER 2 TWIBON
-          </label>
-          <input
-            value={data.player2_twibbon}
-            id="player2_twibon"
-            type="url"
-            placeholder="link"
-            className="p-4 bg-white rounded-xs w-full outline-none text-sm lg:text-base font-plus-jakarta-sans shadow-md border-2"
-            onChange={(e) => setData({ ...data, player2_twibbon: e.target.value })}
-          />
-          <p className="text-red-500 text-xs text-start md:text-right">please fill your name</p>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label htmlFor="player2_phone" className="text-sm lg:text-base font-fira-code text-start md:text-right">
-            PLAYER 2 PHONE NUMBER
-          </label>
-          <input
-            value={data.player2_phone}
-            id="player2_phone"
-            type="tel"
-            placeholder="08123456789"
-            className="p-4 bg-white rounded-xs w-full outline-none text-sm lg:text-base font-plus-jakarta-sans shadow-md border-2"
-            onChange={(e) => setData({ ...data, player2_phone: e.target.value })}
-          />
-          <p className="text-red-500 text-xs text-start md:text-right">please fill your name</p>
-        </div>
-
-        <button className="bg-[#FBFF00] hover:bg-yellow-300 transition font-fira-code font-medium py-3 mt-2 shadow-md">
-          DOWNLOAD TWIBON
-        </button>
-      </div>
-    </div>
-  );
+type Props = {
+    data: IParticipantsBody[]
+    setData: (index: number, patch: Partial<IParticipantsBody>) => void
+    errors?: Record<number, Partial<Record<keyof IParticipantsBody, string>>>
 }
 
-export default FormRegistrationPlayer;
+export default function FormRegistrationPlayer({ data, setData, errors = {} }: Props) {
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-28 w-full max-w-[1176px] px-3 md:px-6">
+            {data.map((player, index) => (
+                <div key={index} className="flex flex-col gap-6">
+                    {/* NAME */}
+                    <Field label={`PLAYER ${index + 1} NAME`} error={errors[index]?.participantsName}>
+                        <input
+                            value={player.participantsName}
+                            type="text"
+                            placeholder={`player ${index + 1} name`}
+                            className="p-4 bg-white rounded-xs shadow-md border-2"
+                            onChange={(e) => setData(index, { participantsName: e.target.value })}
+                        />
+                    </Field>
+
+                    <Field label={`PLAYER ${index + 1} ROLE`} error={errors[index]?.participantsRoleInTeam}>
+                        <select
+                            id="participant-role"
+                            name="participant-role"
+                            onChange={(e) => setData(index, { participantsRoleInTeam: e.target.value })}
+                            className={`p-4 bg-white rounded-xs shadow-md border-2 font-plus-jakarta-sans text-sm lg:text-base ${
+                                player.participantsRoleInTeam === '' ? 'text-gray-400' : 'text-black'
+                            }`}
+                        >
+                            <option value="">-- SELECT --</option>
+                            <option value="LEADER" className="text-black">
+                                LEADER
+                            </option>
+                            <option value="MEMBER" className="text-black">
+                                MEMBER
+                            </option>
+                        </select>
+                    </Field>
+
+                    {/* PICTURE */}
+                    <Field label={`PLAYER ${index + 1} PICTURE`} error={errors[index]?.participantsImage}>
+                        <input
+                            type="file"
+                            accept=".jpg, .png, .jpeg"
+                            id="participantsImage"
+                            name="participantsImage"
+                            className="p-4 bg-white rounded-xs shadow-md border-2"
+                            onChange={(e) => {
+                                const file = (e.target as HTMLInputElement).files?.[0]
+                                if (file) {
+                                    setData(index, { participantsImage: file })
+                                }
+                            }}
+                        />
+                    </Field>
+
+                    <Field label={`PLAYER ${index + 1} IDENTITY IMAGE`} error={errors[index]?.participantsIdentityCardImage}>
+                        <input
+                            type="file"
+                            accept=".jpg, .png, .jpeg"
+                            id="participantsIdentityCardImage"
+                            name="participantsIdentityCardImage"
+                            className="p-4 bg-white rounded-xs shadow-md border-2"
+                            onChange={(e) => {
+                                const file = (e.target as HTMLInputElement).files?.[0]
+                                if (file) {
+                                    setData(index, { participantsIdentityCardImage: file })
+                                }
+                            }}
+                        />
+                    </Field>
+
+                    {/* TWIBON */}
+                    <Field label={`PLAYER ${index + 1} TWIBON`} error={errors[index]?.participantsTwibbon}>
+                        <input
+                            value={player.participantsTwibbon}
+                            type="url"
+                            placeholder="link"
+                            className="p-4 bg-white rounded-xs shadow-md border-2"
+                            onChange={(e) => setData(index, { participantsTwibbon: e.target.value })}
+                        />
+                    </Field>
+
+                    {/* PHONE */}
+                    <Field label={`PLAYER ${index + 1} PHONE`} error={errors[index]?.participantsPhone}>
+                        <input
+                            value={player.participantsPhone}
+                            type="tel"
+                            placeholder="08123456789"
+                            className="p-4 bg-white rounded-xs shadow-md border-2"
+                            onChange={(e) => setData(index, { participantsPhone: e.target.value })}
+                        />
+                    </Field>
+                </div>
+            ))}
+        </div>
+    )
+}
+
+function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+    return (
+        <div className="flex flex-col gap-1">
+            <label className="text-sm lg:text-base font-fira-code">{label}</label>
+            {children}
+            {error && <p className="text-red-500 text-xs">{error}</p>}
+        </div>
+    )
+}

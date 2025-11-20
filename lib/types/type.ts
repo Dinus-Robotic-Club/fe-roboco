@@ -53,6 +53,8 @@ export interface ICreateTournament {
     description?: string | null
     startDate: string
     endDate?: string | null
+    image?: File | null
+    location?: string
     playoffType?: PlayoffType | null
     stageType: StageType | null
 }

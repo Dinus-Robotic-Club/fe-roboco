@@ -11,7 +11,7 @@ import { useCreateTournament } from '@/hooks/mutations/tournament-mutations'
 import { useTournaments } from '@/hooks/queries/useTournaments'
 import { nav_admin } from '@/lib'
 import { generateSlug } from '@/lib/func'
-import { IBodyCreateTournament, PlayoffType, StageType } from '@/lib/types'
+import { IBodyCreateTournament, PlayoffType, StageType } from '@/lib/types/type'
 import { useState } from 'react'
 const Page = () => {
     const { data, isLoading, isError } = useTournaments()
@@ -27,6 +27,8 @@ const Page = () => {
             startDate: '',
             description: '',
             endDate: '',
+            image: null,
+            location: '',
             playoffType: null,
         },
     })

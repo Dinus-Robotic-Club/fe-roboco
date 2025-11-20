@@ -1,5 +1,5 @@
 'use client'
-import { NavData } from '@/lib/types'
+import { NavData } from '@/lib/types/type'
 import Image from 'next/image'
 import React, { useState, useEffect } from 'react'
 import { FiAlignRight, FiX } from 'react-icons/fi'
@@ -26,7 +26,7 @@ function Navbar({ left, right }: NavData) {
 
     return (
         <nav
-            className={`fixed font-plus-jakarta-sans top-0 left-0 w-full h-full max-h-[70px] 2xl:max-h-20 z-50 uppercase flex  items-center justify-between md:justify-center gap-7 transition-all duration-400 px-4 ${
+            className={`fixed font-plus-jakarta-sans top-0 left-0 w-full h-full max-h-[70px] 2xl:max-h-25 z-50 uppercase flex  items-center justify-between md:justify-center gap-7 transition-all duration-400 px-4 ${
                 scrolled ? 'bg-white shadow-md' : 'bg-transparent'
             }`}
         >
