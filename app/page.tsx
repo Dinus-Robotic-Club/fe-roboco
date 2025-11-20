@@ -2,7 +2,7 @@ import About from '@/component/landingPage/About'
 import Category from '@/component/landingPage/Category'
 import Footer from '@/component/ui/Footer'
 import Home from '@/component/landingPage/Home'
-import Navbar from '@/component/ui/Navbar'
+import Navbar from '@/component/ui/Global/Navbar'
 import { nav_home } from '@/lib'
 
 export default function Page() {

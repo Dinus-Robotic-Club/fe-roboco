@@ -172,7 +172,7 @@ function FormRegistationTeam({
                             <option value="SOCCER" className="text-black">
                                 SOCCER
                             </option>
-                            <option value="SUMMO" className="text-black">
+                            <option value="SUMO" className="text-black">
                                 SUMMO
                             </option>
                         </select>

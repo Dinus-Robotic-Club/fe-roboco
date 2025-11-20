@@ -97,6 +97,9 @@ export default function FormRegistrationPlayer({ data, setData, errors = {} }: P
                             onChange={(e) => setData(index, { participantsPhone: e.target.value })}
                         />
                     </Field>
+                    <button key={index} className="bg-[#FBFF00] hover:shadow-xl transition font-fira-code font-medium py-3 mt-2 shadow-md">
+                        DOWNLOAD TWIBON
+                    </button>
                 </div>
             ))}
         </div>

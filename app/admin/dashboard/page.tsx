@@ -1,7 +1,7 @@
 'use client'
 
 import Card from '@/component/dashboard-admin/card'
-import Navbar from '@/component/ui/Navbar'
+import Navbar from '@/component/ui/Global/Navbar'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
