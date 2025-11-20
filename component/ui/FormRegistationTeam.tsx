@@ -1,6 +1,6 @@
 'use-client'
 import { ITeamBody, TeamError } from '@/lib/types/team'
-import { IResponseGetTour } from '@/lib/types/type'
+import { IGetAllTournaments, IResponseGetTour } from '@/lib/types/type'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 
@@ -13,7 +13,7 @@ function FormRegistationTeam({
     data: ITeamBody
     setData: React.Dispatch<React.SetStateAction<ITeamBody>>
     error?: TeamError
-    listTour?: IResponseGetTour
+    listTour?: IGetAllTournaments[]
 }) {
     const [showPass, setShowPass] = useState<boolean>(false)
     const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false)
@@ -195,7 +195,7 @@ function FormRegistationTeam({
                         >
                             <option value="">-- SELECT --</option>
                             {listTour &&
-                                listTour.data.map((tour) => (
+                                listTour.map((tour) => (
                                     <option value={tour.uid} key={tour.uid} className="text-black">
                                         {tour.name}
                                     </option>
