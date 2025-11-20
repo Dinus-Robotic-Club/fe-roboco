@@ -1,16 +1,13 @@
 // Card.tsx
 import { IGetAllTournaments } from '@/lib/types/type'
+import Image from 'next/image'
 
 const Card = ({ data }: { data: IGetAllTournaments }) => {
+    console.log(`${process.env.NEXT_PUBLIC_API_URL}/${data.image}`)
     return (
         <div className="bg-white rounded-2xl hover:shadow-sm hover:cursor-pointer border border-gray-100 overflow-hidden shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 w-full">
-            {/* Thumbnail Placeholder (Clean Yellow Accent) */}
-            <div className="w-full h-48 bg-yellow-50 flex items-center justify-center">
-                <div className="bg-yellow-100 rounded-full p-4 text-yellow-600">
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
+            <div className="w-full h-48 bg-yellow-50 flex items-center justify-center overflow-hidden rounded-md">
+                <Image src={`${process.env.NEXT_PUBLIC_API_URL}${data.image}`} alt="image tournament" width={320} height={320} className="object-cover w-full h-full" />
             </div>
 
             {/* Content */}
@@ -28,7 +25,7 @@ const Card = ({ data }: { data: IGetAllTournaments }) => {
                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                             />
                         </svg>
-                        15 Nov 2025 • 14:00 WIB
+                        {data.startDate}
                     </div>
                     <div className="flex items-center">
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,7 +37,7 @@ const Card = ({ data }: { data: IGetAllTournaments }) => {
                             />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        Stadion Utama
+                        {data.location}
                     </div>
                 </div>
             </div>

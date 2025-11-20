@@ -16,7 +16,7 @@ interface ITeamBody {
     name: string
     school: string
     password: string
-    confirmPassword: string
+    confirmPassword?: string
     category: string
     invoice: File | null
     email: string
