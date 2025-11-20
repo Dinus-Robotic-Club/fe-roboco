@@ -1,4 +1,4 @@
-import { IBodyCreateTournament, IResponseGetTour } from '../types'
+import { IResponseGetTour } from '../types/type'
 import { apiFetch } from './client'
 // import { Tournament } from '../types'
 
@@ -8,9 +8,9 @@ export const getAllTournaments = () => {
     return apiFetch<IResponseGetTour>(`${BASE}/tournament/get`)
 }
 
-export const createTournament = (data: IBodyCreateTournament) => {
+export const createTournament = (data: FormData) => {
     return apiFetch<IResponseGetTour>(`${BASE}/tournament/create`, {
         method: 'POST',
-        body: JSON.stringify(data),
+        body: data,
     })
 }

@@ -1,5 +1,5 @@
 // Card.tsx
-import { IGetAllTournaments } from '@/lib/types'
+import { IGetAllTournaments } from '@/lib/types/type'
 
 const Card = ({ data }: { data: IGetAllTournaments }) => {
     return (
