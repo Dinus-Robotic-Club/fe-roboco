@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Fira_Code, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
+import { Toaster } from 'sonner'
 import QueryProvider from '@/providers/app-providers'
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -27,7 +28,10 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${plusJakartaSans.variable} ${firaCode.variable} antialiased`}>
-                <QueryProvider>{children}</QueryProvider>
+                <QueryProvider>
+                    {children}
+                    <Toaster expand={true} richColors position="top-right" />
+                </QueryProvider>
             </body>
         </html>
     )

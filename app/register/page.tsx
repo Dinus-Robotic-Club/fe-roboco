@@ -5,13 +5,13 @@ import Navbar from '@/component/ui/Global/Navbar'
 import { useTournaments } from '@/hooks/queries/useTournaments'
 import { nav_register } from '@/lib'
 import { IBodyRegisterTeam, IParticipantsBody, ITeamBody, RegisterError } from '@/lib/types/team'
-import * as z from 'zod'
 import { useMounted } from '@/lib/useMounted'
 import { RegisterTeamSchema } from '@/lib/validator/register-form'
 import Image from 'next/image'
 import { FormEvent, useEffect, useState } from 'react'
 import { useCreateTeam } from '@/hooks/mutations/teams-mutation'
 import Loader from '@/component/ui/Global/loader'
+import { mapZodErrors } from '@/lib/func'
 
 function Register() {
     const mounted = useMounted()
@@ -68,35 +68,6 @@ function Register() {
         localStorage.setItem('participants-form', JSON.stringify(participants))
     }, [participants])
 
-    function mapZodErrors(issues: z.ZodIssue[]): RegisterError {
-        const errorObj: RegisterError = {
-            team: {},
-            participants: [],
-        }
-
-        for (const issue of issues) {
-            const path = issue.path
-
-            if (path[0] === 'team' && typeof path[1] === 'string') {
-                const field = path[1] as keyof ITeamBody
-                errorObj.team![field] = issue.message
-            }
-
-            if (path[0] === 'participants') {
-                const idx = path[1] as number
-                const field = path[2] as keyof IParticipantsBody
-
-                if (!errorObj.participants![idx]) {
-                    errorObj.participants![idx] = {}
-                }
-
-                errorObj.participants![idx]![field] = issue.message
-            }
-        }
-
-        return errorObj
-    }
-
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
         console.log('CLICKED')
@@ -131,7 +102,7 @@ function Register() {
         mutate(fd)
     }
 
-    if (isSuccess) console.log(isSuccess)
+    if (isSuccess) localStorage.clear()
     if (!mounted) return null
 
     return (
