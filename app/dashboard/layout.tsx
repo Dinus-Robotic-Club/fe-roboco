@@ -1,5 +1,5 @@
 import Footer from '@/component/ui/Footer'
-import Navbar from '@/component/ui/Navbar'
+import Navbar from '@/component/ui/Global/Navbar'
 import { nav_dashboard } from '@/lib'
 
 export default function DashboardLayout({ children }: Readonly<{ children: React.ReactNode }>) {

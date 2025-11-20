@@ -4,7 +4,7 @@ import Image from 'next/image'
 import React, { useState, useEffect } from 'react'
 import { FiAlignRight, FiX } from 'react-icons/fi'
 import { usePathname } from 'next/navigation'
-import NavLogo from './NavLogo'
+import NavLogo from '../NavLogo'
 
 function Navbar({ left, right }: NavData) {
     const [scrolled, setScrolled] = useState(false)
@@ -26,11 +26,11 @@ function Navbar({ left, right }: NavData) {
 
     return (
         <nav
-            className={`fixed font-plus-jakarta-sans top-0 left-0 w-full h-full max-h-[70px] 2xl:max-h-25 z-50 uppercase flex  items-center justify-between md:justify-center gap-7 transition-all duration-400 px-4 ${
+            className={`fixed font-plus-jakarta-sans top-0 left-0 w-full h-full max-h-[78px] 2xl:max-h-25 z-50 uppercase flex  items-center justify-between md:justify-center gap-7 transition-all duration-400 px-4 ${
                 scrolled ? 'bg-white shadow-md' : 'bg-transparent'
             }`}
         >
-            <div className="hidden md:flex gap-4 lg:gap-7 text-sm 2xl:text-base w-full justify-end">
+            <div className="hidden md:flex gap-4 lg:gap-7 text-sm 2xl:text-lg w-full justify-end">
                 {left.map((item) => (
                     <a
                         key={item.title}
@@ -43,10 +43,10 @@ function Navbar({ left, right }: NavData) {
                     </a>
                 ))}
             </div>
-            <div className="hidden md:flex relative min-w-[210px] items-center justify-center">
+            <div className="hidden md:flex relative min-w-[165px] items-center justify-center">
                 <NavLogo />
             </div>
-            <div className="hidden md:flex gap-4 lg:gap-7 text-sm 2xl:text-base w-full justify-start">
+            <div className="hidden md:flex gap-4 lg:gap-7 text-sm 2xl:text-lg w-full justify-start">
                 {right.map((item) => (
                     <a
                         key={item.title}
