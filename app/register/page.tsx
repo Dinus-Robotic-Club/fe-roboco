@@ -19,45 +19,35 @@ function Register() {
     const { data, isLoading } = useTournaments()
     const { mutate, isPending, isSuccess } = useCreateTeam()
 
-    const [team, setTeam] = useState<ITeamBody>(() => {
-        const saved = localStorage.getItem('team-form')
-        return saved
-            ? JSON.parse(saved)
-            : {
-                  name: '',
-                  email: '',
-                  password: '',
-                  school: '',
-                  category: '',
-                  logo: null,
-                  tournamentId: '',
-                  invoice: null,
-              }
+    const [team, setTeam] = useState<ITeamBody>({
+        name: '',
+        email: '',
+        password: '',
+        school: '',
+        category: '',
+        logo: null,
+        tournamentId: '',
+        invoice: null,
     })
 
-    const [participants, setParticipants] = useState<IParticipantsBody[]>(() => {
-        const saved = localStorage.getItem('participants-form')
-        return saved
-            ? JSON.parse(saved)
-            : [
-                  {
-                      participantsName: '',
-                      participantsPhone: '',
-                      participantsTwibbon: '',
-                      participantRoleInTeam: '',
-                      participantsImage: null,
-                      participantsIdentityCardImage: null,
-                  },
-                  {
-                      participantsName: '',
-                      participantsPhone: '',
-                      participantsTwibbon: '',
-                      participantRoleInTeam: '',
-                      participantsImage: null,
-                      participantsIdentityCardImage: null,
-                  },
-              ]
-    })
+    const [participants, setParticipants] = useState<IParticipantsBody[]>([
+        {
+            participantsName: '',
+            participantsPhone: '',
+            participantsTwibbon: '',
+            participantsRoleInTeam: '',
+            participantsImage: null,
+            participantsIdentityCardImage: null,
+        },
+        {
+            participantsName: '',
+            participantsPhone: '',
+            participantsTwibbon: '',
+            participantsRoleInTeam: '',
+            participantsImage: null,
+            participantsIdentityCardImage: null,
+        },
+    ])
 
     const [error, setError] = useState<RegisterError>({})
 
@@ -71,7 +61,6 @@ function Register() {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
-        console.log('CLICKED')
 
         const payload: IBodyRegisterTeam = {
             team,
@@ -125,7 +114,7 @@ function Register() {
                     </a>
                 </p>
             </div>
-            <div className="max-h-[510px] w-full max-w-[1176px] relative flex justify-center items-center flex-col px-3 sm:px-6 lg:px-20 z-20 mb-28 py-10 mx-auto shadow-md lg:shadow-none bg-[#fcff00] lg:bg-transparent">
+            <div className="max-h-full md:max-h-[510px]  w-full max-w-[1176px] relative flex justify-center items-center flex-col px-3 sm:px-6 lg:px-20 z-20 mb-28 py-10 mx-auto shadow-md lg:shadow-none bg-[#fcff00] lg:bg-transparent">
                 <Image src="/bg-registration-team.svg" alt="Registration Team" fill className="rounded-md object-cover hidden lg:block" />
                 <FormRegistationTeam data={team} setData={setTeam} listTour={(data?.data as IGetAllTournaments[]) ?? []} error={error.team} />
             </div>

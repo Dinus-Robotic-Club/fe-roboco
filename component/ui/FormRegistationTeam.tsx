@@ -1,6 +1,6 @@
 'use-client'
 import { ITeamBody, TeamError } from '@/lib/types/team'
-import { IGetAllTournaments, IResponseGetTour } from '@/lib/types/type'
+import { IGetAllTournaments } from '@/lib/types/type'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 

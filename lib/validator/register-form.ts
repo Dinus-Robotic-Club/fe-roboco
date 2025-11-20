@@ -19,7 +19,7 @@ export const TeamSchema = z
 
 export const ParticipantSchema = z.object({
     participantsName: z.string().min(1, 'Nama pemain wajib'),
-    participantRoleInTeam: z.string().min(1, 'Role wajib'),
+    participantsRoleInTeam: z.string().min(1, 'Role wajib diisi'),
     participantsImage: z.instanceof(File).nullable(),
     participantsIdentityCardImage: z.instanceof(File).nullable(),
     participantsTwibbon: z.string().optional(),

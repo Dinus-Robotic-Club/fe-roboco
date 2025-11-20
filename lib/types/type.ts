@@ -31,6 +31,8 @@ export interface IGetAllTournaments {
     name: string
     startDate: string
     endDate: string
+    image: string
+    location: string
 }
 
 export type TournamentResponse = IApiResponse<IGetAllTournaments[]>
@@ -55,10 +57,6 @@ export interface ICreateTournament {
     location?: string
     playoffType?: PlayoffType | null
     stageType: StageType | null
-}
-
-export interface IBodyCreateTournament {
-    data: ICreateTournament
 }
 
 export enum StatusCode {
