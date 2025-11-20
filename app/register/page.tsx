@@ -12,10 +12,11 @@ import { FormEvent, useEffect, useState } from 'react'
 import { useCreateTeam } from '@/hooks/mutations/teams-mutation'
 import Loader from '@/component/ui/Global/loader'
 import { mapZodErrors } from '@/lib/func'
+import { IGetAllTournaments } from '@/lib/types/type'
 
 function Register() {
     const mounted = useMounted()
-    const tournament = useTournaments()
+    const { data, isLoading } = useTournaments()
     const { mutate, isPending, isSuccess } = useCreateTeam()
 
     const [team, setTeam] = useState<ITeamBody>(() => {
@@ -103,6 +104,7 @@ function Register() {
     }
 
     if (isSuccess) localStorage.clear()
+    if (isLoading) return <Loader show={isLoading} />
     if (!mounted) return null
 
     return (
@@ -125,7 +127,7 @@ function Register() {
             </div>
             <div className="max-h-[510px] w-full max-w-[1176px] relative flex justify-center items-center flex-col px-3 sm:px-6 lg:px-20 z-20 mb-28 py-10 mx-auto shadow-md lg:shadow-none bg-[#fcff00] lg:bg-transparent">
                 <Image src="/bg-registration-team.svg" alt="Registration Team" fill className="rounded-md object-cover hidden lg:block" />
-                <FormRegistationTeam data={team} setData={setTeam} listTour={tournament.data} error={error.team} />
+                <FormRegistationTeam data={team} setData={setTeam} listTour={(data?.data as IGetAllTournaments[]) ?? []} error={error.team} />
             </div>
             <div className="w-full flex flex-col justify-center items-center mb-28">
                 <h1 className="text-center font-bold text-2xl font-plus-jakarta-sans mb-10">PLAYER PROFILE</h1>

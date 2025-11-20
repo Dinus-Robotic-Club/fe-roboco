@@ -33,9 +33,7 @@ export interface IGetAllTournaments {
     endDate: string
 }
 
-export interface IResponseGetTour {
-    data: IGetAllTournaments[]
-}
+export type TournamentResponse = IApiResponse<IGetAllTournaments[]>
 
 export enum PlayoffType {
     DOUBLE_ELIM = 'DOUBLE_ELIM',

@@ -149,7 +149,7 @@
 .logo-container {
     width: 130px;
     height: 100px;
-    background: #ffff00;
+    background: #fcff00;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 30px 100%, 0 calc(100% - 30px));
 }
 
@@ -208,7 +208,7 @@
 
 .loadingspinner div {
     display: inline-block;
-    background: #fbff00;
+    background: #fcff00;
     border: none;
     border-radius: 2px;
     width: var(--square);
