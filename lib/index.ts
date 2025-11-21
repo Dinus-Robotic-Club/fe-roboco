@@ -267,4 +267,22 @@ export const groups_list = [
     present: 1,
     status: "verified",
   },
+  {
+    logo: "/logo-only.svg",
+    name: "Blitz United",
+    email: "blitz.united@example.com",
+    category: "soccer",
+    instansi: "Universitas Multimedia Nusantara",
+    present: 1,
+    status: "verified",
+  },
+  {
+    logo: "/logo-only.svg",
+    name: "Blitz United",
+    email: "blitz.united@example.com",
+    category: "soccer",
+    instansi: "Universitas Multimedia Nusantara",
+    present: 1,
+    status: "verified",
+  },
 ];
