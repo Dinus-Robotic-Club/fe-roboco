@@ -1,5 +1,5 @@
 "use client";
-import BasisRank from "@/component/leagueboard/BasisRank";
+import MemberList from "@/component/participants/MemberList";
 import TeamList from "@/component/participants/TeamList";
 import HeaderDashboard from "@/component/ui/HeaderDashboard";
 
@@ -12,7 +12,7 @@ function Group() {
   if (activeNav === "team-list") {
     ComponentToRender = <TeamList />;
   } else if (activeNav === "member-list") {
-    ComponentToRender = <BasisRank />;
+    ComponentToRender = <MemberList />;
   } else {
     ComponentToRender = null;
   }

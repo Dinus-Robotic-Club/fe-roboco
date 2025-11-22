@@ -191,7 +191,7 @@ export const groups_list = [
     email: "alpha.strikers@example.com",
     category: "soccer",
     instansi: "Universitas Teknologi Nusantara",
-    present: 1,
+    present: true,
     status: "verified",
   },
 
@@ -210,7 +210,7 @@ export const groups_list = [
     email: "cyber.kickers@example.com",
     category: "soccer",
     instansi: "Universitas Diponegoro",
-    present: 1,
+    present: true,
     status: "verified",
   },
   {
@@ -228,7 +228,7 @@ export const groups_list = [
     email: "blitz.united@example.com",
     category: "soccer",
     instansi: "Universitas Multimedia Nusantara",
-    present: 1,
+    present: true,
     status: "verified",
   },
   {
@@ -246,7 +246,7 @@ export const groups_list = [
     email: "cyber.kickers@example.com",
     category: "soccer",
     instansi: "Universitas Diponegoro",
-    present: 1,
+    present: true,
     status: "verified",
   },
   {
@@ -264,7 +264,7 @@ export const groups_list = [
     email: "blitz.united@example.com",
     category: "soccer",
     instansi: "Universitas Multimedia Nusantara",
-    present: 1,
+    present: true,
     status: "verified",
   },
   {
@@ -273,7 +273,7 @@ export const groups_list = [
     email: "blitz.united@example.com",
     category: "soccer",
     instansi: "Universitas Multimedia Nusantara",
-    present: 1,
+    present: true,
     status: "verified",
   },
   {
@@ -282,7 +282,87 @@ export const groups_list = [
     email: "blitz.united@example.com",
     category: "soccer",
     instansi: "Universitas Multimedia Nusantara",
-    present: 1,
+    present: true,
     status: "verified",
+  },
+];
+
+export const member_list = [
+  {
+    name: "Joshua Wirawan",
+    team: "Harmonic Seals",
+    category: "soccer",
+    role: "leader",
+    phone: "081212345678",
+  },
+  {
+    name: "Zirly Daffa Husain",
+    team: "The Ballers",
+    category: "soccer",
+    role: "leader",
+    phone: "081298765432",
+  },
+  {
+    name: "Aristides Bima",
+    team: "KupasKuaci.group",
+    category: "sumo",
+    role: "leader",
+    phone: "082133445566",
+  },
+  {
+    name: "Michael Argento",
+    team: "Args Dev",
+    category: "soccer",
+    role: "member",
+    phone: "082144556677",
+  },
+  {
+    name: "Kiagus Resadu",
+    team: "CAPYBRO STUDIO",
+    category: "sumo",
+    role: "leader",
+    phone: "081390112233",
+  },
+  {
+    name: "Aditya Wulan Pratama",
+    team: "Fadia Bekicot",
+    category: "soccer",
+    role: "member",
+    phone: "081355667788",
+  },
+  {
+    name: "Adeptama Denis",
+    team: "Placidusax",
+    category: "sumo",
+    role: "leader",
+    phone: "081222334455",
+  },
+  {
+    name: "Ivan Rafsanjani",
+    team: "Nicotaste",
+    category: "soccer",
+    role: "member",
+    phone: "081233445566",
+  },
+  {
+    name: "Feby Akliji Rofiah",
+    team: "Pixel Pixies 2",
+    category: "sumo",
+    role: "member",
+    phone: "082145667799",
+  },
+  {
+    name: "Mario Prasetyo",
+    team: "Rimata",
+    category: "soccer",
+    role: "leader",
+    phone: "081288990011",
+  },
+  {
+    name: "Mario Prasetyo",
+    team: "Rimata",
+    category: "soccer",
+    role: "leader",
+    phone: "081288990011",
   },
 ];

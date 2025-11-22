@@ -5,8 +5,7 @@ import { useMounted } from "@/lib/useMounted";
 import { DownloadIcon, Eye, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+import { downloadExcelTeams } from "./DownloadExcel";
 
 function TeamList() {
   const [statusFilter, setStatusFilter] = useState("all");
@@ -41,9 +40,7 @@ function TeamList() {
 
   // Filtering
   const filteredData = groups_list.filter((team) => {
-    const matchSearch =
-      team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      team.instansi.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchSearch = team.name.toLowerCase().includes(searchQuery.toLowerCase());
 
     let matchStatus = true;
     if (statusFilter === "present") matchStatus = team.present === true;
@@ -63,9 +60,7 @@ function TeamList() {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   const goToNextPage = () => {
@@ -74,32 +69,6 @@ function TeamList() {
 
   const goToPrevPage = () => {
     if (currentPage > 1) setCurrentPage((prev) => prev - 1);
-  };
-
-  const downloadExcel = () => {
-    const dataToExport = filteredData.map((team, index) => ({
-      No: index + 1,
-      Name: team.name,
-      Instansi: team.instansi,
-      Category: team.category,
-      Payment: team.status,
-      Status: team.present ? "Present" : "Absent",
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Teams");
-
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-
-    const file = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-
-    saveAs(file, "team_list.xlsx");
   };
 
   return (
@@ -116,7 +85,7 @@ function TeamList() {
             placeholder="Search teams..."
           />
           <button
-            onClick={downloadExcel}
+            onClick={() => downloadExcelTeams({ filteredData })}
             className="bg-[#FBFF00] flex justify-center items-center py-2 px-6 rounded gap-3 cursor-pointer hover:bg-yellow-300 transition-all lg:text-base text-sm"
           >
             <p className="hidden lg:block">Download data</p>
