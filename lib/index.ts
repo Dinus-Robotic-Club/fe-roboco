@@ -13,7 +13,7 @@ export const nav_home = {
 
 export const nav_register = {
   left: [
-    { title: "Profile", href: "#" },
+    { title: "Dashboard", href: "/dashboard" },
     { title: "Riwayat", href: "#" },
   ],
   right: [
@@ -22,9 +22,9 @@ export const nav_register = {
   ],
 };
 
-export const nav_dashboard = {
+export const nav_dashboard_main = {
   left: [
-    { title: "Profile", href: "#" },
+    { title: "Dashboard", href: "/dashboard" },
     { title: "Riwayat", href: "#" },
   ],
   right: [
@@ -61,6 +61,12 @@ export const nav_legaueboard = [
   { label: "BASIS RANK", key: "basis-rank" },
   { label: "PLAYOFF - SUMMO", key: "playoff-sumo" },
   { label: "PLAYOFF - SOCCER", key: "playoff-soccer" },
+];
+
+export const nav_dashboard = [
+  { label: "TEAM DASHBOARD", key: "team-dashboard" },
+  { label: "TEAM PROFILE", key: "team-profile" },
+  { label: "CERTIFICATE", key: "certificate" },
 ];
 
 export const leaderboard_dumy = [
