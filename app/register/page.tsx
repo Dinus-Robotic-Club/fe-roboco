@@ -95,7 +95,7 @@ function Register() {
   };
 
   if (isSuccess) localStorage.clear();
-  // if (isLoading) return <Loader show={isLoading} />
+  if (isLoading) return <Loader show={isLoading} />;
   if (!mounted) return null;
 
   return (
