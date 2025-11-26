@@ -1,19 +1,22 @@
 'use-client'
 import { ITeamBody, TeamError } from '@/lib/types/team'
-import { IGetAllTournaments } from '@/lib/types/type'
+import { IGetAllCommunity, IGetAllTournaments } from '@/lib/types/type'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
+import CommunityInput from './CommunityInput'
 
 function FormRegistationTeam({
     data,
     setData,
     error,
     listTour,
+    listCommunity,
 }: {
     data: ITeamBody
     setData: React.Dispatch<React.SetStateAction<ITeamBody>>
     error?: TeamError
     listTour?: IGetAllTournaments[]
+    listCommunity?: IGetAllCommunity[]
 }) {
     const [showPass, setShowPass] = useState<boolean>(false)
     const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false)
@@ -204,21 +207,11 @@ function FormRegistationTeam({
                         {error?.category && <p className="text-red-500 text-xs">{error.category}</p>}
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                        <label htmlFor="asal_instansi" className="text-sm lg:text-base font-fira-code">
-                            ASAL INSTANSI
-                        </label>
-                        <input
-                            value={data.school}
-                            onChange={(e) => setData({ ...data, school: e.target.value })}
-                            type="text"
-                            id="asal_instansi"
-                            name="asal_instansi"
-                            placeholder="Asal instansi"
-                            className="p-3 sm:p-4 bg-white rounded-xs w-full outline-none text-sm lg:text-base font-plus-jakarta-sans shadow-md"
-                        />
-                        {error?.school && <p className="text-red-500 text-xs">{error.school}</p>}
-                    </div>
+                    <CommunityInput
+                        communities={listCommunity as IGetAllCommunity[]} // dari API TanStack Query
+                        value={data.communityName}
+                        onChange={(val) => setData({ ...data, communityName: val })}
+                    />
                 </div>
                 <p className="text-center text-[#7d7d7d] text-sm sm:text-base italic font-plus-jakarta-sans ">Dilarang menggunakan nama team yang mengandung unsur SARA*</p>
             </div>
