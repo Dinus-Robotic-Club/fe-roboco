@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const TeamSchema = z
     .object({
         name: z.string().min(1, 'Nama wajib diisi'),
-        school: z.string().min(1, 'Asal sekolah wajib diisi'),
+        communityName: z.string().min(1, 'Asal sekolah wajib diisi'),
         password: z.string().min(6, 'Password minimal 6 karakter'),
         confirmPassword: z.string().min(5, 'Konfirmasi password wajib diisi'),
         category: z.string().min(1, 'Kategori wajib diisi'),

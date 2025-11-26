@@ -1,12 +1,11 @@
-import { IApiResponse, TournamentResponse } from '../types/type'
+import { IApiResponse, IGetAllTournaments } from '../types/type'
 import { apiFetch } from './client'
 
 const BASE = process.env.NEXT_PUBLIC_API_URL
 
 export const getAllTournaments = () => {
-    return apiFetch<TournamentResponse>(`${BASE}/api/tournament/get`)
+    return apiFetch<IApiResponse<IGetAllTournaments[]>>(`${BASE}/api/tournament/get`)
 }
-
 
 export const createTournament = (data: FormData): Promise<IApiResponse<unknown>> => {
     return apiFetch<IApiResponse<unknown>>(`${BASE}/api/tournament/create`, {

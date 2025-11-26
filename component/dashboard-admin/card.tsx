@@ -3,7 +3,7 @@ import { IGetAllTournaments } from '@/lib/types/type'
 import Image from 'next/image'
 
 const Card = ({ data }: { data: IGetAllTournaments }) => {
-    console.log(`${process.env.NEXT_PUBLIC_API_URL}/${data.image}`)
+    console.log(`${process.env.NEXT_PUBLIC_API_URL}${data.image}`)
     return (
         <div className="bg-white rounded-2xl hover:shadow-sm hover:cursor-pointer border border-gray-100 overflow-hidden shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 w-full">
             <div className="w-full h-48 bg-yellow-50 flex items-center justify-center overflow-hidden rounded-md">

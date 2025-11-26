@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 // --- SIGN IN ---
 export const signInSchema = z.object({
-    email: z.email({ message: 'Mohon masukkan email yang valid' }),
+    email: z.string().email({ message: 'Mohon masukkan email yang valid' }),
     password: z.string().min(8, { message: 'Password minimal 8 karakter' }),
 })
 
