@@ -4,8 +4,6 @@ import React from "react";
 function About() {
   return (
     <section className="flex flex-col h-auto bg-transparent w-full ">
-      <Image src="/line-dnroboco.svg" alt="line-dn-roboco" width={1920} height={112} className="w-full h-auto" />
-
       <div className="min-h-[400px] lg:min-h-[450px] w-full flex flex-col justify-center items-center py-5 px-4 sm:px-6 lg:px-8 ">
         <div className="flex flex-col 2xl:flex-row gap-6 2xl:gap-8  justify-center items-center max-w-[1500px] w-full">
           <div className="flex flex-col sm:flex-row items-center gap-4 lg:gap-6">
