@@ -22,7 +22,7 @@ function Group() {
   };
   return (
     <>
-      <HeaderDashboard title="PARTICIPANTS" />
+      <HeaderDashboard title="PARTICIPANTS" name="Admin" />
       <div className="w-full h-auto py-12 px-3 flex flex-col items-center font-plus-jakarta-sans mb-20">
         <nav className="flex flex-wrap gap-6 justify-center text-sm lg:text-base">
           <p
