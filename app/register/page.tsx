@@ -12,13 +12,12 @@ import { FormEvent, useEffect, useState } from 'react'
 import { useCreateTeam } from '@/hooks/mutations/teams-mutation'
 import Loader from '@/component/ui/Global/loader'
 import { mapZodErrors } from '@/lib/func'
-import { IGetAllTournaments } from '@/lib/types/type'
 import ImageUploadModal from '@/component/ui/Modal'
 import { useTournamentAndCommunity } from '@/hooks/function/useTournamentAndCommunity'
 
 function Register() {
     const mounted = useMounted()
-    const { communities, isError, isLoading, tournaments } = useTournamentAndCommunity()
+    const { communities, isLoading, tournaments } = useTournamentAndCommunity()
     const { mutate, isPending, isSuccess } = useCreateTeam()
     const [showModal, setShowModal] = useState(false)
 
