@@ -25,10 +25,10 @@ export const nav_register = {
 export const nav_dashboard_main = {
   left: [
     { title: "Dashboard", href: "/dashboard" },
-    { title: "Riwayat", href: "#" },
+    { title: "Match", href: "/dashboard/match" },
   ],
   right: [
-    { title: "Leagueboard", href: "#" },
+    { title: "Leagueboard", href: "/dashboard/leagueboard" },
     { title: "Standings", href: "#" },
   ],
 };

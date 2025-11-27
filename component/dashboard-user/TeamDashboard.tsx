@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import React from 'react'
-import CardMatch from '../ui/CardMatch'
+import CardMatchDashboard from '../ui/CardMatchDashboard'
 import { DashboardTeamData } from '@/lib/types/team'
 
 function TeamDashboard({ data }: { data: DashboardTeamData }) {
@@ -81,9 +81,9 @@ function TeamDashboard({ data }: { data: DashboardTeamData }) {
                 <h1 className="text-xl">MATCH HISTORY</h1>
                 <div className="w-full  flex flex-col items-center justify-center gap-3">
                     {items.map((items) => (
-                        <CardMatch key={items} />
+                        <CardMatchDashboard key={items} />
                     ))}
-                    <a href="/dashboard/match/history" className="font-plus-jakarta-sans mt-7 text-base md:text-xl">
+                    <a href="/dashboard/match?tab=history" className="font-plus-jakarta-sans mt-7 text-base md:text-xl">
                         WATCH FULL MATCH HISTORY →
                     </a>
                 </div>
