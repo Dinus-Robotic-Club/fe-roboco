@@ -61,14 +61,7 @@ function TeamDashboard({ data }: { data: DashboardTeamData }) {
                     {data.team.participants?.map((pt, index) => (
                         <div key={pt.uid} className="flex flex-col items-center">
                             <div className="bg-player min-h-[215px] min-w-[215px]">
-                                <Image
-                                    className="h-80 w-auto pb-2 pl-3"
-                                    alt={pt.name}
-                                    src={`${process.env.NEXT_PUBLIC_API_URL}${pt.identityCardImage}`}
-                                    height={300}
-                                    width={200}
-                                    unoptimized
-                                />
+                                <Image className="h-80 w-auto pb-2 pl-3" alt={pt.name} src={`${process.env.NEXT_PUBLIC_API_URL}${pt.image}`} height={300} width={200} />
                             </div>
 
                             <h1 className="text-2xl font-bold">Player {index + 1}</h1>

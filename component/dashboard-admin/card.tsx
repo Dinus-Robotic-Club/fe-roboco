@@ -16,7 +16,7 @@ const TournamentCard = ({ data }: { data: IGetAllTournaments }) => {
     const router = useRouter()
 
     // Simulasi status (karena di interface IGetAllTournaments belum ada, kita mock logic-nya)
-    // Nanti bisa diganti dengan field asli dari API: data.status
+    // Nanti bisa diganti dengan field asli dari API: data.status``
     const isUpcoming = new Date(data.startDate) > new Date()
     const status = isUpcoming ? 'UPCOMING' : 'ONGOING'
     const teamCount = 12 // Mock data, nanti ambil dari data.registrations.length
@@ -84,9 +84,7 @@ const TournamentCard = ({ data }: { data: IGetAllTournaments }) => {
                 </div>
             </div>
         </div>
-      </div>
-    </div>
-  );
-};
+    )
+}
 
 export default TournamentCard
