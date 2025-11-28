@@ -152,6 +152,12 @@
     background-repeat: no-repeat;
 }
 
+.bg-sponsorship {
+  background-image: url("/bg-sponsorship.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 .logo-container {
     width: 130px;
     height: 100px;

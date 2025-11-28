@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Card from '@/component/dashboard-admin/card'
 import FormInputTurney from '@/component/dashboard-admin/form-input'
@@ -17,8 +17,8 @@ import { Search, Trophy } from 'lucide-react'
 import { useState } from 'react'
 
 const Page = () => {
-    const { data, isLoading, isError } = useTournaments()
-    const { mutate, isPending } = useCreateTournament()
+  const { data, isLoading, isError } = useTournaments();
+  const { mutate, isPending } = useCreateTournament();
 
     const [searchQuery, setSearchQuery] = useState('')
     const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -36,21 +36,21 @@ const Page = () => {
         playoffType: null,
     })
 
-    const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+  const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-        const formData = new FormData()
+    const formData = new FormData();
 
-        Object.entries(isForm).forEach(([key, value]) => {
-            if (value === null || value === undefined) return
+    Object.entries(isForm).forEach(([key, value]) => {
+      if (value === null || value === undefined) return;
 
-            if (value instanceof File) {
-                formData.append(key, value)
-                return
-            }
+      if (value instanceof File) {
+        formData.append(key, value);
+        return;
+      }
 
-            formData.append(key, String(value))
-        })
+      formData.append(key, String(value));
+    });
 
         mutate(formData, {
             onSuccess: () => setIsDialogOpen(false),
@@ -128,7 +128,26 @@ const Page = () => {
             </main>
             <Footer />
         </div>
-    )
-}
+        <div className="flex justify-center items-center mt-4">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline">Buat Turnamen</Button>
+            </DialogTrigger>
 
-export default Page
+            <FormInputTurney
+              isForm={isForm}
+              setIsForm={setIsForm}
+              isStage={isStage}
+              setIsStage={setIsStage}
+              submitForm={submitForm}
+              isPending={isPending}
+            />
+          </Dialog>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default Page;

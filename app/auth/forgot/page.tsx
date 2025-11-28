@@ -46,20 +46,25 @@ export default function ForgotPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-[#FFD700] to-[#FBFF00] flex items-center justify-center p-2 font-fira-code">
-      <div className="bg-white rounded shadow-2xl p-10 w-full max-w-lg">
-        <div className="text-center mb-8">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center px-2 py-8 font-plus-jakarta-sans">
+      <div className="w-full md:max-w-lg xl:max-w-xl bg-white rounded-2xl shadow-xl px-5 py-7 md:px-10 border border-gray-100">
+        {/* Logo */}
+        <div className="text-center mb-5">
           <Link href="/" className="flex justify-center">
-            <Image src="/logo-only.svg" alt="DN Roboco Logo" width={200} height={119} className="w-32 h-auto" />
+            <Image src="/logo-only.svg" alt="DN Roboco Logo" width={200} height={119} className="w-24 sm:w-28 md:w-32 h-auto" />
           </Link>
         </div>
 
-        <h1 className="mb-8 text-2xl font-bold w-full text-center">Forgot Password</h1>
+        {/* Title */}
+        <h1 className="mb-6 text-2xl sm:text-3xl font-bold text-center text-gray-900">Forgot Password</h1>
 
+        <p className="text-center text-gray-600 text-sm sm:text-base mb-8">Enter your email to reset your password.</p>
+
+        {/* FORM */}
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="relative flex flex-col">
             <div className="relative flex items-center">
-              <span className="absolute left-0 text-gray-500 text-lg pointer-events-none">
+              <span className="absolute left-3 text-gray-400 text-lg pointer-events-none">
                 <FaEnvelope />
               </span>
 
@@ -69,19 +74,19 @@ export default function ForgotPage() {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  setErrors((prev) => ({ ...prev, email: "" })); // hapus error otomatis
+                  setErrors((prev) => ({ ...prev, email: "" }));
                 }}
-                className={`peer w-full pl-8 px-4 py-3 bg-transparent border-b-2 ${
+                className={`peer w-full pl-10 pr-4 py-3 bg-gray-50 border-b-2 ${
                   errors.email ? "border-red-500" : "border-gray-300"
-                }  outline-none text-gray-800 placeholder-transparent transition-all duration-300`}
+                } outline-none text-gray-900 placeholder-transparent transition-all duration-300 focus:bg-white`}
                 placeholder="Team Email"
               />
 
               <label
                 htmlFor="email"
-                className="absolute left-8 -top-3.5 text-gray-600 text-sm px-1 transition-all duration-300 
-                  peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 
-                  peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-gray-700"
+                className="absolute left-10 -top-3.5 text-gray-600 text-sm px-1 transition-all duration-300
+              peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500
+              peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-gray-700"
               >
                 Team Email
               </label>
@@ -90,15 +95,18 @@ export default function ForgotPage() {
             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
 
+          {/* BUTTON */}
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-[#FBFF00] hover:shadow-md transition font-fira-code font-medium py-3 px-10 w-full shadow-sm hover:bg-yellow-300 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full py-3.5 px-4 rounded-full shadow-md font-semibold text-gray-900 bg-[#FBFF00]
+          hover:bg-[#f2f500] transition-all duration-300 focus:ring-2 focus:ring-offset-2 focus:ring-[#FBFF00]
+          disabled:opacity-70 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
           >
             {isLoading ? (
-              <div className="flex items-center justify-center gap-3">
-                <div className="w-5 h-5 border-2 border-gray-700 border-t-transparent rounded-full animate-spin"></div>
-                Loading ...
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
+                Sending...
               </div>
             ) : (
               "Send Reset Link"
@@ -106,21 +114,16 @@ export default function ForgotPage() {
           </button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-gray-300/40 flex flex-col items-center text-center">
-          <Link
-            href="login"
-            className="text-black font-semibold hover:text-[#f5f700] text-sm transition-colors duration-200 block mb-3 underline w-fit"
-          >
-            Login Account
+        {/* Footer */}
+        <div className="text-center mt-8">
+          <Link href="/auth/login" className="text-gray-900 font-semibold hover:text-gray-700 underline text-sm transition">
+            Back to Login
           </Link>
 
-          <p className="text-gray-600 text-sm">
-            Belum punya akun?{" "}
-            <Link
-              href="/register"
-              className="text-black hover:text-[#f5f700] font-semibold transition-colors duration-200 underline"
-            >
-              Daftar di sini
+          <p className="text-gray-600 text-sm mt-3">
+            Don’t have an account?{" "}
+            <Link href="/register" className="font-semibold text-gray-900 hover:text-gray-700 underline transition">
+              Register here
             </Link>
           </p>
         </div>

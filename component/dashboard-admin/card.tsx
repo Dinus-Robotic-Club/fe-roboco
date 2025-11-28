@@ -84,7 +84,9 @@ const TournamentCard = ({ data }: { data: IGetAllTournaments }) => {
                 </div>
             </div>
         </div>
-    )
-}
+      </div>
+    </div>
+  );
+};
 
 export default TournamentCard
