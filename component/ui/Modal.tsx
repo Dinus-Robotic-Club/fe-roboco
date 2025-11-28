@@ -5,8 +5,19 @@ import Image from 'next/image'
 import { ArrowRight, FileImage, Image as Image_Preview, X } from 'lucide-react'
 import { FaCloudDownloadAlt } from 'react-icons/fa'
 import { toast } from 'sonner'
+import { IParticipantsBody } from '@/lib/types/team'
 
-export default function ImageUploadModal({ onClose }: { onClose: () => void }) {
+export default function ImageUploadModal({
+    onClose,
+    data,
+    setData,
+    index,
+}: {
+    onClose: () => void
+    data: IParticipantsBody[]
+    setData: (index: number, patch: Partial<IParticipantsBody>) => void
+    index: number
+}) {
     const [preview, setPreview] = useState<string | null>(null)
     const [twibbonResult, setTwibbonResult] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
@@ -19,15 +30,7 @@ export default function ImageUploadModal({ onClose }: { onClose: () => void }) {
         }
     }, [])
 
-    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (!file) return
-
-        const imgUrl = URL.createObjectURL(file)
-        setPreview(imgUrl)
-
-        setTwibbonResult(null)
-
+    const handleUploadFile = async (file: File) => {
         const formData = new FormData()
         formData.append('image', file)
 
@@ -44,8 +47,7 @@ export default function ImageUploadModal({ onClose }: { onClose: () => void }) {
             const twibbonUrl = URL.createObjectURL(blob)
             setTwibbonResult(twibbonUrl)
         } catch (err) {
-            const errMessage = (err as Error).message
-            toast.error(errMessage)
+            toast.error((err as Error).message)
         } finally {
             setLoading(false)
         }
@@ -111,12 +113,29 @@ export default function ImageUploadModal({ onClose }: { onClose: () => void }) {
                     </div>
 
                     <div className="flex w-full flex-wrap justify-between items-center gap-3 mt-4">
-                        <input type="file" accept="image/png, image/jpeg, image/webp" ref={fileInputRef} onChange={handleUpload} className="hidden" />
+                        <input
+                            type="file"
+                            accept="image/png, image/jpeg, image/webp"
+                            ref={fileInputRef}
+                            onChange={(e) => {
+                                const file = e.target.files?.[0]
+                                if (!file) return
+
+                                const imgUrl = URL.createObjectURL(file)
+                                setPreview(imgUrl)
+
+                                setData(index, { ...data, participantsImage: file })
+
+                                handleUploadFile(file)
+                            }}
+                            className="hidden"
+                        />
+
                         <button
-                            onClick={triggerUpload}
+                            onClick={onClose}
                             className="py-3 px-7 text-xs sm:text-sm bg-yellow-300 font-semibold rounded flex items-center justify-center gap-2 cursor-pointer hover:bg-amber-300/80 w-full sm:w-fit"
                         >
-                            Upload Image <FileImage className="w-5 h-5 sm:w-6 sm:h-6" />
+                            Confirm upload picture <FileImage className="w-5 h-5 sm:w-6 sm:h-6" />
                         </button>
 
                         <button

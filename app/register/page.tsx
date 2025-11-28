@@ -2,7 +2,6 @@
 import FormRegistationTeam from '@/component/ui/FormRegistationTeam'
 import FormRegistrationPlayer from '@/component/ui/FormRegistrationPlayer'
 import Navbar from '@/component/ui/Global/Navbar'
-import { useTournaments } from '@/hooks/queries/useTournaments'
 import { nav_register } from '@/lib'
 import { IBodyRegisterTeam, IParticipantsBody, ITeamBody, RegisterError } from '@/lib/types/team'
 import { useMounted } from '@/lib/useMounted'
@@ -14,12 +13,14 @@ import Loader from '@/component/ui/Global/loader'
 import { mapZodErrors } from '@/lib/func'
 import ImageUploadModal from '@/component/ui/Modal'
 import { useTournamentAndCommunity } from '@/hooks/function/useTournamentAndCommunity'
+import { useRouter } from 'next/navigation'
 
 function Register() {
+    const router = useRouter()
     const mounted = useMounted()
     const { communities, isLoading, tournaments } = useTournamentAndCommunity()
     const { mutate, isPending, isSuccess } = useCreateTeam()
-    const [showModal, setShowModal] = useState(false)
+    const [showModal, setShowModal] = useState<number | null>(null)
 
     const [team, setTeam] = useState<ITeamBody>({
         name: '',
@@ -52,14 +53,6 @@ function Register() {
     ])
 
     const [error, setError] = useState<RegisterError>({})
-
-    useEffect(() => {
-        localStorage.setItem('team-form', JSON.stringify(team))
-    }, [team])
-
-    useEffect(() => {
-        localStorage.setItem('participants-form', JSON.stringify(participants))
-    }, [participants])
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
@@ -94,7 +87,7 @@ function Register() {
         mutate(fd)
     }
 
-    if (isSuccess) localStorage.clear()
+    if (isSuccess) router.push('/auth/login')
     if (isLoading) return <Loader show={isLoading} />
     if (!mounted) return null
 
@@ -131,7 +124,7 @@ function Register() {
                             return copy
                         })
                     }
-                    onOpenTwibbonModal={() => setShowModal(true)}
+                    onOpenTwibbonModal={(index) => setShowModal(index)}
                     errors={error.participants ?? {}}
                 />
 
@@ -141,7 +134,20 @@ function Register() {
                     </button>
                 </div>
             </div>
-            {showModal && <ImageUploadModal onClose={() => setShowModal(false)} />}
+            {showModal !== null && (
+                <ImageUploadModal
+                    index={showModal} // ⬅️ KIRIM INDEX KE MODAL
+                    onClose={() => setShowModal(null)}
+                    data={participants}
+                    setData={(index, data) => {
+                        setParticipants((prev) => {
+                            const copy = [...prev]
+                            copy[index] = { ...copy[index], ...data }
+                            return copy
+                        })
+                    }}
+                />
+            )}
         </main>
     )
 }

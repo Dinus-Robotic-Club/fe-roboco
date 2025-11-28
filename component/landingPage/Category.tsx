@@ -3,7 +3,7 @@ import React from "react";
 
 function Category() {
   return (
-    <section className="relative h-[800px] w-full flex justify-center items-center bg-transparent mb-10">
+    <section className="relative h-[800px] w-full flex justify-center items-center bg-transparent mb-10" id="category">
       <svg
         className="w-full h-auto filter drop-shadow-[0_-10px_5px_rgba(0,0,0,0.07)] absolute top-0 left-0 right-0 -z-10 hidden lg:block"
         width="2115"

@@ -7,7 +7,7 @@ type Props = {
     data: IParticipantsBody[]
     setData: (index: number, patch: Partial<IParticipantsBody>) => void
     errors?: Record<number, Partial<Record<keyof IParticipantsBody, string>>>
-    onOpenTwibbonModal: () => void
+    onOpenTwibbonModal: (index: number) => void
 }
 
 export default function FormRegistrationPlayer({ data, setData, errors = {}, onOpenTwibbonModal }: Props) {
@@ -45,7 +45,7 @@ export default function FormRegistrationPlayer({ data, setData, errors = {}, onO
                         </select>
                     </Field>
 
-                    <Field label={`PLAYER ${index + 1} PICTURE`} error={errors[index]?.participantsImage}>
+                    <Field label={`PLAYER ${index + 1} IDENTITY IMAGE`} error={errors[index]?.participantsIdentityCardImage}>
                         <input
                             type="file"
                             accept=".jpg, .png, .jpeg"
@@ -55,19 +55,19 @@ export default function FormRegistrationPlayer({ data, setData, errors = {}, onO
                             onChange={(e) => {
                                 const file = (e.target as HTMLInputElement).files?.[0]
                                 if (file) {
-                                    setData(index, { participantsImage: file })
+                                    setData(index, { participantsIdentityCardImage: file })
                                 }
                             }}
                         />
                     </Field>
 
-                    <Field label={`PLAYER ${index + 1} SET TWIBON`} error={errors[index]?.participantsIdentityCardImage}>
+                    <Field label={`PLAYER ${index + 1} PICTURE AND TWIBBON`} error={errors[index]?.participantsImage}>
                         <button
                             key={index}
-                            onClick={onOpenTwibbonModal}
+                            onClick={() => onOpenTwibbonModal(index)}
                             className="p-4 bg-white rounded-xs shadow-md border-2 flex justify-between text-gray-500 cursor-pointer active:bg-gray-100"
                         >
-                            <p>Setting Twibbon</p>
+                            <p>Setting Picture and Twibbon</p>
 
                             <SquareCheckBig color="green" />
                         </button>

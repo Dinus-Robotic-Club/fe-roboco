@@ -3,7 +3,7 @@ import Image from "next/image";
 
 function Home() {
   return (
-    <section className="bg-home min-h-screen relative flex justify-center items-center overflow-hidden">
+    <section className="bg-home min-h-screen relative flex justify-center items-center overflow-hidden" id="Home">
       <div className="absolute inset-0 h-full bg-linear-to-b from-white/95 from-20% to-white/60 flex justify-center items-center px-[150px] 2xl:px-[200px]">
         <Image
           src="/bg-home-white.svg"

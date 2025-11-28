@@ -21,5 +21,3 @@ export const useGetCommunity = () => {
         queryFn: getAllCommunity,
     })
 }
-
-
