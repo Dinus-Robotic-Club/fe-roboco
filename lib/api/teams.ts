@@ -1,4 +1,4 @@
-import { DashboardTeamData } from '../types/team'
+import { DashboardTeamData, ITeamDetail } from '../types/team'
 import { IApiResponse, IGetAllCommunity } from '../types/type'
 import { apiFetch } from './client'
 
@@ -17,9 +17,16 @@ export const getTeamDashboard = (): Promise<IApiResponse<DashboardTeamData>> => 
     })
 }
 
-export const getTeamProfile = (): Promise<IApiResponse<unknown>> => {
-    return apiFetch<IApiResponse<unknown>>(`${BASE}/api/teams/profile`, {
+export const getTeamProfile = (): Promise<IApiResponse<ITeamDetail>> => {
+    return apiFetch<IApiResponse<ITeamDetail>>(`${BASE}/api/teams/profile`, {
         method: 'GET',
+    })
+}
+
+export const updateTeamProfile = (data: FormData): Promise<IApiResponse<unknown>> => {
+    return apiFetch<IApiResponse<unknown>>(`${BASE}/api/teams/update`, {
+        method: 'PUT',
+        body: data,
     })
 }
 

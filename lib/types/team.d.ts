@@ -130,9 +130,37 @@ export interface GroupStandingEntry {
     rank: number
 }
 
+type updateTeam = Partial<ITeamBody>
+type updateParticipant = Partial<Omit<IParticipantsBody, 'participantsIdentityImage'>>
+
 export interface TeamStats {
     totalGolScore: number
     totalGolConceded: number
     matchWins: number
     matchLoses: number
+}
+
+export interface IParticipant {
+    uid: string
+    name: string
+    roleInTeam: 'LEADER' | 'MEMBER'
+    image: string
+    twibbon: string
+    phone: string
+}
+
+export interface IRegistration {
+    uid: string
+    qrUrl: string | null
+}
+
+export interface ITeamDetail {
+    uid: string
+    email: string
+    name: string
+    image: string
+    community: string
+    category: string
+    participants: IParticipant[]
+    registrations: IRegistration[]
 }
