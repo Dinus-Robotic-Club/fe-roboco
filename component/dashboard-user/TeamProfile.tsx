@@ -15,8 +15,8 @@ function TeamProfile({
     bodyTeam?: updateTeam
     setBodyTeam?: React.Dispatch<React.SetStateAction<updateTeam>>
     error?: TeamError
-    bodyParticipant: updateParticipant
-    setBodyParticipant: React.Dispatch<React.SetStateAction<updateParticipant>>
+    bodyParticipant?: updateParticipant
+    setBodyParticipant?: React.Dispatch<React.SetStateAction<updateParticipant>>
 }) {
     const [showNewPassword, setShowNewPassword] = useState(true)
     const [showConfirmPassword, setShowConfirmPassword] = useState(true)
@@ -38,7 +38,7 @@ function TeamProfile({
                     {data.participants.map((pt, i) => (
                         <div key={i} className="flex flex-col items-center justify-center">
                             <div className="bg-player min-h-[215px] min-w-[215px]">
-                                <Image className="h-80 w-auto pb-2 pl-3" alt="member1" src={`${process.env.NEXT_PUBLIC_API_URL}${pt.image}`} height={300} width={200} unoptimized />
+                                <Image className="h-80 w-auto pb-2 pl-3" alt="member1" src={`${process.env.NEXT_PUBLIC_API_URL}${pt.image}`} height={300} width={200} />
                             </div>
 
                             <div className="text-center">
