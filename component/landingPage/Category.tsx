@@ -11,14 +11,15 @@ function Category() {
     <section className="relative w-full flex justify-center my-10" id="category">
       <div className="flex flex-col font-plus-jakarta-sans w-full mx-3 sm:mx-10 lg:mx-20 gap-4 max-w-7xl">
         <h1 className="font-extrabold text-4xl text-center md:text-start  lg:text-5xl 2xl:text-[53px]">Kategori Lomba</h1>
+        <p className="font-semibold text-base lg:text-xl text-center md:text-start">DN ROBOCO 2026</p>
 
-        <div className="flex w-full font-plus-jakarta-sans mt-12 flex-wrap">
+        <div className="flex w-full font-plus-jakarta-sans mt-10 flex-wrap">
           <div className="flex bg-transparent max-w-5xl w-full">
             {categories.map((cat, index) => (
               <button
                 key={cat.id}
                 onClick={() => setActive(cat.id)}
-                className={`w-46 pb-2.5 pt-7 text-base font-semibold transition-all bg-cover
+                className={`w-36 sm:w-46 pb-1.5 sm:pb-2.5 pt-5 sm:pt-7 text-sm sm:text-base font-semibold transition-all bg-cover
               ${active === cat.id ? "bg-category-button text-black z-20" : "bg-category-button-trans text-[#FDFF87]"} ${
                   index !== 1 ? "-mr-4" : ""
                 }`}
