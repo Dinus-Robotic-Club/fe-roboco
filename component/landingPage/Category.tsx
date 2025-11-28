@@ -1,51 +1,73 @@
+"use client";
+import { categories } from "@/lib";
 import Image from "next/image";
-import React from "react";
+import Link from "next/link";
+import React, { useState } from "react";
 
 function Category() {
+  const [active, setActive] = useState("soccerbot");
+  const selected = categories.find((item) => item.id === active) || categories[0];
   return (
-    <section className="relative h-[800px] w-full flex justify-center items-center bg-transparent mb-10" id="category">
-      <svg
-        className="w-full h-auto filter drop-shadow-[0_-10px_5px_rgba(0,0,0,0.07)] absolute top-0 left-0 right-0 -z-10 hidden lg:block"
-        width="2115"
-        height="227"
-        viewBox="0 0 2115 227"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M2115 227H0V48.6768L28.6182 23.3652H415.516L472.752 73.9883H1167.29L1208.02 34.0732H1550.89L1589.96 0H2115V227Z"
-          fill="white"
-        />
-      </svg>
-      <svg
-        className="w-full h-auto filter drop-shadow-[0_12px_4px_rgba(0,0,0,0.1)] absolute bottom-0 left-0 right-0 -z-10 hidden lg:block"
-        width="2115"
-        height="211"
-        viewBox="0 0 2115 211"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M2086.38 186.175L2115 159.281V0H0V211L525.035 211L564.11 174.797H906.979L947.705 132.388H1642.25L1699.48 186.175H2086.38Z"
-          fill="white"
-        />
-      </svg>
-      <div className="flex flex-col justify-center items-center font-plus-jakarta-sans w-full px-10 gap-4">
-        <h1 className="font-extrabold text-3xl lg:text-5xl 2xl:text-[53px]">KATEGORI LOMBA</h1>
-        <p className="text-base lg:text-xl 2xl:text-2xl">kategori lomba DN Roboco 2026</p>
-        <div className="flex gap-10 w-full font-plus-jakarta-sans justify-evenly mt-16 flex-wrap">
-          <div className="flex flex-col  items-center justify-center gap-10">
-            <Image src="/logo-only.svg" alt="Category Image" width={300} height={300} className="w-[250px] 2xl:w-[300px]" />
-            <div className="text-center flex flex-col">
-              <h1 className="font-extrabold text-4xl 2x:text-[60px]">SOCCER BOT</h1>
-              <p className="text-xl 2xl:text-2xl">Kompetisi Robot Soccer 1kg</p>
-            </div>
+    <section className="relative w-full flex justify-center my-10" id="category">
+      <div className="flex flex-col font-plus-jakarta-sans w-full mx-3 sm:mx-10 lg:mx-20 gap-4 max-w-7xl">
+        <h1 className="font-extrabold text-4xl text-center md:text-start  lg:text-5xl 2xl:text-[53px]">Kategori Lomba</h1>
+
+        <div className="flex w-full font-plus-jakarta-sans mt-12 flex-wrap">
+          <div className="flex bg-transparent max-w-5xl w-full">
+            {categories.map((cat, index) => (
+              <button
+                key={cat.id}
+                onClick={() => setActive(cat.id)}
+                className={`w-46 pb-2.5 pt-7 text-base font-semibold transition-all bg-cover
+              ${active === cat.id ? "bg-category-button text-black z-20" : "bg-category-button-trans text-[#FDFF87]"} ${
+                  index !== 1 ? "-mr-4" : ""
+                }`}
+              >
+                {cat.title.toUpperCase()}
+              </button>
+            ))}
           </div>
-          <div className="flex flex-col  items-center justify-center gap-10 mt-20 sm:mt-0">
-            <Image src="/logo-only.svg" alt="Category Image" width={300} height={300} className="w-[250px] 2xl:w-[300px]" />
-            <div className="text-center flex flex-col">
-              <h1 className="font-extrabold text-4xl 2x:text-[60px]">SOCCER BOT</h1>
-              <p className="text-xl 2xl:text-2xl">Kompetisi Robot Soccer 1kg</p>
+
+          {/* Content Card */}
+          <div className="bg-white w-full max-w-7xl rounded-b-3xl rounded-tr-3xl p-6 md:p-10 flex flex-col md:flex-row justify-between items-center gap-10 border-4 border-black">
+            <div className="w-full md:w-1/2">
+              <h2 className="text-3xl font-bold mb-4 flex gap-3 items-center">
+                <Image src={selected.icon} alt="logo" height={35} width={35} />
+                {selected.title}
+              </h2>
+
+              <div className="space-y-4 text-lg leading-relaxed">
+                {selected.description.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </div>
+
+              <div className="mt-8 text-center flex flex-col md:flex-row gap-4">
+                <Link
+                  href="/register"
+                  className="px-10 py-3 border-3 border-black bg-black text-[#FBFF00] font-semibold rounded-md shadow-md hover:bg-[#A8A8A8] transition flex items-center justify-center"
+                >
+                  DAFTAR
+                </Link>
+
+                <Link
+                  href={selected.guidebook}
+                  className="px-10 py-3 border-3 border-black text-black rounded-lg font-semibold hover:bg-[#FAFAFA] transition flex justify-center items-center gap-4"
+                >
+                  <Image src={selected.icon} alt="logo" width={30} height={30} className="" /> GUIDE BOOK
+                </Link>
+              </div>
+            </div>
+
+            {/* Image */}
+            <div className="w-full md:w-1/2 flex justify-center">
+              <Image
+                src={selected.image}
+                alt={selected.title}
+                width={450}
+                height={300}
+                className="w-[260px] md:w-[350px] h-auto drop-shadow-xl scale-x-[-1]"
+              />
             </div>
           </div>
         </div>
