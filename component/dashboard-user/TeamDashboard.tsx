@@ -1,11 +1,16 @@
 import Image from 'next/image'
-import React from 'react'
+import React, { useState } from 'react'
 import CardMatchDashboard from '../ui/CardMatchDashboard'
 import { DashboardTeamData } from '@/lib/types/team'
+import { ArrowRight, Swords } from 'lucide-react'
 
 function TeamDashboard({ data }: { data: DashboardTeamData }) {
-    const items = [1, 2, 3]
+    const [activeMatchId, setActiveMatchId] = useState<string | null>(null)
 
+    // Fungsi Toggle
+    const handleToggle = (id: string) => {
+        setActiveMatchId((prevId) => (prevId === id ? null : id))
+    }
     return (
         <>
             <div className="">
@@ -15,11 +20,11 @@ function TeamDashboard({ data }: { data: DashboardTeamData }) {
                 <div className="flex flex-col justify-between gap-16 md:gap-20 lg:gap-0 md:h-[400px]">
                     <div className="flex w-full gap-2 justify-center lg:justify-start">
                         <div className="bg-logo-team w-[70px] h-[70px]">
-                            <Image src={`${process.env.NEXT_PUBLIC_API_URL}${data.team.logo}`} alt="" height={30} width={30} className="w-full h-full p-2 " />
+                            <Image src={`${process.env.NEXT_PUBLIC_API_URL}${data.team.logo}`} alt="team-logo" height={30} width={30} className="w-full h-full p-2 " />
                         </div>
                         <div className="flex flex-col justify-center">
                             <h1 className="text-3xl lg:text-4xl font-bold">{data?.team?.name}</h1>
-                            <p className="text-base lg:text-xl">{data?.team?.community?.name} Community</p>
+                            <p className="text-base lg:text-xl">{data?.team?.community?.name} </p>
                         </div>
                     </div>
                     <div className="flex flex-col gap-10">
@@ -58,13 +63,13 @@ function TeamDashboard({ data }: { data: DashboardTeamData }) {
                 </div>
 
                 <div className="flex gap-12 items-end justify-center flex-wrap lg:flex-nowrap">
-                    {data.team.participants?.map((pt, index) => (
+                    {data.team.participants?.map((pt) => (
                         <div key={pt.uid} className="flex flex-col items-center">
                             <div className="bg-player min-h-[215px] min-w-[215px]">
                                 <Image className="h-80 w-auto pb-2 pl-3" alt={pt.name} src={`${process.env.NEXT_PUBLIC_API_URL}${pt.image}`} height={300} width={200} />
                             </div>
 
-                            <h1 className="text-2xl font-bold">Player {index + 1}</h1>
+                            <h1 className="text-2xl font-bold">{pt.name}</h1>
                             <p>{pt.roleInTeam === 'LEADER' ? 'Team Leader' : 'Team Member'}</p>
                         </div>
                     ))}
@@ -72,13 +77,42 @@ function TeamDashboard({ data }: { data: DashboardTeamData }) {
             </div>
             <div className="flex flex-col gap-20 mt-8 py-5 w-full items-center justify-center">
                 <h1 className="text-xl">MATCH HISTORY</h1>
-                <div className="w-full  flex flex-col items-center justify-center gap-3">
-                    {items.map((items) => (
-                        <CardMatchDashboard key={items} />
-                    ))}
-                    <a href="/dashboard/match?tab=history" className="font-plus-jakarta-sans mt-7 text-base md:text-xl">
-                        WATCH FULL MATCH HISTORY →
-                    </a>
+                <div className="w-full flex flex-col items-center  gap-6">
+                    {data.matchHistory.length > 0 ? (
+                        <>
+                            <div className="w-full flex flex-col items-center justify-center  gap-7">
+                                {data.matchHistory.map((dat) => (
+                                    <CardMatchDashboard
+                                        key={dat.uid}
+                                        data={dat}
+                                        // Cek apakah ID match ini sama dengan state activeMatchId
+                                        isActive={activeMatchId === dat.uid}
+                                        // Kirim fungsi toggle
+                                        onToggle={() => handleToggle(dat.uid)}
+                                    />
+                                ))}
+                            </div>
+
+                            <a
+                                href="/dashboard/match?tab=history"
+                                className="group flex items-center gap-2 mt-2 font-plus-jakarta-sans text-sm md:text-base font-bold text-slate-500 hover:text-black transition-all"
+                            >
+                                LIHAT RIWAYAT LENGKAP
+                                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                            </a>
+                        </>
+                    ) : (
+                        <div className="w-full flex flex-col items-center justify-center py-12 px-4 md:py-20 text-center bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-2xl">
+                            <div className="w-16 h-16 md:w-20 md:h-20 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-100 mb-4 md:mb-6">
+                                <Swords className="w-8 h-8 md:w-10 md:h-10 text-slate-300" />
+                            </div>
+
+                            <h3 className="text-lg md:text-2xl font-bold text-slate-800 mb-2">Belum Ada Pertandingan</h3>
+                            <p className="text-sm md:text-base text-slate-500 max-w-[250px] md:max-w-md leading-relaxed">
+                                Tim ini belum memiliki riwayat pertandingan yang tercatat dalam sistem.
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
         </>

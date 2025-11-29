@@ -2,12 +2,12 @@
 import FormRegistationTeam from '@/component/ui/FormRegistationTeam'
 import FormRegistrationPlayer from '@/component/ui/FormRegistrationPlayer'
 import Navbar from '@/component/ui/Global/Navbar'
-import { nav_register } from '@/lib'
+import { nav_home } from '@/lib'
 import { IBodyRegisterTeam, IParticipantsBody, ITeamBody, RegisterError } from '@/lib/types/team'
 import { useMounted } from '@/lib/useMounted'
 import { RegisterTeamSchema } from '@/lib/validator/register-form'
 import Image from 'next/image'
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useState } from 'react'
 import { useCreateTeam } from '@/hooks/mutations/teams-mutation'
 import Loader from '@/component/ui/Global/loader'
 import { mapZodErrors } from '@/lib/func'
@@ -94,7 +94,7 @@ function Register() {
     return (
         <main className="w-full relative flex flex-col items-center bg-grid">
             <Loader show={isPending} />
-            <Navbar left={nav_register.left} right={nav_register.right} />
+            <Navbar left={nav_home.left} right={nav_home.right} />
             <div className="z-10 min-h-[700px] w-full shadow-lg absolute top-0 left-0 right-0 bg-white"></div>
             <div className="flex flex-col max-w-5xl justify-center items-center font-plus-jakarta-sans w-full px-10 gap-4 text-center mt-52 mb-32 z-20">
                 <h1 className="font-extrabold text-3xl lg:text-5xl 2xl:text-[53px]">REGISTRATION FORM</h1>

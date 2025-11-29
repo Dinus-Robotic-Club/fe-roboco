@@ -9,7 +9,5 @@ export function useDashboardProfile() {
         profile: profile.data,
 
         isLoading: dashboard.isLoading || profile.isLoading,
-        isError: dashboard.isError || profile.isError,
-        isSucces: dashboard.isSuccess || profile.isSuccess,
     }
 }
