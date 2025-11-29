@@ -1,13 +1,13 @@
 export const nav_home = {
   left: [
-    { title: "Home", href: "/#Home" },
-    { title: "Tentang", href: "/#about" },
-    { title: "Kategori", href: "/#category" },
+    { title: "Home", href: "#Home" },
+    { title: "Categori", href: "#category" },
+    { title: "Sponsorship", href: "#sponsor" },
   ],
   right: [
-    { title: "Sponsorship", href: "/#sponsor" },
-    { title: "kontak", href: "/#" },
-    { title: "Registrasi", href: "/register" },
+    { title: "Leagueboard", href: "/leagueboard" },
+    { title: "Register", href: "/register" },
+    { title: "Login", href: "/auth/login" },
   ],
 };
 
@@ -383,7 +383,7 @@ export const categories = [
     ],
     image: "/notfound-robot.svg",
     icon: "/logo-soccer.svg",
-    guidebook: "/",
+    guidebook: "/document/SOCCER BOT GUIDE BOOK - DN ROBOCO 2026.pdf",
   },
   {
     id: "sumobot",
@@ -394,6 +394,41 @@ export const categories = [
     ],
     image: "/notfound-robot.svg",
     icon: "/logo-summo.svg",
-    guidebook: "/",
+    guidebook: "/document/SUMMO BOT GUIDE BOOK - DN ROBOCO 2026.pdf",
+  },
+];
+
+export const TextQna = [
+  {
+    title: "Siapa yang boleh mengikuti DN ROBOCO 2026?",
+    description: "Warga Negara Indonesia dari kalangan umum, termasuk pelajar, mahasiswa, dan komunitas robotika.",
+  },
+  {
+    title: "Berapa jumlah anggota dalam satu tim?",
+    description: "Setiap tim maksimal terdiri dari 2 orang.",
+  },
+  {
+    title: "Apakah robot disediakan panitia?",
+    description: "Tidak. Peserta harus membawa robot dan perlengkapan masing-masing, termasuk baterai dan alat kerja.",
+  },
+  {
+    title: "Berapa batas ukuran, berat, dan baterai robot?",
+    description: "Maksimal 15cm x 15cm x 20cm, berat 1 kg, dan baterai maksimal 12.6V.",
+  },
+  {
+    title: "Apa controller yang boleh digunakan?",
+    description: "Robot dapat dikendalikan menggunakan smartphone, joystick, atau controller sejenis.",
+  },
+  {
+    title: "Bagaimana format babak grup?",
+    description: "Sistem poin: Menang 3 poin, seri 1 poin, kalah 0. Tiga tim terbaik dari tiap grup maju ke playoff.",
+  },
+  {
+    title: "Apa saja yang dapat menyebabkan diskualifikasi?",
+    description: "Tidak hadir saat dipanggil, merusak arena, membuat keributan, atau membawa jammer sinyal.",
+  },
+  {
+    title: "Apakah peraturan bisa berubah?",
+    description: "Ya, peraturan dapat berubah hingga technical meeting dan akan dijelaskan oleh moderator.",
   },
 ];
