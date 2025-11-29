@@ -71,29 +71,62 @@ interface IScore {
 }
 
 // Type untuk Community (Karena kamu select: true, semua field keambil)
-interface ICommunity {
+// --- ENUMS ---
+// Sesuaikan dengan Prisma Enum kamu
+export type MatchEventType = 'GOAL' | 'OWN_GOAL' | 'YELLOW_CARD' | 'RED_CARD' | 'PENALTY' | 'FOUL' | 'KNOCKOUT'
+
+// --- SUB INTERFACES ---
+
+export interface ICommunity {
     uid: string
     name: string
-    // ... field community lainnya
+    logo?: string | null
+}
+
+export interface IScore {
+    golScore: number
+    knockout?: number | boolean // Bisa number (0/1) atau boolean tergantung handling di FE
+}
+
+export interface IPlayer {
+    name: string
+}
+
+// Type untuk Event/Log (Timeline)
+export interface IMatchEvent {
+    id: string
+    type: MatchEventType
+    value: number
+    minute: number
+    teamId: string
+    player?: IPlayer | null // Relasi ke player (bisa null jika own goal atau data lama)
 }
 
 // Type untuk Team di dalam Match
-interface IMatchTeam {
+export interface IMatchTeam {
     name: string
     logo: string | null
-    community: ICommunity | null // Bisa null jika relasi opsional
-    score: IScore[] | null // Prisma biasanya return Array [] untuk relasi one-to-many
+    community: ICommunity | null
+    score: IScore[] | null // Array karena relasi one-to-many di Prisma
 }
 
-// Type Utama (Result dari Query)
+// --- TYPE UTAMA (MATCH HISTORY) ---
 export interface IMatchHistory {
-    uid: string
-    createdAt: Date
-    category: string // Atau Enum Category
-    // ... field scalar Match lainnya (updatedAt, status, dll) akan otomatis terambil
+    // Basic Info
+    uid: string // atau 'id' sesuai schema baru
+    createdAt: Date | string
+    category: string // e.g., 'SOCCER', 'SUMO'
 
+    // IDs (PENTING untuk logika filtering stats di Frontend)
+    teamAId: string
+    teamBId: string
+
+    // Relations
     teamA: IMatchTeam
     teamB: IMatchTeam
+
+    // Timeline Events (Wajib ada untuk fitur detail timeline)
+    events?: IMatchEvent[]
 }
 
 export interface Team {

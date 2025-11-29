@@ -2,22 +2,25 @@
 
 import Card from '@/component/dashboard-admin/card'
 import FormInputTurney from '@/component/dashboard-admin/form-input'
-import Footer from '@/component/ui/Footer'
 import Loader from '@/component/ui/Global/loader'
-import Navbar from '@/component/ui/Global/Navbar'
+import EmptyState from '@/component/ui/Global/not-found-data'
 import HeaderDashboard from '@/component/ui/HeaderDashboard'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog'
 import { useCreateTournament } from '@/hooks/mutations/tournament-mutations'
 import { useTournaments } from '@/hooks/queries/useTournaments'
-import { nav_admin } from '@/lib'
 import { ICreateTournament, StageType } from '@/lib/types/type'
 import { Search, Trophy } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 const Page = () => {
     const { data, isLoading, isError } = useTournaments()
     const { mutate, isPending } = useCreateTournament()
+    const params = useSearchParams()
+    const error = params.get('error')
+    const router = useRouter()
 
     const [searchQuery, setSearchQuery] = useState('')
     const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -60,11 +63,19 @@ const Page = () => {
 
     if (isLoading) return <Loader show />
 
-    if (isError) return <div className="flex justify-center items-center min-h-screen w-full">Error fetching tournaments</div>
+    if (isError) return <EmptyState />
+
+    if (error === 'unauthorized') {
+        toast.error('UNAUTHORIZED: Kamu tidak dapat mengakses halaman tersebut')
+
+        const newParams = new URLSearchParams(params.toString())
+        newParams.delete('error')
+
+        router.replace(`?${newParams.toString()}`)
+    }
 
     return (
         <div className="w-full min-h-screen bg-grid flex flex-col">
-            <Navbar left={nav_admin.left} right={nav_admin.right} />
             <HeaderDashboard title="DASHBOARD" name="Admin" />
 
             <main className="w-full flex-1 p-4 md:p-6 mb-20">
@@ -125,7 +136,6 @@ const Page = () => {
                     )}
                 </div>
             </main>
-            <Footer />
         </div>
     )
 }

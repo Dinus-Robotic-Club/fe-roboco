@@ -2,7 +2,7 @@ import React from 'react'
 
 interface HeaderProps {
     title: string
-    name: string
+    name?: string
 }
 
 function HeaderDashboard({ title, name }: HeaderProps) {

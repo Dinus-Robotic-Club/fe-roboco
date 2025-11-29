@@ -10,6 +10,7 @@ interface IUser extends NextAuthUser {
     uidUser: string
     email: string
     name: string
+    role: string
     accessToken: string
 }
 
@@ -17,6 +18,7 @@ interface CustomJWT extends JWT {
     uidUser: string
     email?: string
     name?: string
+    role?: string
     accessToken?: string
 }
 
@@ -81,6 +83,7 @@ export const authOptions: AuthOptions = {
                         uidUser: verified.uid,
                         email: verified.email,
                         name: verified.name,
+                        role: verified.role,
                         accessToken: access_token,
                     } as IUser
                 } catch (err) {
@@ -104,6 +107,7 @@ export const authOptions: AuthOptions = {
                 customToken.uidUser = u.uidUser
                 customToken.email = u.email ?? undefined
                 customToken.name = u.name
+                customToken.role = u.role
                 customToken.accessToken = u.accessToken
             }
 
@@ -116,6 +120,7 @@ export const authOptions: AuthOptions = {
                 session.user.uidUser = customToken.uidUser
                 session.user.email = customToken.email ?? null
                 session.user.name = customToken.name ?? null
+                session.user.role = customToken.role ?? null
                 session.accessToken = customToken.accessToken
             }
 

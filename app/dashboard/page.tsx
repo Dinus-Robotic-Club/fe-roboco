@@ -7,20 +7,26 @@ import HeaderDashboard from '@/component/ui/HeaderDashboard'
 import { useDashboardProfile } from '@/hooks/function/useDashboardProfile'
 import { nav_dashboard } from '@/lib'
 import { useMounted } from '@/lib/useMounted'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import EmptyState from '@/component/ui/Global/not-found-data'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { toast } from 'sonner'
 
 function Dashboard() {
-    const router = useRouter()
-    const { status } = useSession()
     const { dashboard, isLoading, profile } = useDashboardProfile()
     const [activeNav, setActiveNav] = useState('team-dashboard')
     const isMounted = useMounted()
+    const params = useSearchParams()
+    const error = params.get('error')
+    const router = useRouter()
 
-    if (status === 'unauthenticated') {
-        router.push('/auth/login')
+    if (error === 'unauthorized') {
+        toast.error('UNAUTHORIZED: Kamu tidak dapat mengakses halaman tersebut')
+
+        const newParams = new URLSearchParams(params.toString())
+        newParams.delete('error')
+
+        router.replace(`?${newParams.toString()}`)
     }
 
     if (!isMounted) return null

@@ -6,6 +6,7 @@ export const MatchDetailContent = ({ data }: { data: IMatchHistory }) => {
     return (
         <div className="p-6 bg-gray-50 border-t border-dashed border-gray-200">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Info Umum */}
                 <div className="space-y-3">
                     <h3 className="font-bold text-gray-900">Match Details</h3>
                     <div className="flex items-center text-sm text-gray-500 gap-2">
@@ -18,6 +19,7 @@ export const MatchDetailContent = ({ data }: { data: IMatchHistory }) => {
                     </div>
                 </div>
 
+                {/* Statistik Score/Knockout */}
                 <div className="space-y-3">
                     <h3 className="font-bold text-gray-900">Statistics</h3>
                     <div className="flex justify-between text-sm border-b border-gray-200 pb-2">
@@ -27,6 +29,7 @@ export const MatchDetailContent = ({ data }: { data: IMatchHistory }) => {
                             <span>{data.teamB.score?.[0]?.knockout ? 'YES' : 'NO'}</span>
                         </div>
                     </div>
+                    {/* Tambahkan statistik lain disini jika ada */}
                 </div>
             </div>
         </div>

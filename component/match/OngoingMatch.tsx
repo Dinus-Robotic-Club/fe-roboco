@@ -1,15 +1,15 @@
-import React from "react";
-import CardMatch from "../ui/CardMatch";
+import CardMatch, { ICardMatch } from '../ui/CardMatch'
 
-function OngoingMatch() {
-  const loop = [1, 2, 3, 4, 5];
-  return (
-    <>
-      {loop.map((number) => (
-        <CardMatch key={number} />
-      ))}
-    </>
-  );
+function OngoingMatch({ data }: { data: ICardMatch[] }) {
+    console.log(data)
+
+    return (
+        <>
+            {data.map((dat) => (
+                <CardMatch key={dat.uid} data={dat} />
+            ))}
+        </>
+    )
 }
 
-export default OngoingMatch;
+export default OngoingMatch
