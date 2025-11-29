@@ -1,9 +1,9 @@
 "use client";
 import { timeline } from "@/lib";
 import { useMounted } from "@/lib/useMounted";
-import React from "react";
 import { VerticalTimeline, VerticalTimelineElement } from "react-vertical-timeline-component";
 import "react-vertical-timeline-component/style.min.css";
+import { motion } from "motion/react";
 
 function Timeline() {
   const mounted = useMounted();
@@ -13,10 +13,22 @@ function Timeline() {
   return (
     <section className="relative w-full flex justify-center my-10 scroll-mt-24  mt-24 overflow-hidden" id="timeline">
       <div className="flex flex-col font-plus-jakarta-sans w-full mx-3 sm:mx-10 lg:mx-20 gap-4 max-w-7xl">
-        <h1 className="font-bold text-4xl text-center md:text-start  lg:text-5xl 2xl:text-[53px]">Timeline Lomba</h1>
-        <p className="font-semibold text-base lg:text-xl text-center md:text-start">
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="font-bold text-4xl text-center md:text-start  lg:text-5xl 2xl:text-[53px]"
+        >
+          Timeline Lomba
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="font-semibold text-base lg:text-xl text-center md:text-start"
+        >
           Simak jadwal lengkap dari pendaftaran hingga puncak acara.
-        </p>
+        </motion.p>
         <div className="w-full h-auto mt-10 lg:mt-20">
           <VerticalTimeline lineColor="#000">
             {timeline.map((data, i) => (
@@ -45,8 +57,15 @@ function Timeline() {
                 }}
                 icon={<data.icon strokeWidth={1.75} />}
               >
-                <h3 className="vertical-timeline-element-title text-xl">{data.title}</h3>
-                <p className="text-base">{data.description}</p>
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false }} // <— animasi berulang
+                  transition={{ duration: 0.6, type: "tween", ease: "easeOut" }}
+                >
+                  <h3 className="text-xl">{data.title}</h3>
+                  <p className="text-base">{data.description}</p>
+                </motion.div>
               </VerticalTimelineElement>
             ))}
           </VerticalTimeline>
