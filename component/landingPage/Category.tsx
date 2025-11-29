@@ -19,7 +19,7 @@ function Category() {
               <button
                 key={cat.id}
                 onClick={() => setActive(cat.id)}
-                className={`w-36 sm:w-46 pb-1.5 sm:pb-2.5 pt-5 sm:pt-7 text-sm sm:text-base font-semibold transition-all bg-cover
+                className={`w-36 sm:w-46 pb-1.5 sm:pb-2.5 pt-5 sm:pt-7 text-sm sm:text-base font-semibold bg-cover
               ${active === cat.id ? "bg-category-button text-black z-20" : "bg-category-button-trans text-[#FDFF87]"} ${
                   index !== 1 ? "-mr-4" : ""
                 }`}
