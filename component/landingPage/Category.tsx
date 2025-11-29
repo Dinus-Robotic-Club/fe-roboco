@@ -10,7 +10,7 @@ function Category() {
   return (
     <section className="relative w-full flex justify-center my-10 scroll-mt-24" id="category">
       <div className="flex flex-col font-plus-jakarta-sans w-full mx-3 sm:mx-10 lg:mx-20 gap-4 max-w-7xl">
-        <h1 className="font-extrabold text-4xl text-center md:text-start  lg:text-5xl 2xl:text-[53px]">Kategori Lomba</h1>
+        <h1 className="font-bold text-4xl text-center md:text-start  lg:text-5xl 2xl:text-[53px]">Kategori Lomba</h1>
         <p className="font-semibold text-base lg:text-xl text-center md:text-start">DN ROBOCO 2026</p>
 
         <div className="flex w-full font-plus-jakarta-sans mt-10 flex-wrap">
@@ -53,6 +53,7 @@ function Category() {
 
                 <Link
                   href={selected.guidebook}
+                  download
                   className="px-10 py-3 border-3 border-black text-black rounded-lg font-semibold hover:bg-[#FAFAFA] transition flex justify-center items-center gap-4"
                 >
                   <Image src={selected.icon} alt="logo" width={20} height={20} className="" /> GUIDE BOOK
