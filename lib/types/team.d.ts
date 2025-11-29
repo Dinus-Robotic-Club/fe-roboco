@@ -61,6 +61,39 @@ export interface DashboardTeamData {
     communityStanding: CommunityStanding
     groupStanding: GroupStanding
     stats: TeamStats
+    matchHistory: IMatchHistory[]
+}
+
+// Type untuk Score
+interface IScore {
+    golScore: number
+    knockout: boolean
+}
+
+// Type untuk Community (Karena kamu select: true, semua field keambil)
+interface ICommunity {
+    uid: string
+    name: string
+    // ... field community lainnya
+}
+
+// Type untuk Team di dalam Match
+interface IMatchTeam {
+    name: string
+    logo: string | null
+    community: ICommunity | null // Bisa null jika relasi opsional
+    score: IScore[] | null // Prisma biasanya return Array [] untuk relasi one-to-many
+}
+
+// Type Utama (Result dari Query)
+export interface IMatchHistory {
+    uid: string
+    createdAt: Date
+    category: string // Atau Enum Category
+    // ... field scalar Match lainnya (updatedAt, status, dll) akan otomatis terambil
+
+    teamA: IMatchTeam
+    teamB: IMatchTeam
 }
 
 export interface Team {
@@ -158,7 +191,7 @@ export interface ITeamDetail {
     uid: string
     email: string
     name: string
-    image: string
+    logo: string
     community: string
     category: string
     participants: IParticipant[]

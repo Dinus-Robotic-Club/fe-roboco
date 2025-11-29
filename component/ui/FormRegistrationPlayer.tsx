@@ -30,15 +30,20 @@ export default function FormRegistrationPlayer({ data, setData, errors = {}, onO
                         <select
                             id="participant-role"
                             name="participant-role"
+                            value={player.participantsRoleInTeam} // Pastikan value terikat state
                             onChange={(e) => setData(index, { participantsRoleInTeam: e.target.value })}
                             className={`p-4 bg-white rounded-xs shadow-md border-2 font-plus-jakarta-sans text-sm lg:text-base ${
                                 player.participantsRoleInTeam === '' ? 'text-gray-400' : 'text-black'
                             }`}
                         >
                             <option value="">-- SELECT --</option>
-                            <option value="LEADER" className="text-black">
-                                LEADER
-                            </option>
+
+                            {!data.some((p, i) => p.participantsRoleInTeam === 'LEADER' && i !== index) && (
+                                <option value="LEADER" className="text-black">
+                                    LEADER
+                                </option>
+                            )}
+
                             <option value="MEMBER" className="text-black">
                                 MEMBER
                             </option>

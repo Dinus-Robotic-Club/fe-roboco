@@ -14,7 +14,7 @@ export default function CommunityInput({ communities, value, onChange }: Props) 
     const filtered = useMemo(() => {
         if (!value) return communities
         const lower = value.toLowerCase()
-        return communities.filter((c) => c.name.toLowerCase().includes(lower))
+        return communities?.filter((c) => c.name.toLowerCase().includes(lower))
     }, [value, communities])
 
     return (
@@ -43,14 +43,14 @@ export default function CommunityInput({ communities, value, onChange }: Props) 
                 >
                     {filtered.map((item) => (
                         <div
-                            key={item.uid}
+                            key={item?.uid}
                             className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
                             onClick={() => {
-                                onChange(item.name)
+                                onChange(item?.name)
                                 setOpen(false)
                             }}
                         >
-                            {item.name}
+                            {item?.name}
                         </div>
                     ))}
                 </div>

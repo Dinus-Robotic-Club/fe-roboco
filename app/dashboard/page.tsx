@@ -10,12 +10,12 @@ import { useMounted } from '@/lib/useMounted'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { toast } from 'sonner'
+import EmptyState from '@/component/ui/Global/not-found-data'
 
 function Dashboard() {
     const router = useRouter()
     const { status } = useSession()
-    const { dashboard, isLoading, isError, isSucces, profile } = useDashboardProfile()
+    const { dashboard, isLoading, profile } = useDashboardProfile()
     const [activeNav, setActiveNav] = useState('team-dashboard')
     const isMounted = useMounted()
 
@@ -25,9 +25,8 @@ function Dashboard() {
 
     if (!isMounted) return null
     if (isLoading) return <Loader show />
-    if (isError) toast.error('Gagal mengambil data dashboard')
-    if (isSucces) toast.success('Sukses mengambil data dashboard')
 
+    if (!dashboard || !profile) return <EmptyState />
     let ComponentToRender
 
     if (activeNav === 'team-dashboard') {
