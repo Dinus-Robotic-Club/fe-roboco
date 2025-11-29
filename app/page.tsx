@@ -6,6 +6,7 @@ import { nav_home } from "@/lib";
 import Sponsorship from "@/component/landingPage/Sponsorship";
 import FooterLandingPage from "@/component/landingPage/FooterLandingPage";
 import QnA from "@/component/landingPage/QnA";
+import Timeline from "../component/landingPage/Timeline";
 
 export default function Page() {
   return (
@@ -14,6 +15,7 @@ export default function Page() {
       <Home />
       <About />
       <Category />
+      <Timeline />
       <Sponsorship />
       <QnA />
       <FooterLandingPage />
