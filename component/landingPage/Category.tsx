@@ -8,7 +8,7 @@ function Category() {
   const [active, setActive] = useState("soccerbot");
   const selected = categories.find((item) => item.id === active) || categories[0];
   return (
-    <section className="relative w-full flex justify-center my-10" id="category">
+    <section className="relative w-full flex justify-center my-10 scroll-mt-24" id="category">
       <div className="flex flex-col font-plus-jakarta-sans w-full mx-3 sm:mx-10 lg:mx-20 gap-4 max-w-7xl">
         <h1 className="font-extrabold text-4xl text-center md:text-start  lg:text-5xl 2xl:text-[53px]">Kategori Lomba</h1>
         <p className="font-semibold text-base lg:text-xl text-center md:text-start">DN ROBOCO 2026</p>
@@ -55,7 +55,7 @@ function Category() {
                   href={selected.guidebook}
                   className="px-10 py-3 border-3 border-black text-black rounded-lg font-semibold hover:bg-[#FAFAFA] transition flex justify-center items-center gap-4"
                 >
-                  <Image src={selected.icon} alt="logo" width={30} height={30} className="" /> GUIDE BOOK
+                  <Image src={selected.icon} alt="logo" width={20} height={20} className="" /> GUIDE BOOK
                 </Link>
               </div>
             </div>
@@ -63,11 +63,11 @@ function Category() {
             {/* Image */}
             <div className="w-full md:w-1/2 flex justify-center">
               <Image
-                src={selected.image}
+                src={selected.icon}
                 alt={selected.title}
                 width={450}
                 height={300}
-                className="w-[260px] md:w-[350px] h-auto drop-shadow-xl scale-x-[-1]"
+                className="w-[260px] md:w-[300px] h-auto drop-shadow-xl scale-x-[-1]"
               />
             </div>
           </div>

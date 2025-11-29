@@ -1,13 +1,13 @@
 export const nav_home = {
   left: [
-    { title: "Home", href: "/#Home" },
-    { title: "Tentang", href: "/#about" },
-    { title: "Kategori", href: "/#category" },
+    { title: "Home", href: "#Home" },
+    { title: "Categori", href: "#category" },
+    { title: "Sponsorship", href: "#sponsor" },
   ],
   right: [
-    { title: "Sponsorship", href: "/#sponsor" },
-    { title: "kontak", href: "/#" },
-    { title: "Registrasi", href: "/register" },
+    { title: "Leagueboard", href: "/leagueboard" },
+    { title: "Register", href: "/register" },
+    { title: "Login", href: "/auth/login" },
   ],
 };
 
