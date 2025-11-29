@@ -4,9 +4,14 @@ import OngoingMatch from '@/component/match/OngoingMatch'
 import HeaderDashboard from '@/component/ui/HeaderDashboard'
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Loader from '@/component/ui/Global/loader'
+import { ICardMatch } from '@/component/ui/CardMatch'
+import { useMatchPage } from '@/hooks/function/useMatch'
 
 function MatchPage() {
     const searchParams = useSearchParams()
+    const { history, isLoading, onGoing } = useMatchPage()
+
     const defaultTab = searchParams.get('tab')
 
     const [activeNav, setActiveNav] = useState(() => {
@@ -15,16 +20,18 @@ function MatchPage() {
 
     let ComponentToRender
 
+    if (isLoading) return <Loader show />
+
     if (activeNav === 'on-going match') {
-        ComponentToRender = <OngoingMatch />
+        ComponentToRender = <OngoingMatch data={onGoing?.data as ICardMatch[]} />
     } else if (activeNav === 'match-history') {
-        ComponentToRender = <HistoryMatch />
+        ComponentToRender = <HistoryMatch data={history?.data as ICardMatch[]} />
     } else {
         ComponentToRender = null
     }
     return (
         <>
-            <HeaderDashboard title="MATCH COLLECTION" name="maulll" />
+            <HeaderDashboard title="MATCH COLLECTION"  />
             <div className="w-full h-auto py-12 px-3 flex flex-col items-center font-plus-jakarta-sans">
                 <nav className="flex flex-wrap gap-6 justify-center text-sm lg:text-base">
                     <p

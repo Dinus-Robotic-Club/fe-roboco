@@ -31,9 +31,9 @@ function CardMatchDashboard({ data, isActive, onToggle }: CardProps) {
         <>
             <div
                 onClick={handleClick}
-                className={`max-w-6xl w-full flex flex-col bg-white shadow-[0_-2px_1px_rgba(0,0,0,0.05),0_4px_9px_rgba(0,0,0,0.1)] 
-                hover:bg-gray-50 transition-all cursor-pointer overflow-hidden group
-                ${isActive && isDesktop ? 'ring-2 ring-black' : ''}`} // Highlight saat aktif di desktop
+                className={`max-w-6xl w-full flex flex-col bg-transparent  
+                 transition-all cursor-pointer overflow-hidden group
+                ${isActive && isDesktop ? 'ring-2 ring-black' : ''}`}
             >
                 {/* --- MAIN CARD CONTENT --- */}
                 <div className="flex flex-col w-full py-8 lg:py-7 px-3 sm:px-5 md:px-10 lg:px-3 gap-5">
@@ -84,8 +84,6 @@ function CardMatchDashboard({ data, isActive, onToggle }: CardProps) {
                     </div>
                 </div>
 
-                {/* --- DROPDOWN CONTENT (DESKTOP ONLY) --- */}
-                {/* Kita gunakan Framer Motion untuk animasi 'Height' */}
                 {isDesktop && (
                     <AnimatePresence>
                         {isActive && (
