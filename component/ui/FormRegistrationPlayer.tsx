@@ -1,7 +1,7 @@
 'use client'
 
 import { IParticipantsBody } from '@/lib/types/team'
-import { SquareCheckBig } from 'lucide-react'
+import { Square, SquareCheckBig } from 'lucide-react'
 
 type Props = {
     data: IParticipantsBody[]
@@ -68,13 +68,22 @@ export default function FormRegistrationPlayer({ data, setData, errors = {}, onO
 
                     <Field label={`PLAYER ${index + 1} PICTURE AND TWIBBON`} error={errors[index]?.participantsImage}>
                         <button
+                            type="button" // Penting: Biar gak submit form
                             key={index}
                             onClick={() => onOpenTwibbonModal(index)}
-                            className="p-4 bg-white rounded-xs shadow-md border-2 flex justify-between text-gray-500 cursor-pointer active:bg-gray-100"
+                            className={`p-4 bg-white rounded-xs shadow-md border-2 flex justify-between items-center cursor-pointer active:bg-gray-100 w-full transition-colors ${
+                                data[index]?.participantsImage ? 'border-green-500/50 text-green-700 bg-green-50' : 'border-gray-200 text-gray-500'
+                            }`}
                         >
-                            <p>Setting Picture and Twibbon</p>
+                            <p className="truncate max-w-[85%] font-medium">
+                                {data[index]?.participantsImage instanceof File ? data[index].participantsImage.name : 'Setting Picture and Twibbon'}
+                            </p>
 
-                            <SquareCheckBig color="green" />
+                            {data[index]?.participantsImage ? (
+                                <SquareCheckBig className="text-green-600 w-6 h-6" /> // Icon Sukses
+                            ) : (
+                                <Square className="text-gray-300 w-6 h-6" /> // Icon Biasa/Kosong
+                            )}
                         </button>
                     </Field>
 
