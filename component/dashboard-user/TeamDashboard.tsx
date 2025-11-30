@@ -20,7 +20,7 @@ function TeamDashboard({ data }: { data: DashboardTeamData }) {
                 <div className="flex flex-col justify-between gap-16 md:gap-20 lg:gap-0 md:h-[400px]">
                     <div className="flex w-full gap-2 justify-center lg:justify-start">
                         <div className="bg-logo-team w-[70px] h-[70px]">
-                            <Image src={`${process.env.NEXT_PUBLIC_API_URL}${data.team.logo}`} alt="team-logo" height={30} width={30} className="w-full h-full p-2 " />
+                            <Image src={`${process.env.NEXT_PUBLIC_API_URL}${data.team.logo}`} alt="team-logo" height={10000} width={10000} className="w-full h-full p-2 " />
                         </div>
                         <div className="flex flex-col justify-center">
                             <h1 className="text-3xl lg:text-4xl font-bold">{data?.team?.name}</h1>
@@ -65,8 +65,8 @@ function TeamDashboard({ data }: { data: DashboardTeamData }) {
                 <div className="flex gap-12 items-end justify-center flex-wrap lg:flex-nowrap">
                     {data.team.participants?.map((pt) => (
                         <div key={pt.uid} className="flex flex-col items-center">
-                            <div className="bg-player min-h-[215px] min-w-[215px]">
-                                <Image className="h-80 w-auto pb-2 pl-3" alt={pt.name} src={`${process.env.NEXT_PUBLIC_API_URL}${pt.image}`} height={300} width={200} />
+                            <div className="bg-player h-[215px] w-[215px]">
+                                <Image className="w-full h-full pb-2 " alt={pt.name} src={`${process.env.NEXT_PUBLIC_API_URL}${pt.image}`} height={1000} width={1000} />
                             </div>
 
                             <h1 className="text-2xl font-bold">{pt.name}</h1>
