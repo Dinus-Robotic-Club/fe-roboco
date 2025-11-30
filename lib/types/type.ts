@@ -11,6 +11,7 @@ export interface NavData {
 export interface IGetAllTournaments {
     uid: string
     name: string
+    slug: string
     startDate: string
     endDate: string
     image: string
@@ -86,4 +87,89 @@ export interface DownloadExcelTeamProps {
 
 export interface DownloadExcelMemberProps {
     filteredData: MemberData[]
+}
+
+import { LucideIcon } from 'lucide-react'
+
+export type TournamentStatus = 'DRAFT' | 'PUBLISHED' | 'ONGOING' | 'COMPLETED'
+export type TabId = 'overview' | 'registrations' | 'settings' | 'brackets' | 'matches' | 'teams'
+
+export interface Team {
+    name: string
+    logo: string | null
+}
+
+export type RegistrationStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
+export type FilterType = 'ALL' | RegistrationStatus
+
+export interface Community {
+    uid: string
+    name: string
+    comPoint: number
+}
+
+export interface Participant {
+    uid: string
+    name: string
+    roleInTeam: 'LEADER' | 'MEMBER'
+    image: string
+    phone: string
+    twibbon: string
+    identityCardImage: string
+}
+
+export interface Team {
+    uid: string
+    name: string
+    email: string
+    logo: string | null
+    category: string
+    community: Community
+    participants: Participant[]
+}
+
+export interface Registration {
+    uid: string
+    teamId: string
+    tournamentId: string
+    invoice: string
+    status: RegistrationStatus
+    registeredAt: string
+    team: Team
+}
+
+export interface RegistrationsTabProps {
+    data: {
+        registrations: Registration[]
+        name: string
+    }
+    onUpdateStatus: (uid: string, newStatus: RegistrationStatus) => void
+    formatDate: (date: string) => string
+    onShowToast: (message: string) => void
+}
+export interface TournamentData {
+    name: string
+    status: TournamentStatus
+    description: string
+    startDate: string
+    endDate: string
+    location: string
+    registrations: Registration[]
+}
+
+export interface TournamentSettings {
+    defaultBestOf: number
+    groupBestOf: number
+    upperBestOf: number
+    lowerBestOf: number
+    grandFinalBestOf: number
+    roundDurationSoccer: number
+    roundDurationSumo: number
+}
+
+export interface TabItem {
+    id: TabId
+    label: string
+    icon: LucideIcon
+    count?: number
 }

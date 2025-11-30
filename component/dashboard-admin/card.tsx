@@ -23,7 +23,7 @@ const TournamentCard = ({ data }: { data: IGetAllTournaments }) => {
 
     return (
         <div
-            onClick={() => router.push(`dashboard/tournament/${data.uid}`)}
+            onClick={() => router.push(`dashboard/tournament/${data.slug}`)}
             className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:border-[#FBFF00] transition-all duration-300 cursor-pointer flex flex-col h-full"
         >
             {/* Image Section */}

@@ -136,7 +136,7 @@ function Register() {
             </div>
             {showModal !== null && (
                 <ImageUploadModal
-                    index={showModal} // ⬅️ KIRIM INDEX KE MODAL
+                    index={showModal} 
                     onClose={() => setShowModal(null)}
                     data={participants}
                     setData={(index, data) => {
