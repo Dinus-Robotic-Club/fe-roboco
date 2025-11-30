@@ -118,11 +118,17 @@ export default function TeamsTab({ data, onUpdateStatus, formatDate, onShowToast
                             </>
                         )}
                     </div>
-                    <button onClick={handleExportCSV} className="btn-secondary">
+                    <button
+                        onClick={handleExportCSV}
+                        className="px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-gray-200 rounded-lg hover:bg-slate-50 flex items-center gap-2"
+                    >
                         <Download className="w-4 h-4" /> Export CSV
                     </button>
-                    <button onClick={() => window.print()} className="btn-secondary">
-                        <Printer className="w-4 h-4" /> Print
+                    <button
+                        onClick={() => window.print()}
+                        className="px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-gray-200 rounded-lg hover:bg-slate-50 flex items-center gap-2"
+                    >
+                        <Printer className="w-4 h-4" /> Print PDF
                     </button>
                 </div>
             </div>

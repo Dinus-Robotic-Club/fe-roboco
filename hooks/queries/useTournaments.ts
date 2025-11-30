@@ -14,9 +14,6 @@ export const useTournaments = () => {
 export const useDetailTournaments = (slug: string) => {
     return useQuery<TournamentApiResponse, Error>({
         queryKey: ['tournaments', slug],
-
         queryFn: () => getDetailTournament(slug),
-
-        enabled: !!slug,
     })
 }

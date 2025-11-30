@@ -11,6 +11,7 @@ export interface NavData {
 export interface IGetAllTournaments {
     uid: string
     name: string
+    slug: string
     startDate: string
     endDate: string
     image: string
@@ -155,8 +156,6 @@ export interface TournamentData {
     location: string
     registrations: Registration[]
 }
-
-
 
 export interface TournamentSettings {
     defaultBestOf: number

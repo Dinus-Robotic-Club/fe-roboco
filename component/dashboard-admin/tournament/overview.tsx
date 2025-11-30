@@ -1,8 +1,9 @@
-import { TabId, TournamentData } from '@/lib/types/type'
+import { ITournamentData } from '@/lib/types/tournament'
+import { TabId } from '@/lib/types/type'
 import { ShieldAlert, Users, Settings } from 'lucide-react'
 
 interface OverviewProps {
-    data: TournamentData
+    data: ITournamentData
     onChangeTab: (tab: TabId) => void
     formatDate: (date: string) => string
 }
@@ -16,14 +17,14 @@ export default function OverviewTab({ data, onChangeTab, formatDate }: OverviewP
                     <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
                         <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Total Teams</p>
                         <div className="flex items-baseline gap-2">
-                            <h3 className="text-3xl font-extrabold text-slate-900">{data.registrations.length}</h3>
+                            <h3 className="text-3xl font-extrabold text-slate-900">{data?.registrations?.length}</h3>
                             {/* <span className="text-xs text-emerald-600 font-medium bg-emerald-50 px-1.5 py-0.5 rounded">+2 today</span> */}
                         </div>
                     </div>
                     <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
                         <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Start Date</p>
                         <div className="flex items-baseline gap-2">
-                            <h3 className="text-xl font-bold text-slate-900">{formatDate(data.startDate)}</h3>
+                            <h3 className="text-xl font-bold text-slate-900">{formatDate(data?.startDate)}</h3>
                         </div>
                         <p className="text-xs text-slate-400 mt-1">in 2 days</p>
                     </div>
@@ -52,7 +53,7 @@ export default function OverviewTab({ data, onChangeTab, formatDate }: OverviewP
                                     <Users className="w-5 h-5" />
                                 </div>
                                 <h4 className="font-bold text-slate-900">Review Registrations</h4>
-                                <p className="text-sm text-slate-500 mt-1">{data.registrations.filter((r) => r.status === 'PENDING').length} teams are waiting for approval.</p>
+                                <p className="text-sm text-slate-500 mt-1">{data?.registrations?.filter((r) => r?.status === 'PENDING').length} teams are waiting for approval.</p>
                             </div>
                         </button>
                         <button

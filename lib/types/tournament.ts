@@ -43,7 +43,6 @@ export interface Team {
     // Relations
     community: Community
     participants: Participant[]
-    groupTeams: any[] // Bisa diganti interface GroupTeam jika datanya sudah ada
 }
 
 export interface Registration {
@@ -74,9 +73,9 @@ export interface TournamentSettings {
     updatedAt: string
 }
 
-// --- MAIN INTERFACE ---
+// --- MAIN INTERFACE ---`
 
-export interface TournamentData {
+export interface ITournamentData {
     uid: string
     name: string
     slug: string
@@ -89,8 +88,6 @@ export interface TournamentData {
     playoffType: PlayoffType
     createdAt: string
     updatedAt: string
-    // Relations
-    matches: any[] // Bisa diganti interface Match jika datanya sudah ada
     registrations: Registration[]
     settings: TournamentSettings
 }
@@ -99,5 +96,5 @@ export interface TournamentData {
 // Gunakan ini jika fetch langsung dari endpoint yg membungkus "data"
 
 export interface TournamentApiResponse {
-    data: TournamentData
+    data: ITournamentData
 }
