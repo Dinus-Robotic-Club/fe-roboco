@@ -33,3 +33,17 @@ export const updateTeamProfile = (data: FormData): Promise<IApiResponse<unknown>
 export const getAllCommunity = (): Promise<IApiResponse<IGetAllCommunity[]>> => {
     return apiFetch<IApiResponse<IGetAllCommunity[]>>(`${BASE}/api/teams/community`)
 }
+
+export const updateStatusRegistration = (status: string, uid: string): Promise<IApiResponse<unknown>> => {
+    return apiFetch<IApiResponse<unknown>>(`${BASE}/api/teams/update/${uid}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status: status }),
+    })
+}
+
+export const updateAttendeance = (token: string): Promise<IApiResponse<unknown>> => {
+    return apiFetch<IApiResponse<unknown>>(`${BASE}/api/teams/attendeance`, {
+        method: 'POST',
+        body: JSON.stringify({ token: token }),
+    })
+}

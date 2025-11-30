@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { Save, Loader2, Trophy, Clock } from 'lucide-react'
 import { TournamentSettings } from '@/lib/types/type'
+import { toast } from 'sonner'
 
 interface SettingsTabProps {
     settings: TournamentSettings
     onUpdateSettings: (newSettings: TournamentSettings) => void
-    onShowToast: (message: string) => void
 }
 
-export default function SettingsTab({ settings, onUpdateSettings, onShowToast }: SettingsTabProps) {
+export default function SettingsTab({ settings, onUpdateSettings }: SettingsTabProps) {
     const [isEditingSettings, setIsEditingSettings] = useState<boolean>(false)
     const [isSaving, setIsSaving] = useState<boolean>(false)
 
@@ -22,7 +22,7 @@ export default function SettingsTab({ settings, onUpdateSettings, onShowToast }:
         setTimeout(() => {
             setIsSaving(false)
             setIsEditingSettings(false)
-            onShowToast('Settings saved successfully!')
+            toast.success('Settings saved successfully!')
         }, 1000)
     }
 

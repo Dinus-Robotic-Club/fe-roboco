@@ -10,8 +10,6 @@ interface HeaderProps {
 }
 
 export default function DashboardHeader({ data, activeTab, onTabChange, tabs }: HeaderProps) {
-    console.log(data)
-
     return (
         <div className="bg-white border-b border-gray-200 sticky top-0 z-30 no-print">
             <div className="h-48 w-full bg-slate-900 relative overflow-hidden group">
@@ -25,9 +23,7 @@ export default function DashboardHeader({ data, activeTab, onTabChange, tabs }: 
                         </div>
                         <div className="mb-1 text-white">
                             <div className="flex items-center gap-3 mb-2">
-                                <span className="px-2.5 py-0.5 rounded text-[10px] font-bold tracking-wider bg-[#FBFF00] text-black uppercase shadow-[0_0_10px_rgba(251,255,0,0.5)]">
-                                    
-                                </span>
+                                <span className="px-2.5 py-0.5 rounded text-[10px] font-bold tracking-wider bg-[#FBFF00] text-black uppercase shadow-[0_0_10px_rgba(251,255,0,0.5)]"></span>
                                 <span className="text-slate-300 text-xs flex items-center gap-1 bg-black/30 px-2 py-0.5 rounded backdrop-blur-sm">
                                     <MapPin className="w-3 h-3" /> {data?.location}
                                 </span>

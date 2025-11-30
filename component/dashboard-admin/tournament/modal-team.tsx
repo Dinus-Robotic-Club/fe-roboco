@@ -31,7 +31,7 @@ export const DetailModal = ({
                         <div>
                             <h2 className="text-lg font-bold text-slate-900">{team.name}</h2>
                             <div className="flex items-center gap-2 text-sm text-slate-500">
-                                <span>UID: {registration.uid.split('-')[0]}...</span>
+                                <span>UID: {registration.team.uid.split('-')[0]}...</span>
                                 <span className="w-1 h-1 rounded-full bg-slate-300" />
                                 <span>{formatDate(registration.registeredAt)}</span>
                             </div>
@@ -160,13 +160,13 @@ export const DetailModal = ({
                     {registration.status === 'PENDING' ? (
                         <>
                             <button
-                                onClick={() => onUpdateStatus(registration.uid, 'REJECTED')}
+                                onClick={() => onUpdateStatus(registration.team.uid, 'REJECTED')}
                                 className="px-4 py-2 text-sm font-bold text-rose-700 bg-white border border-rose-200 rounded-lg hover:bg-rose-50 shadow-sm transition-all"
                             >
                                 Reject Registration
                             </button>
                             <button
-                                onClick={() => onUpdateStatus(registration.uid, 'APPROVED')}
+                                onClick={() => onUpdateStatus(registration.team.uid, 'APPROVED')}
                                 className="px-4 py-2 text-sm font-bold text-white bg-emerald-600 border border-emerald-600 rounded-lg hover:bg-emerald-700 shadow-sm shadow-emerald-200 transition-all"
                             >
                                 Verify & Approve
