@@ -1,4 +1,4 @@
-import { createTeams, updateTeamProfile } from '@/lib/api/teams'
+import { createTeams, updateAttendeance, updateStatusRegistration, updateTeamProfile } from '@/lib/api/teams'
 import { IApiResponse } from '@/lib/types/type'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -30,6 +30,39 @@ export const useUpdateTeam = () => {
         },
         onError: (err) => {
             console.log('Error update team', err.message)
+            toast.error(err.message)
+        },
+    })
+}
+
+export const useUpdateStatus = () => {
+    const queryClient = useQueryClient()
+
+    return useMutation<IApiResponse<unknown>, Error, { status: string; uid: string }>({
+        mutationFn: ({ status, uid }) => updateStatusRegistration(status, uid),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['tournaments'] })
+            toast.success(data.message)
+        },
+        onError: (err) => {
+            console.log('Error update team', err.message)
+            toast.error(err.message)
+        },
+    })
+}
+
+export const useAttendance = () => {
+    const queryClient = useQueryClient()
+
+    return useMutation<IApiResponse<unknown>, Error, { token: string }>({
+        mutationFn: ({ token }) => updateAttendeance(token),
+
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['tournaments'] })
+            toast.success(data.message)
+        },
+        onError: (err) => {
+            console.log('Error update attendance', err.message)
             toast.error(err.message)
         },
     })

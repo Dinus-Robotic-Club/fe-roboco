@@ -145,7 +145,6 @@ export interface RegistrationsTabProps {
     }
     onUpdateStatus: (uid: string, newStatus: RegistrationStatus) => void
     formatDate: (date: string) => string
-    onShowToast: (message: string) => void
 }
 export interface TournamentData {
     name: string

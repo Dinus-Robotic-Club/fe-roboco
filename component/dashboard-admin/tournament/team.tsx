@@ -3,6 +3,7 @@ import { Search, Filter, Download, Printer, CheckCircle2, XCircle, MoreHorizonta
 import Image from 'next/image' // Pastikan sudah config domain di next.config.js
 import { Registration, RegistrationStatus, FilterType, RegistrationsTabProps } from '@/lib/types/type'
 import { DetailModal } from './modal-team'
+import { toast } from 'sonner'
 
 // --- HELPER COMPONENTS ---
 
@@ -20,7 +21,7 @@ export const StatusBadge = ({ status }: { status: RegistrationStatus }) => {
     )
 }
 
-export default function TeamsTab({ data, onUpdateStatus, formatDate, onShowToast }: RegistrationsTabProps) {
+export default function TeamsTab({ data, onUpdateStatus, formatDate }: RegistrationsTabProps) {
     const [searchQuery, setSearchQuery] = useState<string>('')
     const [statusFilter, setStatusFilter] = useState<FilterType>('ALL')
     const [showFilterDropdown, setShowFilterDropdown] = useState<boolean>(false)
@@ -53,7 +54,7 @@ export default function TeamsTab({ data, onUpdateStatus, formatDate, onShowToast
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
-        onShowToast('Exported to CSV successfully!')
+        toast.success('Exported to CSV successfully!')
     }
 
     const handleUpdateStatus = (uid: string, status: RegistrationStatus) => {
@@ -165,7 +166,7 @@ export default function TeamsTab({ data, onUpdateStatus, formatDate, onShowToast
                                         </div>
                                         <div>
                                             <p className="font-bold text-slate-900 group-hover:text-[#d4b904] transition-colors">{reg.team.name}</p>
-                                            <p className="text-xs text-slate-400 font-mono">ID: {reg.uid.slice(0, 8)}...</p>
+                                            <p className="text-xs text-slate-400 font-mono">ID: {reg.team.uid.slice(0, 8)}...</p>
                                         </div>
                                     </div>
                                 </td>

@@ -1,23 +1,80 @@
 'use client'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Html5QrcodeScanner } from 'html5-qrcode'
 import Image from 'next/image'
 import { toast } from 'sonner'
 import { FaCamera } from 'react-icons/fa'
+import { useAttendance } from '@/hooks/mutations/teams-mutation'
+import Loader from '@/component/ui/Global/loader'
 
 function CheckTicket() {
     const [isCameraActive, setIsCameraActive] = useState(false)
+    const { mutate: submitAttendance, isPending } = useAttendance()
+
+    // Refs
     const scannerRef = useRef<Html5QrcodeScanner | null>(null)
+    const isProcessingRef = useRef(false) // <-- LOCKING VARIABLE
+
     const qrBoxId = 'qr-reader'
+
+    // Cleanup Effect (Wajib ada biar gak error saat pindah halaman/refresh)
+    useEffect(() => {
+        return () => {
+            if (scannerRef.current) {
+                scannerRef.current.clear().catch(() => {})
+                scannerRef.current = null
+            }
+        }
+    }, [])
+
     const onScanSuccess = (decodedText: string) => {
-        toast.success(`QR Code detected: ${decodedText}`, {
-            duration: 2000,
-        })
+        if (isProcessingRef.current) return
+
+        isProcessingRef.current = true
+        if (scannerRef.current) {
+            try {
+                scannerRef.current.pause(true)
+            } catch (e) {
+                console.log(e)
+            }
+        }
+
+        submitAttendance(
+            { token: decodedText },
+            {
+                onSuccess: (data) => {
+                    toast.success(data.message)
+
+                    setTimeout(() => {
+                        isProcessingRef.current = false
+                        try {
+                            scannerRef.current?.resume()
+                        } catch (e) {
+                            console.log(e)
+                        }
+                    }, 2000)
+                },
+                onError: () => {
+                    toast.error('Verification failed. Please try again.')
+
+                    setTimeout(() => {
+                        isProcessingRef.current = false
+                        try {
+                            scannerRef.current?.resume()
+                        } catch (e) {
+                            console.log(e)
+                        }
+                    }, 2000)
+                },
+            },
+        )
     }
 
     const onScanFailure = (error: string) => {
-        console.warn(`QR Code scan error: ${error}`)
+        // console.warn(`QR Code scan error: ${error}`)
+        // Dikosongkan/comment agar console tidak penuh spam
     }
+
     const toggleCamera = () => {
         if (isCameraActive && scannerRef.current) {
             scannerRef.current.clear().catch((error) => {
@@ -25,8 +82,10 @@ function CheckTicket() {
             })
             scannerRef.current = null
             setIsCameraActive(false)
+            isProcessingRef.current = false
         } else if (!isCameraActive) {
             setIsCameraActive(true)
+            isProcessingRef.current = false
 
             setTimeout(() => {
                 const element = document.getElementById(qrBoxId)
@@ -35,26 +94,37 @@ function CheckTicket() {
                     return
                 }
 
+                // --- BAGIAN YANG DIUBAH ---
                 scannerRef.current = new Html5QrcodeScanner(
                     qrBoxId,
                     {
-                        fps: 60,
+                        fps: 10,
+
                         qrbox: { width: 350, height: 350 },
+
+                        aspectRatio: 1.0,
+
                         supportedScanTypes: [],
                         rememberLastUsedCamera: true,
+
+                        experimentalFeatures: {
+                            useBarCodeDetectorIfSupported: true,
+                        },
                     },
                     false,
                 )
+                // ---------------------------
 
                 scannerRef.current.render(onScanSuccess, onScanFailure)
             }, 100)
         }
     }
+
     return (
         <main className="w-full min-h-screen h-auto  p-14 flex flex-col justify-center items-center gap-5 bg-grid">
+            {isPending && <Loader show />}
             <Image src="/logo-title.svg" alt="logo-title" width={488} height={234} className="w-full max-w-[450px] h-auto px-2" />
             <h1 className="text-xl font-plus-jakarta-sans font-semibold text-center text-gray-800">Silakan scan QR Code untuk konfirmasi kehadiran</h1>
-
             <div className="flex w-auto gap-4 justify-center items-center">
                 <Image src="/element-left-qr.svg" alt="element-left" width={100} height={300} className="w-auto h-[370px]" />
                 <div className="bg-[#FBFF00] min-w-[600px] max-w-[600px] rounded-lg min-h-[500px] overflow-y-hidden h-auto flex justify-center p-5 shadow-md">
@@ -73,7 +143,6 @@ function CheckTicket() {
                 </div>
                 <Image src="/element-right-qr.svg" alt="element-right" width={100} height={300} className="w-auto h-[370px]" />
             </div>
-
             <button
                 onClick={toggleCamera}
                 className="min-w-[600px] max-w-lg bg-[#FBFF00] py-4 cursor-pointer rounded-lg font-plus-jakarta-sans text-lg font-medium flex justify-center items-center transition-all hover:bg-amber-300 active:scale-105"

@@ -73,6 +73,25 @@ export interface TournamentSettings {
     updatedAt: string
 }
 
+export interface FlatParticipant {
+    // Participant Data
+    participantUid: string
+    name: string
+    role: TeamRole
+    image: string
+    idCard: string
+    phone: string
+    twibbon: string
+    // Team/Registration Context
+    teamName: string
+    teamLogo: string
+    category: string
+    communityName: string
+    registrationStatus: RegistrationStatus
+    registrationUid: string
+    registeredAt: string
+}
+
 // --- MAIN INTERFACE ---`
 
 export interface ITournamentData {
