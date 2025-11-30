@@ -1,3 +1,4 @@
+import { TournamentApiResponse } from '../types/tournament'
 import { IApiResponse, IGetAllTournaments } from '../types/type'
 import { apiFetch } from './client'
 
@@ -21,8 +22,8 @@ export const updateTournament = (uid: string, data: FormData): Promise<IApiRespo
     })
 }
 
-export const getDetailTournament = (slug: string): Promise<IApiResponse<unknown>> => {
-    return apiFetch<IApiResponse<unknown>>(`${BASE}/api/tournament/get/${slug}`)
+export const getDetailTournament = (slug: string): Promise<TournamentApiResponse> => {
+    return apiFetch<TournamentApiResponse>(`${BASE}/api/tournament/get/${slug}`)
 }
 
 export const updateSetting = (tourId: string, data: string): Promise<IApiResponse<unknown>> => {
