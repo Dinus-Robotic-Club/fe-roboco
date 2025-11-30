@@ -55,8 +55,8 @@ function TeamProfile({
                 <div className="flex flex-wrap justify-center items-center gap-30">
                     {data.participants.map((pt, i) => (
                         <div key={i} className="flex flex-col items-center justify-center">
-                            <div className="bg-player min-h-[215px] min-w-[215px]">
-                                <Image className="h-80 w-auto pb-2 pl-3" alt="member1" src={`${process.env.NEXT_PUBLIC_API_URL}${pt.image}`} height={300} width={200} />
+                            <div className="bg-player h-[215px] w-[215px]">
+                                <Image className="h-full w-full pb-2 " alt="member1" src={`${process.env.NEXT_PUBLIC_API_URL}${pt.image}`} height={300} width={200} />
                             </div>
 
                             <div className="text-center">
@@ -70,7 +70,7 @@ function TeamProfile({
 
             <div className="mt-20 max-w-4xl w-full md:px-4 flex flex-col items-center gap-10">
                 <div className="bg-logo-team w-[123px] h-[123px]">
-                    <Image src={`${process.env.NEXT_PUBLIC_API_URL}${data.logo}`} alt="logo-team" height={30} width={30} className="w-full h-full p-2 " />
+                    <Image src={`${process.env.NEXT_PUBLIC_API_URL}${data.logo}`} alt="logo-team" height={10000} width={10000} className="w-full h-full p-2 " />
                 </div>
 
                 <div className="flex flex-col gap-5 sm:gap-8 w-full">

@@ -5,8 +5,8 @@ function OngoingMatch({ data }: { data: ICardMatch[] }) {
 
     return (
         <>
-            {data.map((dat) => (
-                <CardMatch key={dat.uid} data={dat} />
+            {data?.map((dat) => (
+                <CardMatch key={dat?.uid} data={dat} />
             ))}
         </>
     )
