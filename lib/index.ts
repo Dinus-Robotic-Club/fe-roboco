@@ -387,7 +387,7 @@ export const categories = [
     ],
     image: "/notfound-robot.svg",
     icon: "/logo-soccer.svg",
-    guidebook: "/document/SOCCER BOT GUIDE BOOK - DN ROBOCO 2026.pdf",
+    guidebook: "https://drive.google.com/drive/folders/1LcLNOm_-fJViKSqnbyDqab0WMMUhBTPr?usp=sharing",
   },
   {
     id: "sumobot",
@@ -398,7 +398,7 @@ export const categories = [
     ],
     image: "/notfound-robot.svg",
     icon: "/logo-summo.svg",
-    guidebook: "/document/SUMMO BOT GUIDE BOOK - DN ROBOCO 2026.pdf",
+    guidebook: "https://drive.google.com/drive/folders/1LcLNOm_-fJViKSqnbyDqab0WMMUhBTPr?usp=sharing",
   },
 ];
 
