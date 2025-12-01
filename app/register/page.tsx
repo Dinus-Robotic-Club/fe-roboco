@@ -104,7 +104,7 @@ function Register() {
                         panduan pendaftaran
                     </a>{' '}
                     atau hubungi{' '}
-                    <a href="" className="underline cursor-pointer">
+                    <a href="https://wa.me/6288226457475" className="underline cursor-pointer">
                         narahubung kami
                     </a>
                 </p>
@@ -136,7 +136,7 @@ function Register() {
             </div>
             {showModal !== null && (
                 <ImageUploadModal
-                    index={showModal} 
+                    index={showModal}
                     onClose={() => setShowModal(null)}
                     data={participants}
                     setData={(index, data) => {

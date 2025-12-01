@@ -1,7 +1,10 @@
 import CardMatch, { ICardMatch } from '../ui/CardMatch'
+import EmptyState from '../ui/Global/not-found-data'
 
 function OngoingMatch({ data }: { data: ICardMatch[] }) {
-    console.log(data)
+    if (!data || data.length === 0) {
+        return <EmptyState variant="public" className="w-full max-w-4xl h-auto " title="COMING SOON" description="Arena Pertandingan Robot Segera Tiba... " />
+    }
 
     return (
         <>
