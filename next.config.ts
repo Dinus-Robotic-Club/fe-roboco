@@ -29,8 +29,8 @@ const nextConfig: NextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'dnroboco01.dinusrobotic.org/be',
-                pathname: '/uploads/**',
+                hostname: 'dnroboco01.dinusrobotic.org',
+                pathname: '/be/uploads/**',
             },
         ],
     },

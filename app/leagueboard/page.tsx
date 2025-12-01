@@ -31,9 +31,9 @@ function Leagueboard() {
         ComponentToRender = <OngoingMatch data={onGoing?.data as ICardMatch[]} />
     } else if (activeNav === 'match-history') {
         ComponentToRender = <HistoryMatch data={history?.data as ICardMatch[]} />
-    } else if (activeNav === 'on-going match') {
+    } else if (activeNav === 'playoff-sumo') {
         ComponentToRender = <OngoingMatch data={onGoing?.data as ICardMatch[]} />
-    } else if (activeNav === 'on-going match') {
+    } else if (activeNav === 'playoff-soccer') {
         ComponentToRender = <OngoingMatch data={onGoing?.data as ICardMatch[]} />
     } else ComponentToRender = null
 
