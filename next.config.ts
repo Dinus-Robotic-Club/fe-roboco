@@ -22,6 +22,16 @@ const nextConfig: NextConfig = {
                 hostname: 'be-roboco-production.up.railway.app',
                 pathname: '/uploads/**',
             },
+            {
+                protocol: 'https',
+                hostname: 'backend-dnroboco.dinusrobotic.org',
+                pathname: '/uploads/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'dnroboco01.dinusrobotic.org/be',
+                pathname: '/uploads/**',
+            },
         ],
     },
 
