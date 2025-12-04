@@ -14,6 +14,7 @@ import {
 import { FaCloudDownloadAlt } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { IParticipantsBody } from '@/lib/types/team';
+import Loader from './Global/loader';
 
 // Teks Caption Statis (Disimpan di luar komponen agar rapi)
 const CAPTION_TEXT = `Setiap inovasi adalah pijakan kecil menuju masa depan penuh cahaya. ⚙️✨
@@ -150,7 +151,7 @@ export default function ImageUploadModal({
 		navigator.clipboard.writeText(CAPTION_TEXT);
 		setIsCopied(true);
 		toast.success('Caption Twibbon berhasil disalin!');
-		setTimeout(() => setIsCopied(false), 2000); // Reset icon setelah 2 detik
+		setTimeout(() => setIsCopied(false), 2000);
 	};
 
 	const triggerUpload = () => fileInputRef.current?.click();
@@ -173,21 +174,7 @@ export default function ImageUploadModal({
 				onClick={(e) => e.stopPropagation()}
 			>
 				{/* --- CUSTOM OVERLAY LOADER --- */}
-				{isLoadingAny && (
-					<div className="absolute inset-0 z-50 bg-white/90 backdrop-blur-md flex flex-col items-center justify-center rounded-xl animate-in fade-in duration-300">
-						<div className="bg-yellow-100 p-4 rounded-full mb-4">
-							<Loader2 className="w-12 h-12 text-yellow-600 animate-spin" />
-						</div>
-						<h3 className="text-xl font-bold text-gray-800">
-							Mohon Tunggu Sebentar...
-						</h3>
-						<p className="text-gray-500 font-medium mt-2 animate-pulse">
-							{loadingTwibbon
-								? 'Sedang memasang twibbon otomatis...'
-								: 'Sedang menghapus background & menyimpan...'}
-						</p>
-					</div>
-				)}
+				{isLoadingAny && <Loader show />}
 
 				{/* Header */}
 				<div className="flex justify-between items-center border-b pb-4">
