@@ -4,10 +4,10 @@ import { useResetPassword } from '@/hooks/mutations/auth-mutations'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import React, { useState } from 'react'
+import React, { Suspense, useState } from 'react'
 import { FaLock, FaEye, FaEyeSlash } from 'react-icons/fa'
 
-function ResetPassword() {
+function ResetPasswordForm() {
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
@@ -162,6 +162,14 @@ function ResetPassword() {
                 </div>
             </div>
         </div>
+    )
+}
+
+export const ResetPassword = () => {
+    return (
+        <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+            <ResetPasswordForm />
+        </Suspense>
     )
 }
 
