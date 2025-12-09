@@ -1,0 +1,109 @@
+[
+  {
+    "uid": "match-001",
+    "bestOf": 3,
+    "scoreA": 12,
+    "scoreB": 13,
+    "status": "ONGOING",
+    "roundLabel": "GROUP B - MATCH 2",
+    "category": "Soccer Bot",
+    "teamA": {
+      "name": "Maul Ganks",
+      "logo": "/logo-only.svg",
+      "community": {
+        "name": "SMK Negeri 1 Banyumas"
+      }
+    },
+    "teamB": {
+      "name": "Maul Cuwaks",
+      "logo": "/logo-only.svg",
+      "community": {
+        "name": "SMK Negeri 1 Mawar"
+      }
+    },
+    "group": {
+      "name": "Group B"
+    }
+  },
+
+  {
+    "uid": "match-002",
+    "bestOf": 3,
+    "scoreA": 7,
+    "scoreB": 4,
+    "status": "FINISHED",
+    "roundLabel": "GROUP D - MATCH 1",
+    "category": "Sumo Bot",
+    "teamA": {
+      "name": "Maul Tzy",
+      "logo": "/logo-only.svg",
+      "community": {
+        "name": "SMK Negeri 1 Banyumas"
+      }
+    },
+    "teamB": {
+      "name": "Maul Ana",
+      "logo": "/logo-only.svg",
+      "community": {
+        "name": "SMK Negeri 1 Mawar"
+      }
+    },
+    "group": {
+      "name": "Group D"
+    }
+  },
+
+  {
+    "uid": "match-003",
+    "bestOf": 5,
+    "scoreA": 0,
+    "scoreB": 0,
+    "status": "SCHEDULE",
+    "roundLabel": "GROUP A - MATCH 4",
+    "category": "Line Follower",
+    "teamA": {
+      "name": "Maul Bot Alpha",
+      "logo": "/logo-only.svg",
+      "community": {
+        "name": "SMK Cendekia"
+      }
+    },
+    "teamB": {
+      "name": "Maul Bot Beta",
+      "logo": "/logo-only.svg",
+      "community": {
+        "name": "SMK Nusantara"
+      }
+    },
+    "group": {
+      "name": "Group A"
+    }
+  },
+
+  {
+    "uid": "match-004",
+    "bestOf": 3,
+    "scoreA": 3,
+    "scoreB": 3,
+    "status": "PENDING",
+    "roundLabel": "GROUP C - MATCH 5",
+    "category": "Delivery Robot",
+    "teamA": {
+      "name": "Maul Squad",
+      "logo": "/logo-only.svg",
+      "community": {
+        "name": "SMK Informatika"
+      }
+    },
+    "teamB": {
+      "name": "Maul Legends",
+      "logo": "/logo-only.svg",
+      "community": {
+        "name": "SMK Kreatif"
+      }
+    },
+    "group": {
+      "name": "Group C"
+    }
+  }
+]

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export type statusType = "FINISHED" | "PENDING" | "SCHEDULE" | "ONGOING" | "CANCELLED";
 export interface ICardMatch {
@@ -31,10 +32,14 @@ export interface ICardMatchResp {
   data: ICardMatch[];
 }
 
-export default function CardMatch({ data }: { data: ICardMatch }) {
+export default function CardMatchAdmin({ data }: { data: ICardMatch }) {
+  const route = useRouter();
   return (
     <>
-      <div className="w-full py-6 px-3 flex-col items-center justify-between rounded-md bg-white shadow-[0_-2px_1px_rgba(0,0,0,0.05),0_4px_9px_rgba(0,0,0,0.1)] lg:bg-transparent lg:shadow-none">
+      <div
+        onClick={() => route.push(`/admin/match/${data.uid}`)}
+        className="w-full py-6 px-3 flex-col items-center justify-between rounded-md lg:rounded bg-white shadow-[0_-2px_1px_rgba(0,0,0,0.05),0_4px_9px_rgba(0,0,0,0.1)] max-w-6xl 2xl:max-w-7xl cursor-pointer"
+      >
         <p className="mb-6 text-gray-700 font-medium tracking-wide text-center block lg:hidden">
           {data?.roundLabel} | {data?.category}
         </p>
