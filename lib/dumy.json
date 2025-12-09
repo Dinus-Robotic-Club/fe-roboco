@@ -6,7 +6,7 @@
     "scoreB": 13,
     "status": "ONGOING",
     "roundLabel": "GROUP B - MATCH 2",
-    "category": "Soccer Bot",
+    "category": "SOCCER BOT",
     "teamA": {
       "name": "Maul Ganks",
       "logo": "/logo-only.svg",
@@ -33,7 +33,7 @@
     "scoreB": 4,
     "status": "FINISHED",
     "roundLabel": "GROUP D - MATCH 1",
-    "category": "Sumo Bot",
+    "category": "SUMMO BOT",
     "teamA": {
       "name": "Maul Tzy",
       "logo": "/logo-only.svg",
@@ -58,9 +58,9 @@
     "bestOf": 5,
     "scoreA": 0,
     "scoreB": 0,
-    "status": "SCHEDULE",
+    "status": "FINISHED",
     "roundLabel": "GROUP A - MATCH 4",
-    "category": "Line Follower",
+    "category": "SOCCER BOT",
     "teamA": {
       "name": "Maul Bot Alpha",
       "logo": "/logo-only.svg",
@@ -85,9 +85,9 @@
     "bestOf": 3,
     "scoreA": 3,
     "scoreB": 3,
-    "status": "PENDING",
+    "status": "ONGOING",
     "roundLabel": "GROUP C - MATCH 5",
-    "category": "Delivery Robot",
+    "category": "SUMMO BOT",
     "teamA": {
       "name": "Maul Squad",
       "logo": "/logo-only.svg",
