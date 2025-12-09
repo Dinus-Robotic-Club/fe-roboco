@@ -1,216 +1,365 @@
-'use client'
+'use client';
 
-import { useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
-import { ArrowRight, FileImage, Image as Image_Preview, X } from 'lucide-react'
-import { FaCloudDownloadAlt } from 'react-icons/fa'
-import { toast } from 'sonner'
-import { IParticipantsBody } from '@/lib/types/team'
+import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+import {
+	ArrowRight,
+	FileImage,
+	Image as Image_Preview,
+	X,
+	Copy,
+	Check,
+	Loader2,
+} from 'lucide-react'; // Tambah Icon Baru
+import { FaCloudDownloadAlt } from 'react-icons/fa';
+import { toast } from 'sonner';
+import { IParticipantsBody } from '@/lib/types/team';
+import Loader from './Global/loader';
+
+// Teks Caption Statis (Disimpan di luar komponen agar rapi)
+const CAPTION_TEXT = `Setiap inovasi adalah pijakan kecil menuju masa depan penuh cahaya. ⚙️✨
+
+Perjalanan baru ini bagaikan para pejuang teknologi yang menapaki tangga menuju langit robotik—langit yang dipenuhi cahaya ide, kreativitas, dan semangat tanpa batas. Kini adalah waktunya bagi kita untuk bersinar lebih terang, melangkah lebih jauh, dan menciptakan pengalaman yang tak terlupakan bersama. 🤖💫
+
+Perkenalkan, saya [Nama Lengkap] dari [Nama Komunitas / Nama Instansi], turut serta memeriahkan DN.Roboco 2026 dalam rangkaian Dinus Fest. Dengan penuh semangat dan harapan, mari kita menapaki “tangga inovasi” ini bersama-sama, menunjukkan bahwa kita mampu berdiri tegak di antara bintang-bintang teknologi masa depan. ✨
+
+Mari kita berkarya, berkompetisi, dan bersinar dalam DN.Roboco 2026.
+Let’s innovate higher and shine brighter among the stars of robotics! 💙⚡
+
+“Bergerak Bersama Inovasi, Bersinar Menuju Masa Depan Robotika.”
+
+@dinus_robotic_club
+#dinusfest2026 #dnroboco2026 #dnroboco`;
 
 export default function ImageUploadModal({
-    onClose,
-    data,
-    setData,
-    index,
+	onClose,
+	data,
+	setData,
+	index,
 }: {
-    onClose: () => void
-    data: IParticipantsBody[]
-    setData: (index: number, patch: Partial<IParticipantsBody>) => void
-    index: number
+	onClose: () => void;
+	data: IParticipantsBody[];
+	setData: (index: number, patch: Partial<IParticipantsBody>) => void;
+	index: number;
 }) {
-    // STATE LOKAL
-    const [preview, setPreview] = useState<string | null>(null) // Kiri: Preview Gambar Asli
-    const [twibbonResult, setTwibbonResult] = useState<string | null>(null) // Kanan: Preview Twibbon (Download Only)
+	// STATE LOKAL
+	const [preview, setPreview] = useState<string | null>(null);
+	const [twibbonResult, setTwibbonResult] = useState<string | null>(null);
 
-    const [loadingTwibbon, setLoadingTwibbon] = useState(false) // Loading untuk generate Twibbon
-    const [loadingProcess, setLoadingProcess] = useState(false) // Loading untuk Remove BG (Confirm)
+	const [loadingTwibbon, setLoadingTwibbon] = useState(false);
+	const [loadingProcess, setLoadingProcess] = useState(false);
 
-    const [tempFile, setTempFile] = useState<File | null>(null) // File mentah dari user
+	const [tempFile, setTempFile] = useState<File | null>(null);
+	const [isCopied, setIsCopied] = useState(false); // State untuk feedback copy
 
-    const fileInputRef = useRef<HTMLInputElement>(null)
+	const fileInputRef = useRef<HTMLInputElement>(null);
 
-    console.log(tempFile, twibbonResult)
+	// Helper: Cek apakah sedang loading apapun
+	const isLoadingAny = loadingTwibbon || loadingProcess;
 
-    useEffect(() => {
-        document.body.style.overflow = 'hidden'
-        return () => {
-            document.body.style.overflow = ''
-        }
-    }, [])
+	useEffect(() => {
+		document.body.style.overflow = 'hidden';
+		return () => {
+			document.body.style.overflow = '';
+		};
+	}, []);
 
-    // 1. AUTO GENERATE TWIBBON (SIDE EFFECT KETIKA FILE DIPILIH)
-    useEffect(() => {
-        const generateTwibbon = async () => {
-            if (!tempFile) return
+	// 1. AUTO GENERATE TWIBBON
+	useEffect(() => {
+		const generateTwibbon = async () => {
+			if (!tempFile) return;
 
-            const formData = new FormData()
-            formData.append('image', tempFile) // Sesuaikan key dengan API Twibbon kamu
+			const formData = new FormData();
+			formData.append('image', tempFile);
 
-            try {
-                setLoadingTwibbon(true)
+			try {
+				setLoadingTwibbon(true);
+				// Ganti URL ini sesuai endpoint real kamu nanti
+				const res = await fetch(
+					`${process.env.NEXT_PUBLIC_API_URL}/image/remove`,
+					{
+						method: 'POST',
+						body: formData,
+					}
+				);
 
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/image/remove`, {
-                    method: 'POST',
-                    body: formData,
-                })
+				if (!res.ok) throw new Error('Failed to generate twibbon');
 
-                if (!res.ok) throw new Error('Failed to generate twibbon')
+				const blob = await res.blob();
+				const twibbonUrl = URL.createObjectURL(blob);
+				setTwibbonResult(twibbonUrl);
+			} catch (err) {
+				console.error(err);
+				toast.error('Gagal membuat pratinjau Twibbon.');
+			} finally {
+				setLoadingTwibbon(false);
+			}
+		};
 
-                const blob = await res.blob()
-                const twibbonUrl = URL.createObjectURL(blob)
-                setTwibbonResult(twibbonUrl)
-            } catch (err) {
-                console.error(err)
-                toast.error('Gagal membuat preview Twibbon.')
-            } finally {
-                setLoadingTwibbon(false)
-            }
-        }
+		generateTwibbon();
+	}, [tempFile]);
 
-        generateTwibbon()
-    }, [tempFile])
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file) return;
 
-    // Handler saat user memilih file
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (!file) return
+		const imgUrl = URL.createObjectURL(file);
+		setPreview(imgUrl);
+		setTempFile(file);
+		setTwibbonResult(null);
+	};
 
-        const imgUrl = URL.createObjectURL(file)
-        setPreview(imgUrl)
-        setTempFile(file) // Ini akan memicu useEffect di atas
-        setTwibbonResult(null) // Reset hasil lama
-    }
+	// 2. HANDLER CONFIRM: REMOVE BG & SAVE
+	const handleConfirmAndSave = async () => {
+		if (!tempFile) {
+			toast.error('Mohon pilih foto terlebih dahulu');
+			return;
+		}
 
-    // 2. HANDLER CONFIRM: REMOVE BG & SAVE TO STATE
-    const handleConfirmAndSave = async () => {
-        if (!tempFile) {
-            toast.error('Pilih gambar terlebih dahulu')
-            return
-        }
+		const formData = new FormData();
+		formData.append('file', tempFile);
 
-        const formData = new FormData()
-        formData.append('file', tempFile) // Kirim file ASLI (bukan twibbon)
+		try {
+			setLoadingProcess(true);
 
-        try {
-            setLoadingProcess(true)
+			const res = await fetch('https://api-bg-ok.dinusrobotic.org/remove-bg', {
+				method: 'POST',
+				body: formData,
+			});
 
-            console.log(formData)
+			if (!res.ok) throw new Error('Failed to remove background');
 
-            // Hit API Remove BG (Khusus untuk Data Peserta)
-            const res = await fetch('https://api-bg-ok.dinusrobotic.org/remove-bg', {
-                method: 'POST',
-                body: formData,
-            })
+			const blob = await res.blob();
+			const processedFile = new File([blob], `removed_bg_${tempFile.name}`, {
+				type: 'image/png',
+			});
 
-            if (!res.ok) throw new Error('Failed to remove background')
+			setData(index, { ...data, participantsImage: processedFile });
 
-            const blob = await res.blob()
+			toast.success('Foto berhasil diproses dan disimpan!');
+			onClose();
+		} catch (err) {
+			console.error(err);
+			toast.error('Gagal memproses penghapusan latar belakang (background).');
+		} finally {
+			setLoadingProcess(false);
+		}
+	};
 
-            // Convert hasil Remove BG jadi File
-            const processedFile = new File([blob], `removed_bg_${tempFile.name}`, { type: 'image/png' })
+	// 3. HANDLER COPY CAPTION
+	const handleCopyCaption = () => {
+		navigator.clipboard.writeText(CAPTION_TEXT);
+		setIsCopied(true);
+		toast.success('Caption Twibbon berhasil disalin!');
+		setTimeout(() => setIsCopied(false), 2000);
+	};
 
-            // Simpan ke State Form Utama
-            setData(index, { ...data, participantsImage: processedFile })
+	const triggerUpload = () => fileInputRef.current?.click();
 
-            toast.success('Foto berhasil diproses & disimpan!')
-            onClose() // Tutup modal karena flow selesai
-        } catch (err) {
-            console.error(err)
-            toast.error('Gagal memproses background removal.')
-        } finally {
-            setLoadingProcess(false)
-        }
-    }
+	const handleDownloadTwibbon = () => {
+		if (!twibbonResult) return;
+		const link = document.createElement('a');
+		link.href = twibbonResult;
+		link.download = `twibbon_result_${index + 1}.png`;
+		link.click();
+	};
 
-    const triggerUpload = () => {
-        fileInputRef.current?.click()
-    }
+	return (
+		<div
+			className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 font-plus-jakarta-sans backdrop-blur-sm"
+			onClick={isLoadingAny ? undefined : onClose}
+		>
+			<div
+				className="bg-white w-full max-w-4xl 2xl:max-w-5xl rounded-xl shadow-2xl p-6 relative max-h-[95vh] overflow-y-auto no-scrollbar flex flex-col gap-6"
+				onClick={(e) => e.stopPropagation()}
+			>
+				{/* --- CUSTOM OVERLAY LOADER --- */}
+				{isLoadingAny && <Loader show />}
 
-    const handleDownloadTwibbon = () => {
-        if (!twibbonResult) return
-        const link = document.createElement('a')
-        link.href = twibbonResult
-        link.download = `twibbon_result_${index + 1}.png`
-        link.click()
-    }
+				{/* Header */}
+				<div className="flex justify-between items-center border-b pb-4">
+					<h2 className="text-2xl font-bold text-gray-900">
+						Unggah Foto & Pratinjau Twibbon
+					</h2>
+					<button
+						onClick={onClose}
+						disabled={isLoadingAny}
+						className="text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
+					>
+						<X className="w-6 h-6" />
+					</button>
+				</div>
 
-    return (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 font-plus-jakarta-sans" onClick={onClose}>
-            <div
-                className="bg-white w-full max-w-4xl 2xl:max-w-5xl rounded-xl shadow-xl p-6 relative max-h-[95vh] overflow-y-auto no-scrollbar"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <button onClick={onClose} className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-                    <X />
-                </button>
+				{/* Content Area */}
+				<div className="flex flex-col gap-6">
+					{/* Image Processing Section */}
+					<div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10">
+						{/* KIRI: Upload */}
+						<div className="flex flex-col gap-2 w-full max-w-sm">
+							<label className="text-sm font-semibold text-gray-700 ml-1">
+								1. Pilih Foto Peserta
+							</label>
+							<label
+								onClick={isLoadingAny ? undefined : triggerUpload}
+								className={`cursor-pointer group flex flex-col items-center justify-center aspect-square w-full border-2 border-dashed rounded-xl transition-all duration-300 relative overflow-hidden bg-gray-50
+                                ${
+																	preview
+																		? 'border-yellow-400 bg-yellow-50/30'
+																		: 'border-gray-300 hover:border-yellow-400 hover:bg-yellow-50'
+																}`}
+							>
+								{preview ? (
+									<Image
+										src={preview}
+										fill
+										alt="Original Preview"
+										className="object-contain p-2"
+									/>
+								) : (
+									<div className="flex flex-col items-center text-gray-400 group-hover:text-yellow-600 transition-colors">
+										<div className="p-4 bg-white rounded-full shadow-sm mb-3 group-hover:scale-110 transition-transform">
+											<Image_Preview className="w-8 h-8" />
+										</div>
+										<span className="text-sm font-medium">
+											Klik untuk upload foto
+										</span>
+										<span className="text-xs text-gray-400 mt-1">
+											Jpg, Png, Webp (Max 5MB)
+										</span>
+									</div>
+								)}
+							</label>
+						</div>
 
-                <h2 className="text-2xl font-bold mb-6">Upload & Preview Twibbon</h2>
+						<ArrowRight className="hidden lg:block w-8 h-8 text-gray-300" />
 
-                <div className="flex flex-col gap-4 items-center">
-                    <div className="flex flex-wrap justify-between items-center gap-3 w-full">
-                        {/* KIRI: Upload & Preview Gambar Asli */}
-                        <label
-                            onClick={triggerUpload}
-                            className="cursor-pointer flex flex-col items-center justify-center aspect-square w-full max-w-[330px] md:max-w-[350px] 2xl:max-w-[400px] border-2 border-dashed border-gray-400 rounded-lg mx-auto hover:bg-gray-50 transition-colors"
-                        >
-                            {preview ? (
-                                <Image src={preview} width={400} height={400} alt="Original Preview" className="object-contain w-full h-full rounded-lg" />
-                            ) : (
-                                <>
-                                    <Image_Preview color="#dedede" className="w-20 h-20" />
-                                    <span className="text-sm text-gray-600 mt-2">Click to select image</span>
-                                </>
-                            )}
-                        </label>
+						{/* KANAN: Result */}
+						<div className="flex flex-col gap-2 w-full max-w-sm">
+							<label className="text-sm font-semibold text-gray-700 ml-1">
+								2. Hasil Preview Twibbon
+							</label>
+							<div className="flex flex-col items-center justify-center aspect-square w-full border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 relative overflow-hidden">
+								{twibbonResult ? (
+									<Image
+										src={twibbonResult}
+										fill
+										alt="Twibbon Result"
+										className="object-contain p-2"
+									/>
+								) : (
+									<div className="text-center p-6 text-gray-400">
+										<FileImage className="w-12 h-12 mx-auto mb-3 opacity-50" />
+										<span className="text-sm">
+											Preview akan muncul otomatis
+											<br />
+											setelah foto dipilih
+										</span>
+									</div>
+								)}
+							</div>
+						</div>
+					</div>
 
-                        <ArrowRight color="gray" className="hidden lg:block w-8 h-8" />
+					<div className="mt-4 relative group">
+						{/* Decorative Background Blob (Subtle) */}
+						<div className="absolute -top-4 -right-4 w-24 h-24 bg-yellow-100 rounded-full blur-2xl opacity-50 pointer-events-none"></div>
 
-                        {/* KANAN: Preview Twibbon (Auto Generated) */}
-                        <div className="flex flex-col items-center justify-center aspect-square w-full max-w-[330px] md:max-w-[350px] 2xl:max-w-[400px] border-2 border-dashed border-gray-400 rounded-lg mx-auto relative bg-gray-50">
-                            {loadingTwibbon && (
-                                <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10 rounded-lg backdrop-blur-sm">
-                                    <div className="flex flex-col items-center animate-pulse">
-                                        <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-3"></div>
-                                        <span className="text-gray-700 font-semibold">Generating Twibbon...</span>
-                                    </div>
-                                </div>
-                            )}
+						<div className="relative border-2 border-dashed border-gray-300 rounded-2xl bg-white/50 p-1 sm:p-2 transition-all hover:border-gray-400 hover:bg-white">
+							{/* Header Bar */}
+							<div className="flex justify-between items-center px-3 py-2 border-b border-dashed border-gray-200 mb-1">
+								<div className="flex items-center gap-2">
+									<div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+									<span className="font-fira-code text-xs sm:text-sm font-bold text-gray-800 tracking-tight">
+										CAPTION_TWIBBON.TXT
+									</span>
+								</div>
 
-                            {twibbonResult ? (
-                                <Image src={twibbonResult} width={400} height={400} alt="Twibbon Result" className="object-contain w-full h-full rounded-lg" />
-                            ) : (
-                                <div className="text-center p-4">
-                                    <FileImage className="w-16 h-16 text-gray-300 mx-auto mb-2" />
-                                    <span className="text-sm text-gray-400">Twibbon preview will appear here</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+								{/* Copy Button */}
+								<button
+									onClick={handleCopyCaption}
+									className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-300 transform active:scale-95
+                                    ${
+																			isCopied
+																				? 'bg-green-500 text-white shadow-green-200 shadow-lg ring-2 ring-green-100'
+																				: 'bg-black text-white hover:bg-gray-800 shadow-lg shadow-gray-200'
+																		}`}
+								>
+									{isCopied ? (
+										<>
+											<Check className="w-3.5 h-3.5" /> COPIED!
+										</>
+									) : (
+										<>
+											<Copy className="w-3.5 h-3.5" /> COPY TEXT
+										</>
+									)}
+								</button>
+							</div>
 
-                    <div className="flex w-full flex-wrap justify-between items-center gap-3 mt-6 border-t pt-4">
-                        <input type="file" accept="image/png, image/jpeg, image/webp" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
+							{/* Text Area (Monospace Look) */}
+							<div className="relative p-2">
+								<textarea
+									readOnly
+									value={CAPTION_TEXT}
+									className="w-full h-32 sm:h-40 bg-transparent text-xs sm:text-sm text-gray-600 font-mono leading-relaxed resize-none focus:outline-none p-2 selection:bg-yellow-200 selection:text-black"
+									spellCheck={false}
+								/>
 
-                        {/* Tombol Confirm: Trigger Remove BG & Save */}
-                        <button
-                            onClick={handleConfirmAndSave}
-                            disabled={loadingProcess || !tempFile}
-                            className="py-3 px-7 text-xs sm:text-sm bg-yellow-300 font-semibold rounded flex items-center justify-center gap-2 cursor-pointer hover:bg-amber-300 transition-colors w-full sm:w-fit disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-                        >
-                            {loadingProcess ? 'Processing Remove BG...' : 'Confirm Upload Picture'}
-                            <FileImage className="w-4 h-4 sm:w-5 sm:h-5" />
-                        </button>
+								{/* Overlay Gradient untuk indikasi scroll jika teks panjang */}
+								<div className="absolute bottom-0 left-0 right-0 h-8 bg-linear-to-t from-white to-transparent pointer-events-none"></div>
+							</div>
+						</div>
 
-                        {/* Tombol Download: Hanya Download Twibbon */}
-                        <button
-                            disabled={!twibbonResult || loadingTwibbon}
-                            onClick={handleDownloadTwibbon}
-                            className="py-3 px-7 text-xs sm:text-sm bg-white border border-yellow-300 text-yellow-600 font-semibold rounded flex items-center justify-center gap-2 disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-yellow-50 transition-colors w-full sm:w-fit shadow-sm"
-                        >
-                            Download Twibbon <FaCloudDownloadAlt className="w-4 h-4 sm:w-5 sm:h-5" />
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
+						{/* Warning / Reminder Tag */}
+						<div className="flex items-start gap-2 mt-3 ml-2">
+							<div className="min-w-1 h-4 bg-yellow-400 rounded-full mt-0.5"></div>
+							<p className="text-[11px] sm:text-xs text-gray-500 font-medium">
+								<span className="text-red-500 font-bold">PENTING:</span> Jangan
+								lupa ganti bagian
+								<span className="bg-yellow-100 px-1 mx-1 rounded text-gray-800 border border-yellow-200 font-mono">
+									[Nama]
+								</span>
+								dan
+								<span className="bg-yellow-100 px-1 mx-1 rounded text-gray-800 border border-yellow-200 font-mono">
+									[Instansi]
+								</span>
+								sebelum posting ya! 🚀
+							</p>
+						</div>
+					</div>
+
+					{/* Action Buttons */}
+					<div className="flex flex-wrap gap-3 justify-center sm:justify-end border-t pt-6">
+						<input
+							type="file"
+							accept="image/png, image/jpeg, image/webp"
+							ref={fileInputRef}
+							onChange={handleFileChange}
+							className="hidden"
+						/>
+
+						{/* Tombol Confirm Utama */}
+						<button
+							onClick={handleConfirmAndSave}
+							disabled={isLoadingAny || !tempFile}
+							className="order-1 sm:order-2 flex-1 sm:flex-none py-3 px-6 bg-[#FBFF00] hover:bg-yellow-400 text-black font-bold rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none min-w-[200px]"
+						>
+							{loadingProcess ? 'Menyimpan...' : 'Simpan Foto ke Form'}
+							<Check className="w-5 h-5" />
+						</button>
+
+						{/* Tombol Download Sekunder */}
+						<button
+							disabled={!twibbonResult || isLoadingAny}
+							onClick={handleDownloadTwibbon}
+							className="order-2 sm:order-1 flex-1 sm:flex-none py-3 px-6 bg-white border-2 border-gray-200 text-gray-600 font-semibold rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 hover:border-gray-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							Unduh Twibbon
+							<FaCloudDownloadAlt className="w-4 h-4" />
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 }
