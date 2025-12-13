@@ -118,7 +118,7 @@ function TeamList() {
                       onChange={(e) => handlePaymentChange(e.target.value)}
                       className="px-4 outline-none"
                     >
-                      <option value="all">Payment</option>
+                      <option value="all">Status</option>
                       <option value="verified">Verified</option>
                       <option value="pending">Pending</option>
                       <option value="rejected">Rejected</option>
@@ -130,12 +130,12 @@ function TeamList() {
                       onChange={(e) => handleStatusChange(e.target.value)}
                       className="px-4 outline-none"
                     >
-                      <option value="all">Status</option>
+                      <option value="all">Attendance</option>
                       <option value="present">Present</option>
                       <option value="absent">Absent</option>
                     </select>
                   </th>
-                  <th className="px-4 py-5 text-center">Action</th>
+                  {/* <th className="px-4 py-5 text-center">Action</th> */}
                 </tr>
               </thead>
 
@@ -176,11 +176,11 @@ function TeamList() {
                       )}
                     </td>
 
-                    <td className="px-4 py-3 text-center flex gap-4 justify-center">
+                    {/* <td className="px-4 py-3 text-center flex gap-4 justify-center">
                       <Eye className="text-green-600 hover:text-green-800 w-5" />
                       <Pencil className="text-blue-600 hover:text-blue-800 w-5" />
                       <Trash2 className="text-red-600 hover:text-red-800 w-5" />
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>

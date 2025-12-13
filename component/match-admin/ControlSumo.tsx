@@ -7,7 +7,7 @@ import { TimelineAction } from "@/lib/types/type";
 import MatchAction from "./MatchAction";
 import { useRouter } from "next/navigation";
 
-function ControlSoccer({ matchId }: { matchId: string }) {
+function ControlSumo({ matchId }: { matchId: string }) {
   const [startMatch, setStartMatch] = useState(false);
   const [showModalFinish, setShowModalFinish] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -15,9 +15,11 @@ function ControlSoccer({ matchId }: { matchId: string }) {
   const [awayScore, setAwayScore] = useState(0);
   const [timeline, setTimeline] = useState<TimelineAction[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [roundNumber, setRoundNumber] = useState(1); // ronde ke berapa
+  const [homeRounds, setHomeRounds] = useState(0); // menang berapa ronde
+  const [awayRounds, setAwayRounds] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(180);
   const router = useRouter();
-  const [round, setRound] = useState<1 | 2>(1);
 
   const formatTime = (sec: number) => {
     const m = Math.floor(sec / 60)
@@ -37,7 +39,7 @@ function ControlSoccer({ matchId }: { matchId: string }) {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timerRef.current!);
-          // setStartMatch(false);
+          setStartMatch(false);
           return 0;
         }
         return prev - 1;
@@ -48,7 +50,7 @@ function ControlSoccer({ matchId }: { matchId: string }) {
   const handleScoreAction = (actionName: string, actionType: string, team: "home" | "away") => {
     const actionTime = formatTime(secondsLeft);
     const newAction: TimelineAction = {
-      name: actionName,
+      name: actionName + " R" + roundNumber,
       team: team,
       time: actionTime,
       type: actionType as TimelineAction["type"],
@@ -59,9 +61,20 @@ function ControlSoccer({ matchId }: { matchId: string }) {
     if (actionType === "point") {
       if (team === "home") {
         setHomeScore((prev) => prev + 1);
+        setHomeRounds((prev) => prev + 1);
       } else {
         setAwayScore((prev) => prev + 1);
+        setAwayRounds((prev) => prev + 1);
       }
+
+      // Stop timer ronde ini
+      if (timerRef.current) clearInterval(timerRef.current);
+
+      setRoundNumber((prev) => prev + 1);
+      setSecondsLeft(180);
+      setStartMatch(false);
+
+      return;
     }
   };
 
@@ -71,32 +84,20 @@ function ControlSoccer({ matchId }: { matchId: string }) {
 
   const confirmFinish = () => {
     setShowModalFinish(false);
-
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
-
     setStartMatch(false);
-    setIsPaused(false);
-
-    if (round === 1) {
-      // 🔥 Selesai Babak 1 → lanjut Babak 2
-      setRound(2);
-      setSecondsLeft(180);
-
-      // optional: simpan timeline babak 1 ke backend di sini
-      console.log("End of Round 1", timeline);
-    } else {
-      // 🔥 Selesai Babak 2 → match selesai
-      console.log("End of Match", timeline);
-
-      setRound(1);
-      setSecondsLeft(180);
-      setHomeScore(0);
-      setAwayScore(0);
-      setTimeline([]);
-    }
+    setSecondsLeft(180);
+    console.log(timeline);
+    setHomeScore(0);
+    setAwayScore(0);
+    setRoundNumber(1);
+    setHomeRounds(0);
+    setAwayRounds(0);
+    setTimeline([]);
   };
+
   const handlePause = () => {
     if (!startMatch) return;
 
@@ -124,23 +125,30 @@ function ControlSoccer({ matchId }: { matchId: string }) {
       <HeaderDashboard title="Match Control" name="Admin" />
       <main className="w-full p-4 md:p-6 mb-20 flex flex-col items-center">
         <div className="w-full py-6 px-3 flex-col items-center justify-between rounded-md bg-white shadow-[0_-2px_1px_rgba(0,0,0,0.05),0_4px_9px_rgba(0,0,0,0.1)] lg:bg-transparent lg:shadow-none font-plus-jakarta-sans">
-          <p className="mb-6 text-gray-700 font-medium tracking-wide text-center block">GROUP B - MATCH 2 - SOCCER BOT</p>
+          <p className="mb-6 text-gray-700 font-medium tracking-wide text-center block">GROUP B - MATCH 2 - SUMMO BOT</p>
 
           <div className="w-full flex lg:flex-col items-center justify-between">
             <div className="flex flex-col gap-6 lg:gap-0 lg:flex-row items-start justify-center w-full lg:max-w-6x md:px-3">
               {/* Home Team */}
               <div className="w-full lg:w-auto flex items-center justify-between">
-                <div className="flex flex-row-reverse lg:flex-row items-center gap-4 justify-end col-span-2">
-                  <div className="flex flex-col lg:text-right">
-                    <h1 className="text-xl font-bold line-clamp-1">Nee GUZZ</h1>
-                    <p className="text-sm text-gray-600 line-clamp-1">Universitas Digidaw</p>
+                <div className="flex flex-col items-start lg:items-end">
+                  <div className="flex flex-row-reverse lg:flex-row items-center gap-4 justify-end col-span-2">
+                    <div className="flex flex-col lg:text-right">
+                      <h1 className="text-xl font-bold line-clamp-1">Nee GUZZ</h1>
+                      <p className="text-sm text-gray-600 line-clamp-1">Universitas Digidaw</p>
+                    </div>
+                    <div className="bg-logo-team w-[60px] h-[60px] min-w-[60px] min-h-[60px] sm:w-[70px] sm:h-[70px] flex items-center justify-center">
+                      <Image src="/logo-only.svg" alt="logo" height={30} width={30} className="w-auto h-auto p-2" />
+                    </div>
+                    <p className="text-3xl font-bold bg-black text-white h-16 w-[70px] hidden lg:flex items-center justify-center">
+                      {homeScore}
+                    </p>
                   </div>
-                  <div className="bg-logo-team w-[60px] h-[60px] min-w-[60px] min-h-[60px] sm:w-[70px] sm:h-[70px] flex items-center justify-center">
-                    <Image src="/logo-only.svg" alt="logo" height={30} width={30} className="w-auto h-auto p-2" />
+
+                  <div className="mt-2 flex gap-2 sm:gap-3 lg:flex-row-reverse">
+                    <span className={`w-7 h-2 ${homeRounds >= 1 ? "bg-[#f9fd0b]" : "bg-gray-300"}`}></span>
+                    <span className={`w-7 h-2 ${homeRounds >= 2 ? "bg-[#f9fd0b]" : "bg-gray-300"}`}></span>
                   </div>
-                  <p className="text-3xl font-bold bg-black text-white h-16 w-[70px] hidden lg:flex items-center justify-center">
-                    {homeScore}
-                  </p>
                 </div>
                 <div className="font-plus-jakarta-sans text-2xl sm:text-3xl block lg:hidden">
                   <p className=" font-bold bg-black text-white w-16 h-16 sm:w-[70px] flex items-center justify-center">
@@ -155,25 +163,31 @@ function ControlSoccer({ matchId }: { matchId: string }) {
                 </div>
               </div>
               <div className="w-full lg:w-auto flex items-center justify-between">
-                <div className="flex items-center gap-4 justify-start col-span-2 ">
-                  <p className="text-3xl font-bold bg-black text-white h-16 w-[70px] hidden lg:flex items-center justify-center">
-                    {awayScore}
-                  </p>
+                <div className="flex flex-col items-start">
+                  <div className="flex items-center gap-4 justify-start col-span-2 ">
+                    <p className="text-3xl font-bold bg-black text-white h-16 w-[70px] hidden lg:flex items-center justify-center">
+                      {awayScore}
+                    </p>
 
-                  <div className="bg-logo-team w-[60px] h-[60px] min-w-[60px] min-h-[60px] sm:w-[70px] sm:h-[70px]  flex items-center justify-center">
-                    <Image src="/logo-only.svg" alt="logo" height={30} width={30} className="w-auto h-auto p-2" />
+                    <div className="bg-logo-team w-[60px] h-[60px] min-w-[60px] min-h-[60px] sm:w-[70px] sm:h-[70px]  flex items-center justify-center">
+                      <Image src="/logo-only.svg" alt="logo" height={30} width={30} className="w-auto h-auto p-2" />
+                    </div>
+
+                    <div className="flex flex-col text-left">
+                      <h1 className="text-xl font-bold line-clamp-1">Mahasigma</h1>
+                      <p className="text-sm text-gray-600 line-clamp-1">Universitas Digidaw</p>
+                    </div>
                   </div>
-
-                  <div className="flex flex-col text-left">
-                    <h1 className="text-xl font-bold line-clamp-1">Mahasigma</h1>
-                    <p className="text-sm text-gray-600 line-clamp-1">Universitas Digidaw</p>
+                  <div className="mt-2 flex gap-2 sm:gap-3 items-start">
+                    <span className={`w-7 h-2 ${awayRounds >= 1 ? "bg-[#f9fd0b]" : "bg-gray-300"}`}></span>
+                    <span className={`w-7 h-2 ${awayRounds >= 2 ? "bg-[#f9fd0b]" : "bg-gray-300"}`}></span>
                   </div>
                 </div>
-              </div>
-              <div className="font-plus-jakarta-sans text-2xl sm:text-3xl block lg:hidden">
-                <p className=" font-bold bg-black text-white w-16 h-16 sm:w-[70px] flex items-center justify-center">
-                  {awayScore}
-                </p>
+                <div className="font-plus-jakarta-sans text-2xl sm:text-3xl block lg:hidden">
+                  <p className=" font-bold bg-black text-white w-16 h-16 sm:w-[70px] flex items-center justify-center">
+                    {awayScore}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -186,8 +200,8 @@ function ControlSoccer({ matchId }: { matchId: string }) {
         <MatchAction startMatch={startMatch} handleScoreAction={handleScoreAction} timeline={timeline} />
         <div className="w-full flex mt-8 justify-between gap-4 max-w-6xl">
           <button
-            disabled={startMatch}
-            onClick={() => router.push("admin/match")}
+            disabled={startMatch && homeRounds < 2 && awayRounds < 2}
+            onClick={() => router.push("/admin/match")}
             className="px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow-md active:scale-95 bg-yellow-300 hover:bg-yellow-400 text-black disabled:bg-gray-400 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
           >
             <ArrowLeftIcon size={18} />
@@ -196,8 +210,8 @@ function ControlSoccer({ matchId }: { matchId: string }) {
           <div className="flex gap-4">
             <button
               onClick={confirmPlay}
-              disabled={startMatch}
-              className={`px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow-md active:scale-95 bg-green-500 hover:bg-green-600 text-white cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100`}
+              disabled={startMatch || homeRounds >= 2 || awayRounds >= 2}
+              className={`px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow-md active:scale-95 bg-green-500 hover:bg-green-600 text-white disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100`}
             >
               <Play size={18} />
               Start
@@ -206,26 +220,19 @@ function ControlSoccer({ matchId }: { matchId: string }) {
             <button
               disabled={!startMatch}
               onClick={handlePause}
-              className="px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow-md active:scale-95 bg-yellow-500 hover:bg-yellow-600 text-white cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
+              className="px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow-md active:scale-95 bg-yellow-500 hover:bg-yellow-600 text-white disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
             >
-              {isPaused ? (
-                <>
-                  <Play size={18} /> <p>Continue</p>
-                </>
-              ) : (
-                <>
-                  <Pause size={18} /> <p>Pause</p>
-                </>
-              )}
+              <Pause size={18} />
+              {isPaused ? "Continue" : "Pause"}
             </button>
 
             <button
               onClick={handleFinish}
-              disabled={!startMatch}
-              className="px-4 py-2 rounded-lg font-semibold flex items-center gap-2 border shadow-md active:scale-95 bg-red-500 hover:bg-red-600 text-white disabled:bg-gray-400"
+              disabled={roundNumber <= 3}
+              className="px-4 py-2 rounded-lg font-semibold flex items-center gap-2 border shadow-md active:scale-95 bg-red-500 hover:bg-red-600 text-white disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
             >
               <FlagTriangleRightIcon size={18} />
-              {round === 1 ? "Finish Round 1" : "Finish Round 2"}
+              Finish
             </button>
           </div>
         </div>
@@ -243,4 +250,4 @@ function ControlSoccer({ matchId }: { matchId: string }) {
   );
 }
 
-export default ControlSoccer;
+export default ControlSumo;

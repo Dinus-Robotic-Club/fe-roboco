@@ -4,6 +4,7 @@ import ControlSoccer from "@/component/match-admin/ControlSoccer";
 import { ICardMatch } from "@/component/ui/CardMatch";
 import dummyData from "@/lib/dumy.json";
 import { useParams, useRouter } from "next/navigation";
+import ControlSumo from "@/component/match-admin/ControlSumo";
 
 function MatchControl() {
   const { slug } = useParams();
@@ -22,8 +23,8 @@ function MatchControl() {
 
   if (matchType == "SOCCER BOT") {
     return <ControlSoccer matchId={slug as string} />;
-  } else if (matchType == "SUMO BOT") {
-    return null;
+  } else if (matchType == "SUMMO BOT") {
+    return <ControlSumo matchId={slug as string} />;
   }
 }
 
