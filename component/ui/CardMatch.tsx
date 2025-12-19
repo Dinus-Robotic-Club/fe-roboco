@@ -1,104 +1,160 @@
-import Image from "next/image";
+'use client'
 
-export type statusType = "FINISHED" | "PENDING" | "SCHEDULE" | "ONGOING" | "CANCELLED";
-export interface ICardMatch {
-  uid: string;
-  bestOf: number;
-  scoreA: number;
-  scoreB: number;
-  status: statusType;
-  roundLabel: string;
-  category: string;
-  teamA: ITeamMatch;
-  teamB: ITeamMatch;
-  group: IGroupMatch;
-}
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { ChevronDown } from 'lucide-react'
+import ValidationModal from '../match-admin/validationModal'
+import { MatchDetailContent } from '../match/matchDetail'
 
-export interface ITeamMatch {
-  name: string;
-  logo: string;
-  community: ICommunityMatch;
-}
+// --- PASTIKAN INTERFACE INI SESUAI ---
+// (Bisa dipindah ke file types.d.ts)
+// ... (Interface ICardMatch, IAuthUser, dll)
 
-export interface ICommunityMatch {
-  name: string;
-}
-export interface IGroupMatch {
-  name: string;
-}
+// --- KOMPONEN DETAIL MATCH (Embedded untuk kemudahan) ---
+// Kamu bisa memisahkan ini ke file sendiri: components/match/MatchDetailContent.tsx
 
-export interface ICardMatchResp {
-  data: ICardMatch[];
-}
+export default function CardMatch({ data, user }: { data: ICardMatch; user: IAuthUser | null }) {
+  const route = useRouter()
+  const [showModalStart, setShowModalStart] = useState(false)
+  const [isDetailOpen, setIsDetailOpen] = useState(false) // State untuk dropdown
 
-export default function CardMatch({ data }: { data: ICardMatch }) {
+  const goToMatch = () => {
+    route.push(`/admin/match/${data.uid}`)
+  }
+
+  const isAdmin = user?.role === 'ADMIN'
+  const isLive = data?.status === 'ONGOING' || data?.status === 'LIVE'
+  const isFinished = data?.status === 'FINISHED'
+
+  // --- LOGIKA UTAMA KLIK ---
+  const handleCardClick = () => {
+    // 1. Jika Admin DAN Match belum selesai (Scheduled/Live) -> Buka Modal Admin
+    if (isAdmin && !isFinished) {
+      setShowModalStart(true)
+      return
+    }
+
+    // 2. Selain kondisi di atas (User biasa ATAU Admin & Finished) -> Toggle Detail
+    setIsDetailOpen((prev) => !prev)
+  }
+
   return (
-    <>
-      <div className="w-full py-6 px-3 flex-col items-center justify-between rounded-md bg-white shadow-[0_-2px_1px_rgba(0,0,0,0.05),0_4px_9px_rgba(0,0,0,0.1)] lg:bg-transparent lg:shadow-none">
-        <p className="mb-6 text-gray-700 font-medium tracking-wide text-center block lg:hidden">
-          {data?.roundLabel} | {data?.category}
-        </p>
-        <div className="w-full flex lg:flex-col items-center justify-between">
-          <div className="flex flex-col gap-6 lg:grid lg:grid-cols-5 items-start lg:items-center lg:w-full lg:max-w-6x md:px-3">
-            <div className="flex flex-row-reverse lg:flex-row items-center gap-4 justify-end col-span-2">
-              <div className="flex flex-col lg:text-right">
-                <h1 className="text-xl font-bold line-clamp-1">{data?.teamA.name}</h1>
-                <p className="text-sm text-gray-600 line-clamp-1">{data?.teamA.community.name}</p>
-              </div>
+    <div className="w-full transition-all duration-300">
+      <div
+        className={`
+          relative w-full max-w-7xl mx-auto rounded-xl border bg-white overflow-hidden transition-all duration-300 cursor-pointer group
+          ${isLive ? 'border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.15)]' : isDetailOpen ? 'border-slate-300 shadow-md' : 'border-slate-200 hover:border-slate-300 shadow-sm'}
+        `}>
+        {/* Klik wrapper hanya pada bagian header/body, bukan detailnya jika ingin menutup */}
+        <div onClick={handleCardClick}>
+          {/* --- LIVE PULSE BG --- */}
+          {isLive && <div className="absolute inset-0 bg-red-500/5 animate-pulse pointer-events-none z-0"></div>}
 
-              <div className="bg-logo-team w-[60px] h-[60px] min-w-[60px] min-h-[60px] sm:w-[70px] sm:h-[70px] flex items-center justify-center">
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_API_URL}${data?.teamA.logo}`}
-                  alt={data?.teamA.name as string}
-                  height={30}
-                  width={30}
-                  className="w-auto h-auto p-2"
-                />
-              </div>
-
-              <p className="text-3xl font-bold bg-black text-white h-16 w-[70px] hidden lg:flex items-center justify-center">
-                {data?.scoreA}
-              </p>
+          {/* --- HEADER: STATUS --- */}
+          <div
+            className={`
+            relative z-10 flex items-center justify-between px-4 py-2 border-b text-xs font-semibold tracking-wider uppercase transition-colors
+            ${isLive ? 'bg-red-50 border-red-100 text-red-600' : 'bg-slate-50 border-slate-100 text-slate-500'}
+            `}>
+            <div className="flex items-center gap-2">
+              {isLive ? (
+                <>
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
+                  </span>
+                  <span>SEDANG BERLANGSUNG</span>
+                </>
+              ) : isFinished ? (
+                <span>🏁 SELESAI</span>
+              ) : (
+                <span>YANG AKAN DATANG</span>
+              )}
             </div>
-
-            <div className="hidden lg:flex justify-center col-span-1">
-              <Image src="/logo-only.svg" alt="Center Logo" width={50} height={50} className="w-20" />
+            <div className="flex items-center gap-2 opacity-75">
+              <span>
+                {data?.category} • {data?.roundLabel}
+              </span>
             </div>
+          </div>
 
-            <div className="flex items-center gap-4 justify-start col-span-2 ">
-              <p className="text-3xl font-bold bg-black text-white h-16 w-[70px] hidden lg:flex items-center justify-center">
-                {data?.scoreB}
-              </p>
-
-              <div className="bg-logo-team w-[60px] h-[60px] min-w-[60px] min-h-[60px] sm:w-[70px] sm:h-[70px] flex items-center justify-center">
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_API_URL}${data?.teamB.logo}`}
-                  alt={data?.teamB.name as string}
-                  height={30}
-                  width={30}
-                  className="w-auto h-auto p-2"
-                />
+          {/* --- BODY CONTENT --- */}
+          <div className="relative z-10 p-4 lg:p-6">
+            <div className="flex flex-col lg:flex-row items-center justify-between lg:gap-8">
+              {/* TEAM A */}
+              <div className="flex items-center justify-start w-full lg:w-1/3 gap-3 lg:gap-4 order-1">
+                <div className="flex lg:flex-row-reverse items-center w-full gap-3 lg:gap-4">
+                  <div className="relative w-12 h-12 lg:w-16 lg:h-16 shrink-0">
+                    <Image src={`${process.env.NEXT_PUBLIC_API_URL}${data?.teamA.logo}`} alt={data?.teamA.name} fill className="object-contain drop-shadow-sm" unoptimized />
+                  </div>
+                  <div className="flex flex-col lg:items-end grow">
+                    <h3 className="font-bold text-slate-800 text-lg lg:text-xl leading-tight line-clamp-1">{data?.teamA.name}</h3>
+                    <p className="text-slate-500 text-xs lg:text-sm font-medium">{data?.teamA.community?.name}</p>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex flex-col text-left">
-                <h1 className="text-xl font-bold line-clamp-1">{data?.teamB.name}</h1>
-                <p className="text-sm text-gray-600 line-clamp-1">{data?.teamB.community.name}</p>
+              {/* SCOREBOARD */}
+              <div className="flex flex-col items-center justify-center gap-2 w-full lg:w-auto py-4 lg:py-0 order-2">
+                <div
+                  className={`
+                            flex items-center justify-center px-4 py-2 rounded-lg min-w-[100px] lg:min-w-[140px] gap-3
+                            ${isLive ? 'bg-red-600 text-white shadow-lg shadow-red-500/30' : 'bg-slate-100 text-slate-800'}
+                        `}>
+                  <span className="text-3xl lg:text-4xl font-bold font-mono tracking-tighter tabular-nums">{data?.scoreA}</span>
+                  <span className={`text-sm font-light opacity-60 ${isLive ? 'text-red-100' : 'text-slate-400'}`}>-</span>
+                  <span className="text-3xl lg:text-4xl font-bold font-mono tracking-tighter tabular-nums">{data?.scoreB}</span>
+                </div>
+
+                {/* Indikator "Click to expand" untuk User atau Admin Finished */}
+                {(!isAdmin || isFinished) && (
+                  <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1 group-hover:text-slate-600 transition-colors">
+                    Details
+                    <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${isDetailOpen ? 'rotate-180' : ''}`} />
+                  </div>
+                )}
+                {/* Indikator "Manage" untuk Admin Ongoing/Scheduled */}
+                {isAdmin && !isFinished && <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-blue-500 mt-1">Manage Match</div>}
+              </div>
+
+              {/* TEAM B */}
+              <div className="flex items-center justify-end w-full lg:w-1/3 gap-3 lg:gap-4 order-3">
+                <div className="flex flex-row-reverse lg:flex-row items-center w-full gap-3 lg:gap-4">
+                  <div className="flex flex-col items-start lg:items-start grow">
+                    <h3 className="font-bold text-slate-800 text-lg lg:text-xl leading-tight text-right lg:text-left line-clamp-1 w-full">{data?.teamB.name}</h3>
+                    <p className="text-slate-500 text-xs lg:text-sm font-medium w-full text-right lg:text-left">{data?.teamB.community?.name}</p>
+                  </div>
+                  <div className="relative w-12 h-12 lg:w-16 lg:h-16 shrink-0">
+                    <Image src={`${process.env.NEXT_PUBLIC_API_URL}${data?.teamB.logo}`} alt={data?.teamB.name} fill className="object-contain drop-shadow-sm" unoptimized />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <p className="mt-6 text-gray-700 font-medium  tracking-wider hidden lg:flex">
-            {data?.roundLabel} | {data?.category}
-          </p>
-          <div className="flex flex-col justify-between lg:hidden font-plus-jakarta-sans text-lg sm:text-2xl md:text-3xl gap-6 md:px-3">
-            <p className=" font-bold bg-black text-white h-[50px] w-[50px] md:h-16 md:w-[70px] flex items-center justify-center">
-              {data?.scoreA}
-            </p>
-            <p className=" font-bold bg-black text-white h-[50px] w-[50px] md:h-16 md:w-[70px] flex items-center justify-center">
-              {data?.scoreB}
-            </p>
+        </div>
+
+        {/* --- DROPDOWN DETAIL (CSS GRID ANIMATION) --- */}
+        <div
+          className={`
+            grid transition-all duration-300 ease-in-out
+            ${isDetailOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}
+          `}>
+          <div className="overflow-hidden">
+            <MatchDetailContent data={data} />
           </div>
         </div>
       </div>
-    </>
-  );
+
+      {showModalStart && (
+        <ValidationModal
+          setShowModalStart={setShowModalStart}
+          action={goToMatch}
+          title="Masuk ke Panel Admin?"
+          desc="Pertandingan ini belum selesai. Kamu akan diarahkan ke halaman kontrol admin."
+          confirm_text="Ya, Kelola Match"
+        />
+      )}
+    </div>
+  )
 }

@@ -7,8 +7,6 @@ export function useMatchPage() {
     return {
         onGoing: onGoing.data,
         history: history.data,
-
-        isLoading: onGoing.isLoading || history.isLoading,
     }
 }
 
@@ -19,7 +17,5 @@ export function useAllMatchPage() {
     return {
         onGoing: onGoing.data,
         history: history.data,
-
-        isLoading: onGoing.isLoading || history.isLoading,
     }
 }

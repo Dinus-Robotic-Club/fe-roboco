@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { LayoutGrid, Users, Settings as SettingsIcon, Trophy, Swords, Users2Icon } from 'lucide-react'
 import { TournamentSettings, TabItem, TabId, RegistrationStatus } from '@/lib/types/type'
 import DashboardHeader from '@/component/dashboard-admin/tournament/header'
@@ -14,6 +14,7 @@ import Loader from '@/component/ui/Global/loader'
 import { ITournamentData } from '@/lib/types/tournament'
 import { useUpdateStatus } from '@/hooks/mutations/teams-mutation'
 import { toast } from 'sonner'
+import TournamentMatchPage from '@/component/dashboard-admin/tournament/match'
 
 const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -23,17 +24,17 @@ export default function TournamentAdminDashboard() {
     const params = useParams()
     const slug = params.slug as string
 
-    const { data, isLoading, isError } = useDetailTournaments(slug)
+    return (
+        <Suspense fallback={<Loader show />}>
+            <DashboardContentWrapper key={slug} slug={slug} />
+        </Suspense>
+    )
+}
 
-    if (isLoading) {
-        return <Loader show />
-    }
+function DashboardContentWrapper({ slug }: { slug: string }) {
+    const { data } = useDetailTournaments(slug)
 
-    if (isError || !data?.data) {
-        return <div className="flex h-screen items-center justify-center text-rose-600 font-bold">Failed to load tournament data.</div>
-    }
-
-    return <DashboardContent initialData={data.data as ITournamentData} />
+    return <DashboardContent initialData={data?.data as ITournamentData} />
 }
 
 function DashboardContent({ initialData }: { initialData: ITournamentData }) {
@@ -57,7 +58,6 @@ function DashboardContent({ initialData }: { initialData: ITournamentData }) {
             registrations: prev.registrations.map((reg) => (reg.uid === uid ? { ...reg, status: newStatus } : reg)),
         }))
 
-        // 2. Kirim ke Hook (Dalam bentuk Object Wrapper)
         updateStatus({
             status: newStatus,
             uid: uid,
@@ -101,17 +101,18 @@ function DashboardContent({ initialData }: { initialData: ITournamentData }) {
 
                 {activeTab === 'settings' && <SettingsTab settings={settings} onUpdateSettings={setSettings} />}
 
-                {['brackets', 'matches'].includes(activeTab) && <EmptyState activeTab={activeTab} setActiveTab={setActiveTab} />}
+                {activeTab === 'matches' && <TournamentMatchPage data={tournamentData} />}
+
+                {['brackets'].includes(activeTab) && <EmptyState activeTab={activeTab} setActiveTab={setActiveTab} />}
             </main>
         </div>
     )
 }
 
-// Simple Empty State
 function EmptyState({ activeTab, setActiveTab }: { activeTab: string; setActiveTab: (id: TabId) => void }) {
     return (
         <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-gray-200 border-dashed animate-in fade-in zoom-in-95 duration-300 no-print">
-            <div className="w-20 h-20 bg-gradient-to-br from-[#FBFF00]/10 to-transparent rounded-full flex items-center justify-center mb-6 shadow-sm">
+            <div className="w-20 h-20 bg-linear-to-br from-[#FBFF00]/10 to-transparent rounded-full flex items-center justify-center mb-6 shadow-sm">
                 {activeTab === 'brackets' ? <Trophy className="w-10 h-10 text-slate-400" /> : <Swords className="w-10 h-10 text-slate-400" />}
             </div>
             <h3 className="text-xl font-bold text-slate-900 mb-2">Setup Required</h3>

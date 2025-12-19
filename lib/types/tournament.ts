@@ -109,10 +109,24 @@ export interface ITournamentData {
     updatedAt: string
     registrations: Registration[]
     settings: TournamentSettings
+    matches: Match[]
 }
 
-// --- API RESPONSE WRAPPER ---
-// Gunakan ini jika fetch langsung dari endpoint yg membungkus "data"
+export type MatchStatus = 'SCHEDULED' | 'ONGOING' | 'FINISHED'
+
+export interface Match {
+    uid: string
+    tournamentId: string
+    teamAId: string
+    teamBId: string
+    scoreA: number
+    scoreB: number
+    winnerId: string | null
+    status: MatchStatus
+    roundLabel: string
+    category: TeamCategory
+    updatedAt: string
+}
 
 export interface TournamentApiResponse {
     data: ITournamentData

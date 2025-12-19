@@ -20,9 +20,10 @@ interface IRequestResetPassword {
 }
 
 interface IAuthUser {
-    uidUser?: string
-    email?: string
-    name?: string
+    uidUser?: string | null
+    email?: string | null
+    name?: string | null
+    role?: string | null
 }
 
 type IAuthContext = {

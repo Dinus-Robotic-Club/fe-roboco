@@ -1,19 +1,19 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { getAllTournaments, getDetailTournament } from '@/lib/api/tournament'
 import { TournamentApiResponse } from '@/lib/types/tournament'
 
 export const useTournaments = () => {
-    return useQuery({
-        queryKey: ['tournaments'],
-        queryFn: getAllTournaments,
-    })
+  return useSuspenseQuery({
+    queryKey: ['tournaments'],
+    queryFn: getAllTournaments,
+  })
 }
 
 export const useDetailTournaments = (slug: string) => {
-    return useQuery<TournamentApiResponse, Error>({
-        queryKey: ['tournaments'],
-        queryFn: () => getDetailTournament(slug),
-    })
+  return useSuspenseQuery<TournamentApiResponse, Error>({
+    queryKey: ['tournaments', slug],
+    queryFn: () => getDetailTournament(slug),
+  })
 }

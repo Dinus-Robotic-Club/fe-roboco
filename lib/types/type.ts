@@ -180,3 +180,5 @@ export interface TimelineAction {
   type: "point" | "penalty" | "foul" | "yellow" | "red";
   player?: string;
 }
+
+

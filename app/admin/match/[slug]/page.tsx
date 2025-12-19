@@ -1,7 +1,6 @@
 "use client";
 import { useMemo } from "react";
 import ControlSoccer from "@/component/match-admin/ControlSoccer";
-import { ICardMatch } from "@/component/ui/CardMatch";
 import dummyData from "@/lib/dumy.json";
 import { useParams, useRouter } from "next/navigation";
 import ControlSumo from "@/component/match-admin/ControlSumo";
