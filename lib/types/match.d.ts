@@ -1,0 +1,68 @@
+type typeEvent = 'GOAL' | 'KNOCKOUT' | 'YELLOW_CARD' | 'RED_CARD' | 'PENALTY' | 'FOUL'
+
+type MatchListResponse = ICardMatch[]
+
+interface IMatch {
+  uid: string
+  tournamentId: string
+  teamAId: string
+  teamBId: string
+  scoreA: number
+  scoreB: number
+  winnerId: string | null
+  status: MatchStatus
+  roundLabel: string
+  category: TeamCategory
+  updatedAt: string
+}
+
+interface ICardMatch {
+  uid: string
+  tournamentId: string
+  groupId: string | null
+  bracketId: string | null
+  teamAId: string
+  teamBId: string
+  bestOf: number
+  scoreA: number
+  scoreB: number
+  nextMatchWinId: string | null
+  nextMatchLoseId: string | null
+  nextMatchWinSlotIsB: boolean
+  nextMatchLoseSlotIsB: boolean
+  winnerId: string | null
+  status: 'FINISHED' | 'LIVE' | 'UPCOMING' | 'ONGOING' | 'CANCELLED'
+  roundLabel: string
+  category: 'SOCCER' | 'SUMO'
+  createdAt: string
+  updatedAt: string
+  teamA: ITeam
+  teamB: ITeam
+  group: IGroup | null
+  events: IMatchEvent[]
+  score: IScore[]
+}
+
+interface IMatchEvent {
+  uid: string
+  matchId: string
+  teamId: string
+  roundId: string
+  groupTeamId: string
+  type: typeEvent
+  value: number
+  minute: number
+  timestamp: string
+}
+
+interface IScore {
+  golScore: number
+  knockout: boolean
+}
+
+interface IScoreUpdateBody {
+  teamId: string
+  type: string
+  value: number
+  minute: number
+}

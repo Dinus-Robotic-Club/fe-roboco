@@ -1,0 +1,101 @@
+import { useState, useMemo } from 'react'
+
+export function useParticipantsList(initialData: ITeam[], itemsPerPage = 10) {
+  const [statusFilter, setStatusFilter] = useState('all') // Filter Attendance
+  const [paymentFilter, setPaymentFilter] = useState('all') // Filter Payment
+  const [categoryFilter, setCategoryFilter] = useState('all') // Filter Category
+  const [searchQuery, setSearchQuery] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+
+  // --- Handlers ---
+  const handleStatusChange = (value: string) => {
+    setStatusFilter(value)
+    setCurrentPage(1)
+  }
+
+  const handlePaymentChange = (value: string) => {
+    setPaymentFilter(value)
+    setCurrentPage(1)
+  }
+
+  const handleCategoryChange = (value: string) => {
+    setCategoryFilter(value)
+    setCurrentPage(1)
+  }
+
+  const handleSearch = (value: string) => {
+    setSearchQuery(value)
+    setCurrentPage(1)
+  }
+
+  const filteredData = useMemo(() => {
+    if (!initialData) return []
+
+    return initialData.filter((team) => {
+      const searchLower = searchQuery.toLowerCase()
+      const matchTeamName = team.name.toLowerCase().includes(searchLower)
+      const matchParticipantName = team.participants.some((p) => p.name.toLowerCase().includes(searchLower))
+
+      const matchSearch = matchTeamName || matchParticipantName
+
+      const isPresent = team.registrations?.[0]?.attendeance?.isPresent
+      let matchStatus = true
+      if (statusFilter === 'present') matchStatus = isPresent === true
+      else if (statusFilter === 'absent') matchStatus = isPresent === false
+
+      let matchCategory = true
+      if (categoryFilter !== 'all') {
+        matchCategory = team.category.toLowerCase() === categoryFilter.toLowerCase()
+      }
+
+      const payStatus = team.registrations?.[0]?.status
+      let matchPayment = true
+      if (paymentFilter !== 'all') {
+        matchPayment = payStatus === paymentFilter
+      }
+
+      return matchStatus && matchCategory && matchPayment && matchSearch
+    })
+  }, [initialData, searchQuery, statusFilter, categoryFilter, paymentFilter])
+
+  // --- Pagination Logic ---
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage)
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem)
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1)
+  }
+
+  const goToPrevPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1)
+  }
+
+  return {
+    filters: {
+      status: statusFilter,
+      payment: paymentFilter,
+      category: categoryFilter,
+      search: searchQuery,
+    },
+    handlers: {
+      setStatus: handleStatusChange,
+      setPayment: handlePaymentChange,
+      setCategory: handleCategoryChange,
+      setSearch: handleSearch,
+      nextPage: goToNextPage,
+      prevPage: goToPrevPage,
+    },
+    pagination: {
+      currentPage,
+      totalPages,
+      itemsPerPage,
+      indexOfFirstItem,
+    },
+    data: {
+      filtered: filteredData,
+      paginated: currentItems,
+    },
+  }
+}

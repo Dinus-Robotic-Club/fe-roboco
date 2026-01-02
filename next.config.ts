@@ -1,0 +1,57 @@
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  reactStrictMode: true,
+  output: 'standalone',
+  allowedDevOrigins: ['http://localhost:3002', 'http://192.168.18.213:3002'],
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3002',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        port: '3002',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '192.168.18.213',
+        port: '3002',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'be-roboco-production.up.railway.app',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'backend-dnroboco.dinusrobotic.org',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dnroboco01.dinusrobotic.org',
+        pathname: '/be/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dnroboco-be.dinusrobotic.org',
+        pathname: '/uploads/**',
+      },
+    ],
+  },
+
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['lucide-react'],
+  },
+}
+
+export default nextConfig
