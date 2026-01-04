@@ -101,6 +101,8 @@ export interface IGenericRankTableProps<T> {
   data: T[]
   columns: IRankColumn<T>[]
   title?: string
+  onRowClick?: (item: T) => void
+  rowClassName?: string
   subtitle?: string
 }
 
@@ -185,6 +187,7 @@ export interface IFilterControlsProps {
   filters?: IFilterConfig[]
   action?: ReactNode
   className?: string
+  type?: 'user' | 'admin'
 }
 
 export interface IDownloadExcelProps<T> {
@@ -234,4 +237,46 @@ export interface IMatchActionProps {
   startMatch: boolean
   handleScoreAction: (type: ManualActionType, team: 'home' | 'away') => void
   timeline: ITimelineAction[]
+}
+
+export interface IParticipantRow {
+  // Info Member
+  participantId: string
+  participantName: string
+  participantRole: string
+  participantAvatar?: string // jika ada
+
+  // Info Tim (Parent)
+  teamId: string
+  teamName: string
+  teamCategory: string
+
+  // Info Status (Dari Registration Tim)
+  registrationStatus: string
+  attendanceStatus: boolean
+}
+
+export interface IMatchFormatConfig {
+  groupStage: number
+  upperBracket: number
+  lowerBracket: number
+  grandFinals: number
+}
+
+export interface IRoundDurationConfig {
+  soccer: number
+  sumo: number
+}
+
+export interface ITournamentConfig {
+  formats: IMatchFormatConfig
+  durations: IRoundDurationConfig
+}
+
+export interface IModalProps {
+  isOpen: boolean
+  onClose: () => void
+  data: IRegistrationData
+  onApprove: (id: string) => void
+  onReject: (id: string) => void
 }

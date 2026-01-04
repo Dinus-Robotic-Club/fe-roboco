@@ -7,14 +7,16 @@ import { FilterControls } from '../tools/filter'
 import { DownloadButton } from '../tools/download'
 import { participantExcelMapper, ParticipantsColumns } from '@/lib'
 import { GenericRankTable } from '@/components/ui/table'
+import { flattenParticipants } from '@/lib/function'
 
 export function ParticipantsList({ data }: { data: ITeam[] }) {
   const mounted = useMounted()
 
-  // Gunakan hook khusus Participants
-  const { filters, handlers, pagination, data: listData } = useParticipantsList(data)
+  const flatData = useMemo(() => flattenParticipants(data), [data])
 
-  // --- Dynamic Options Generator ---
+  // Gunakan hook khusus Participants
+  const { filters, handlers, pagination, data: listData } = useParticipantsList(flatData)
+
   const categoryOptions = useMemo(() => {
     return generateOptions(
       data,

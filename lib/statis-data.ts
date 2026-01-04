@@ -18,6 +18,17 @@ export const nav_home = createNav({
   ],
 })
 
+export const nav_tournament = [
+  { label: 'Overview', key: 'overview' },
+  { label: 'Participants', key: 'participants' },
+  { label: 'Teams', key: 'teams' },
+  { label: 'Config', key: 'config' },
+  { label: 'Bracket', key: 'bracket' },
+  { label: 'Group', key: 'group' },
+  { label: 'Match', key: 'match' },
+  { label: 'Users', key: 'user' },
+]
+
 export const nav_dashboard_main = createNav({
   left: [
     { title: 'Dashboard', href: '/dashboard' },
@@ -36,7 +47,7 @@ export const nav_admin = createNav({
     { title: 'Kehadiran', href: '/admin/pendaf/checking-ticket' },
   ],
   right: [
-    { title: 'Bracket', href: '#' },
+    { title: 'Tambah Peserta', href: '/admin/pendaf/register-team' },
     { title: 'Papan liga', href: '/leagueboard' },
     { title: 'Keluar', href: '/auth/login' },
   ],

@@ -6,15 +6,23 @@ type Props = {
   data: IParticipantsBody[]
   setData: (index: number, patch: Partial<IParticipantsBody>) => void
   errors?: Record<number, Partial<Record<keyof IParticipantsBody, string>>>
-  onOpenTwibbonModal: (index: number) => void
+  onOpenTwibbonModal?: (index: number) => void
+  // Menambahkan prop type
+  type?: 'user' | 'admin'
 }
 
-export default function FormRegistrationPlayer({ data, setData, errors = {}, onOpenTwibbonModal }: Props) {
+export default function FormRegistrationPlayer({
+  data,
+  setData,
+  errors = {},
+  onOpenTwibbonModal,
+  type = 'user', // Default value 'user' agar tidak merusak implementasi yang sudah ada
+}: Props) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-28 w-full max-w-294 px-3 md:px-6">
       {data.map((player, index) => (
         <div key={index} className="flex flex-col gap-6">
-          {/* NAME */}
+          {/* NAME - Muncul untuk User & Admin */}
           <Field label={`NAMA PEMAIN ${index + 1}`} error={errors[index]?.participantsName}>
             <input
               id={`participants-${index}-participantsName`}
@@ -26,6 +34,7 @@ export default function FormRegistrationPlayer({ data, setData, errors = {}, onO
             />
           </Field>
 
+          {/* ROLE - Muncul untuk User & Admin */}
           <Field label={`PERAN PEMAIN ${index + 1}`} error={errors[index]?.participantsRoleInTeam}>
             <select
               id={`participants-${index}-participantsRoleInTeam`}
@@ -47,32 +56,39 @@ export default function FormRegistrationPlayer({ data, setData, errors = {}, onO
             </select>
           </Field>
 
-          <Field label={`KARTU IDENTITAS ${index + 1} (KTP/KTM/KTS)`} error={errors[index]?.participantsIdentityCardImage}>
-            <input
-              id={`participants-${index}-participantsIdentityCardImage`}
-              type="file"
-              accept=".jpg, .png, .jpeg"
-              className={`p-4 bg-white rounded-xs shadow-md border-2 ${errors[index]?.participantsIdentityCardImage ? 'border-red-500' : 'border-gray-200'}`}
-              onChange={(e) => {
-                const file = (e.target as HTMLInputElement).files?.[0]
-                if (file) setData(index, { participantsIdentityCardImage: file })
-              }}
-            />
-          </Field>
+          {/* KARTU IDENTITAS - Hanya Muncul untuk User */}
+          {type === 'user' && (
+            <Field label={`KARTU IDENTITAS ${index + 1} (KTP/KTM/KTS)`} error={errors[index]?.participantsIdentityCardImage}>
+              <input
+                id={`participants-${index}-participantsIdentityCardImage`}
+                type="file"
+                accept=".jpg, .png, .jpeg"
+                className={`p-4 bg-white rounded-xs shadow-md border-2 ${errors[index]?.participantsIdentityCardImage ? 'border-red-500' : 'border-gray-200'}`}
+                onChange={(e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0]
+                  if (file) setData(index, { participantsIdentityCardImage: file })
+                }}
+              />
+            </Field>
+          )}
 
-          <Field label={`FOTO & TWIBBON PEMAIN ${index + 1}`} error={errors[index]?.participantsImage}>
-            <button
-              id={`participants-${index}-participantsImage`}
-              type="button"
-              onClick={() => onOpenTwibbonModal(index)}
-              className={`p-4 bg-white rounded-xs shadow-md border-2 flex justify-between items-center cursor-pointer active:bg-gray-100 w-full transition-colors ${
-                errors[index]?.participantsImage ? 'border-red-500 text-red-500' : data[index]?.participantsImage ? 'border-green-500/50 text-green-700 bg-green-50' : 'border-gray-200 text-gray-500'
-              }`}>
-              <p className="truncate max-w-[85%] font-medium">{data[index]?.participantsImage instanceof File ? data[index].participantsImage.name : 'Atur Foto dan Twibbon'}</p>
-              {data[index]?.participantsImage ? <SquareCheckBig className="w-6 h-6" /> : <Square className="w-6 h-6" />}
-            </button>
-          </Field>
+          {/* FOTO & TWIBBON - Hanya Muncul untuk User */}
+          {type === 'user' && (
+            <Field label={`FOTO & TWIBBON PEMAIN ${index + 1}`} error={errors[index]?.participantsImage}>
+              <button
+                id={`participants-${index}-participantsImage`}
+                type="button"
+                onClick={() => onOpenTwibbonModal && onOpenTwibbonModal(index)}
+                className={`p-4 bg-white rounded-xs shadow-md border-2 flex justify-between items-center cursor-pointer active:bg-gray-100 w-full transition-colors ${
+                  errors[index]?.participantsImage ? 'border-red-500 text-red-500' : data[index]?.participantsImage ? 'border-green-500/50 text-green-700 bg-green-50' : 'border-gray-200 text-gray-500'
+                }`}>
+                <p className="truncate max-w-[85%] font-medium">{data[index]?.participantsImage instanceof File ? data[index].participantsImage.name : 'Atur Foto dan Twibbon'}</p>
+                {data[index]?.participantsImage ? <SquareCheckBig className="w-6 h-6" /> : <Square className="w-6 h-6" />}
+              </button>
+            </Field>
+          )}
 
+          {/* LINK TWIBBON - Muncul untuk User & Admin (Sesuai request hanya foto & identitas yg hilang) */}
           <Field label={`LINK TWIBBON PEMAIN ${index + 1}`} error={errors[index]?.participantsTwibbon}>
             <input
               id={`participants-${index}-participantsTwibbon`}
@@ -84,6 +100,7 @@ export default function FormRegistrationPlayer({ data, setData, errors = {}, onO
             />
           </Field>
 
+          {/* WHATSAPP - Muncul untuk User & Admin */}
           <Field label={`NOMOR WHATSAPP PEMAIN ${index + 1}`} error={errors[index]?.participantsPhone}>
             <input
               id={`participants-${index}-participantsPhone`}

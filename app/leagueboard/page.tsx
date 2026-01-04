@@ -35,9 +35,9 @@ const Leagueboard = () => {
   if (activeNav === 'basis-rank') {
     ComponentToRender = <BasisRank data={communityByRank.data?.communities} />
   } else if (activeNav === 'group-rank-soccer') {
-    ComponentToRender = <GroupRank data={groups?.data || []} category="SOCCER" />
+    ComponentToRender = <GroupRank data={groups?.data || []} defaultCategory="SOCCER" />
   } else if (activeNav === 'group-rank-sumo') {
-    ComponentToRender = <GroupRank data={groups?.data || []} category="SUMO" />
+    ComponentToRender = <GroupRank data={groups?.data || []} defaultCategory="SUMO" />
   } else if (activeNav === 'on-going match') {
     ComponentToRender = <MatchList data={onGoing?.data as ICardMatch[]} user={session} />
   } else if (activeNav === 'match-history') {

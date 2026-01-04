@@ -10,6 +10,13 @@ export const createTeams = (data: FormData): Promise<IApiResponse<unknown>> => {
   })
 }
 
+export const createTeamsByAdmin = (data: ICreateTeamAdmin): Promise<IApiResponse<unknown>> => {
+  return apiFetch<IApiResponse<unknown>>(`${BASE}/api/teams/create-by-admin`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
 export const getAllTeam = (): Promise<IApiResponse<ITeam[]>> => {
   return apiFetch<IApiResponse<ITeam[]>>(`${BASE}/api/teams/get-all`, {
     method: 'GET',

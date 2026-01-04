@@ -2,7 +2,7 @@ import { CATEGORIES } from '@/lib'
 import { IFilterControlsProps } from '@/lib/types'
 import { Search } from 'lucide-react'
 
-export const FilterControls = ({ search, filters = [], action, className }: IFilterControlsProps) => {
+export const FilterControls = ({ search, filters = [], action, className, type = 'user' }: IFilterControlsProps) => {
   return (
     <div className={`w-full flex flex-col md:flex-row justify-between px-4 py-3 mb-3 rounded-md gap-4 items-center bg-white shadow-sm border border-slate-100 ${className}`}>
       {/* 1. Dynamic Search Bar */}

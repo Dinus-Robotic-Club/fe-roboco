@@ -1,12 +1,9 @@
-import { ExcelRow, IRankColumn } from './types'
-import { renderTeamInfo } from './function'
+import { ExcelRow, IParticipantRow, IRankColumn } from './types'
+import { formatDate, renderTeamInfo } from './function'
 import Image from 'next/image'
 import { StatusBadge } from '@/components/ui/badge'
 import { GiGoalKeeper, GiSoccerBall } from 'react-icons/gi'
 import { TbRectangleVerticalFilled } from 'react-icons/tb'
-
-const cellRowClass = 'h-8 flex items-center justify-center'
-const cellRowClassLeft = 'h-8 flex items-center justify-start'
 
 export const ACTIONS_CONFIG = [
   {
@@ -157,109 +154,84 @@ export const sumoColumns: IRankColumn<IGroupTeamStats>[] = [
   },
 ]
 
-export const TeamColumns: IRankColumn<ITeam>[] = [
+export const TeamColumns: IRankColumn<IRegistrationData>[] = [
   {
     header: 'Nama tim',
-    colSpan: 3,
+    colSpan: 4,
     className: 'text-sm font-semibold',
     title: 'Nama tim',
-    accessor: (d) => d.name,
+    accessor: (d, i) => renderTeamInfo(d.team?.name as string, d.team?.community?.name, d.team?.logo as string, i),
   },
   {
-    header: 'Komunitas',
-    colSpan: 4,
-    className: 'text-center text-sm font-semibold',
-    title: 'Komunitas',
-    accessor: (d) => d.community?.name || '-',
+    header: 'Tanggal Daftar',
+    colSpan: 2,
+    className: 'text-sm font-semibold',
+    title: 'Tanggal Daftar',
+    accessor: (d) => formatDate(d.createdAt) || '-',
   },
   {
     header: 'Category',
     colSpan: 2,
     className: 'text-center text-sm font-semibold',
     title: 'Category',
-    accessor: (d) => <StatusBadge>{d.category}</StatusBadge>,
+    accessor: (d) => <StatusBadge>{d.team?.category}</StatusBadge>,
   },
   {
     header: 'status',
     colSpan: 2,
     className: 'text-center text-sm font-semibold',
     title: 'Status',
-    accessor: (d) => d.registrations?.map((reg) => <StatusBadge key={reg.uid}>{reg.status}</StatusBadge>),
+    accessor: (d) => <StatusBadge>{d.status}</StatusBadge>,
   },
   {
     header: 'Attendance',
-    colSpan: 1,
+    colSpan: 2,
     className: 'text-center text-sm font-semibold',
     title: 'Attendance',
-    accessor: (d) => d.registrations?.map((reg) => <StatusBadge key={reg.uid}>{reg.attendeance?.isPresent ? 'Present' : 'Absent'}</StatusBadge>),
+    accessor: (d) => <StatusBadge>{d.attendeance?.isPresent ? 'Present' : 'Absent'}</StatusBadge>,
   },
 ]
 
-export const ParticipantsColumns: IRankColumn<ITeam>[] = [
+export const ParticipantsColumns: IRankColumn<IParticipantRow>[] = [
   {
     header: 'Nama Member',
-    colSpan: 2,
-    className: 'text-sm font-semibold',
+    colSpan: 3, // Sesuaikan span
+    className: 'text-sm font-semibold text-left',
     title: 'Nama Member',
-
-    accessor: (d) => (
-      <div className="flex flex-col gap-1">
-        {d.participants.flatMap((p) => (
-          <div key={p.uid} className={`${cellRowClassLeft} border-b border-dashed text-center border-slate-100 last:border-0`}>
-            {p.name}
-          </div>
-        ))}
-      </div>
-    ),
+    accessor: (d, i) => renderTeamInfo(d.participantName, d.teamName, d.participantAvatar as string, i),
   },
   {
     header: 'Tim',
     colSpan: 3,
-    className: 'text-center text-sm font-semibold',
+    className: 'text-left text-sm font-semibold', // Sesuaikan alignment dgn gambar
     title: 'Tim',
-
-    accessor: (d) => <span className="font-bold text-slate-700">{d.name}</span>,
-  },
-  {
-    header: 'Category',
-    colSpan: 2,
-    className: 'text-center text-sm font-semibold',
-    title: 'Category',
-    accessor: (d) => <StatusBadge>{d.category}</StatusBadge>,
+    accessor: (row) => (
+      <div className="flex flex-col">
+        <span className="font-bold text-slate-700">{row.teamName}</span>
+        <span className="text-xs text-slate-500">{row.teamCategory}</span>
+      </div>
+    ),
   },
   {
     header: 'Role',
     colSpan: 2,
     className: 'text-center text-sm font-semibold',
     title: 'Role',
-
-    accessor: (d) => (
-      <div className="flex flex-col gap-1">
-        {d.participants.flatMap((p, idx) => (
-          <div key={idx} className={`${cellRowClass} border-b border-dashed border-slate-100 last:border-0`}>
-            <StatusBadge>{p.roleInTeam}</StatusBadge>
-          </div>
-        ))}
-      </div>
-    ),
+    accessor: (row) => <StatusBadge>{row.participantRole}</StatusBadge>,
   },
   {
     header: 'Status',
     colSpan: 2,
     className: 'text-center text-sm font-semibold',
     title: 'Status',
-    accessor: (d) => <div className="flex items-center justify-center h-full">{d.registrations?.flatMap((reg, idx) => <StatusBadge key={idx}>{reg.status}</StatusBadge>) || '-'}</div>,
+    accessor: (row) => <StatusBadge>{row.registrationStatus}</StatusBadge>,
   },
   {
     header: 'Attendance',
     colSpan: 1,
     className: 'text-center text-sm font-semibold',
     title: 'Attendance',
-    accessor: (d) => (
-      <div className="flex items-center justify-center h-full">
-        {d.registrations?.flatMap((reg, idx) => <StatusBadge key={idx}>{reg.attendeance?.isPresent ? 'Present' : 'Absent'}</StatusBadge>) || '-'}
-      </div>
-    ),
+    accessor: (row) => <StatusBadge>{row.attendanceStatus ? 'Present' : 'Absent'}</StatusBadge>,
   },
 ]
 
@@ -295,27 +267,24 @@ export const basisColumns: IRankColumn<ICommunity>[] = [
   },
 ]
 
-export const teamExcelMapper = (team: ITeam): ExcelRow => ({
+export const teamExcelMapper = (team: IRegistrationData): ExcelRow => ({
   No: team.uid.substring(0, 5),
-  'Nama Tim': team.name,
-  Kategori: team.category.toUpperCase(),
-  'Asal Instansi': team.community?.name || '-',
-  'Status Pembayaran': team.registrations?.[0]?.status || 'N/A',
-  Kehadiran: team.registrations?.[0]?.attendeance?.isPresent ? 'Hadir' : 'Tidak Hadir',
+  'Nama Tim': team.team?.name,
+  Kategori: team.team?.category.toUpperCase(),
+  'Asal Instansi': team.team?.community?.name || '-',
+  'Status Pembayaran': team.status || 'N/A',
+  Kehadiran: team.attendeance?.isPresent ? 'Hadir' : 'Tidak Hadir',
   'Tanggal Daftar': new Date(team.createdAt).toLocaleDateString('id-ID'),
-  'Total Anggota': team.participants.length,
+  'Total Anggota': team.team?.participants.length,
 })
 
-export const participantExcelMapper = (team: ITeam): ExcelRow => {
-  const members = team.participants.map((p) => `${p.name} (${p.roleInTeam})`).join(', ')
-  const reg = team.registrations?.[0]
-
+export const participantExcelMapper = (team: IParticipantRow): ExcelRow => {
   return {
-    'Nama Tim': team.name,
-    Kategori: team.category.toUpperCase(),
-    Anggota: members,
-    'Status Pembayaran': reg?.status || '-',
-    Kehadiran: reg?.attendeance?.isPresent ? 'Hadir' : 'Tidak Hadir',
+    'Nama Tim': team.teamName || '-',
+    Kategori: team.teamCategory.toUpperCase() || '-',
+    Anggota: team.participantName && team.participantRole ? `${team.participantName} (${team.participantRole})` : '-',
+    'Status Pembayaran': team.registrationStatus || '-',
+    Kehadiran: team.attendanceStatus ? 'Hadir' : 'Tidak Hadir',
   }
 }
 

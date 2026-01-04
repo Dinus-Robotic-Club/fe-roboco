@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 
-export function useTeamList(initialData: ITeam[], itemsPerPage = 10) {
+export function useTeamList(initialData: IRegistrationData[], itemsPerPage = 10) {
   const [statusFilter, setStatusFilter] = useState('all')
   const [paymentFilter, setPaymentFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
@@ -32,9 +32,9 @@ export function useTeamList(initialData: ITeam[], itemsPerPage = 10) {
     if (!initialData) return []
 
     return initialData.filter((team) => {
-      const matchSearch = team.name.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchSearch = team.team?.name.toLowerCase().includes(searchQuery.toLowerCase())
 
-      const isPresent = team.registrations?.[0]?.attendeance?.isPresent
+      const isPresent = team.attendeance?.isPresent
 
       let matchStatus = true
       if (statusFilter === 'present') matchStatus = isPresent === true
@@ -42,11 +42,11 @@ export function useTeamList(initialData: ITeam[], itemsPerPage = 10) {
 
       // Kategori
       let matchCategory = true
-      if (categoryFilter !== 'all') matchCategory = team.category.toLowerCase() === categoryFilter.toLowerCase()
+      if (categoryFilter !== 'all') matchCategory = team.team?.category.toLowerCase() === categoryFilter.toLowerCase()
 
       // Status Pembayaran (Payment)
       // Asumsi: team.registrations[0].status
-      const payStatus = team.registrations?.[0]?.status
+      const payStatus = team.status
       let matchPayment = true
       if (paymentFilter !== 'all') matchPayment = payStatus === paymentFilter
 

@@ -3,28 +3,34 @@ import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import CommunityInput from './community-input'
 
+// Tambahkan type props di sini
+interface FormRegistationTeamProps {
+  data: ITeamBody
+  setData: React.Dispatch<React.SetStateAction<ITeamBody>>
+  error?: TeamError
+  listTour?: IGetAllTournaments[]
+  listCommunity?: IGetAllCommunity[]
+  type?: 'user' | 'admin' // Prop baru
+}
+
 function FormRegistationTeam({
   data,
   setData,
   error,
   listTour,
   listCommunity,
-}: {
-  data: ITeamBody
-  setData: React.Dispatch<React.SetStateAction<ITeamBody>>
-  error?: TeamError
-  listTour?: IGetAllTournaments[]
-  listCommunity?: IGetAllCommunity[]
-}) {
+  type = 'user', // Default value adalah 'user'
+}: FormRegistationTeamProps) {
   const [showPass, setShowPass] = useState<boolean>(false)
   const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false)
 
   return (
-    <div className=" z-10  w-full">
-      <div className=" flex flex-col justify-center  items-center gap-10 sm:gap-10 lg:mt-4">
+    <div className="z-10 w-full">
+      <div className="flex flex-col justify-center items-center gap-10 sm:gap-10 lg:mt-4">
         <h1 className="text-center font-bold text-xl sm:text-2xl font-plus-jakarta-sans">PROFIL TIM</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-y-7 sm:gap-y-7 gap-x-4 sm:gap-x-6 w-full h-full">
+          {/* --- Field Umum (User & Admin) --- */}
           <div className="flex flex-col gap-1">
             <label htmlFor="team_name" className="text-sm lg:text-base font-fira-code">
               NAMA TIM
@@ -57,31 +63,64 @@ function FormRegistationTeam({
             {error?.email && <p className="text-red-500 text-xs">{error.email}</p>}
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label htmlFor="team_logo" className="text-sm lg:text-base font-fira-code tracking-wide">
-              LOGO TIM (OPSIONAL)
-            </label>
+          {/* --- Field Khusus User (Logo, Password, Invoice) --- */}
+          {type === 'user' && (
+            <>
+              {/* LOGO TIM */}
+              <div className="flex flex-col gap-1">
+                <label htmlFor="team_logo" className="text-sm lg:text-base font-fira-code tracking-wide">
+                  LOGO TIM (OPSIONAL)
+                </label>
 
-            <label htmlFor="team_logo" className="relative bg-white w-full h-12 sm:h-14 flex items-center px-4 cursor-pointer shadow-md">
-              <span className={`text-gray-400 font-plus-jakarta-sans text-sm lg:text-base ${data.logo ? 'text-gray-800' : ''}`}>{data.logo?.name || 'PILIH FILE →'}</span>
+                <label htmlFor="team_logo" className="relative bg-white w-full h-12 sm:h-14 flex items-center px-4 cursor-pointer shadow-md">
+                  <span className={`text-gray-400 font-plus-jakarta-sans text-sm lg:text-base ${data.logo ? 'text-gray-800' : ''}`}>{data.logo?.name || 'PILIH FILE →'}</span>
 
-              <input
-                type="file"
-                accept=".jpg, .png, .jpeg"
-                id="team_logo"
-                name="team_logo"
-                className="absolute inset-0 opacity-0 cursor-pointer"
-                onChange={(e) => {
-                  const file = (e.target as HTMLInputElement).files?.[0]
-                  if (file) {
-                    setData({ ...data, logo: file })
-                  }
-                }}
-              />
-            </label>
-            {error?.logo && <p className="text-red-500 text-xs">{error.logo}</p>}
-          </div>
+                  <input
+                    type="file"
+                    accept=".jpg, .png, .jpeg"
+                    id="team_logo"
+                    name="team_logo"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={(e) => {
+                      const file = (e.target as HTMLInputElement).files?.[0]
+                      if (file) {
+                        setData({ ...data, logo: file })
+                      }
+                    }}
+                  />
+                </label>
+                {error?.logo && <p className="text-red-500 text-xs">{error.logo}</p>}
+              </div>
 
+              {/* INVOICE */}
+              <div className="flex flex-col gap-1">
+                <label htmlFor="invoice" className="text-sm lg:text-base font-fira-code tracking-wide">
+                  BUKTI PEMBAYARAN
+                </label>
+
+                <label htmlFor="invoice" className="relative bg-white w-full h-12 sm:h-14 flex items-center px-4 cursor-pointer shadow-md">
+                  <span className={`text-gray-400 font-plus-jakarta-sans text-sm lg:text-base ${data.invoice ? 'text-gray-800' : ''}`}>{data.invoice?.name || 'PILIH FILE →'}</span>
+
+                  <input
+                    type="file"
+                    accept=".jpg, .png, .jpeg"
+                    id="invoice"
+                    name="invoice"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={(e) => {
+                      const file = (e.target as HTMLInputElement).files?.[0]
+                      if (file) {
+                        setData({ ...data, invoice: file })
+                      }
+                    }}
+                  />
+                </label>
+                {error?.invoice && <p className="text-red-500 text-xs">{error.invoice}</p>}
+              </div>
+            </>
+          )}
+
+          {/* PASSWORD */}
           <div className="flex flex-col gap-1">
             <label htmlFor="team_password" className="text-sm lg:text-base font-fira-code">
               KATA SANDI TIM
@@ -105,6 +144,7 @@ function FormRegistationTeam({
             {error?.password && <p className="text-red-500 text-xs">{error.password}</p>}
           </div>
 
+          {/* CONFIRM PASSWORD */}
           <div className="flex flex-col gap-1">
             <label htmlFor="confirm_password" className="text-sm lg:text-base font-fira-code">
               KONFIRMASI KATA SANDI
@@ -128,31 +168,7 @@ function FormRegistationTeam({
             {error?.confirmPassword && <p className="text-red-500 text-xs">{error.confirmPassword}</p>}
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label htmlFor="invoice" className="text-sm lg:text-base font-fira-code tracking-wide">
-              BUKTI PEMBAYARAN
-            </label>
-
-            <label htmlFor="invoice" className="relative bg-white w-full h-12 sm:h-14 flex items-center px-4 cursor-pointer shadow-md">
-              <span className={`text-gray-400 font-plus-jakarta-sans text-sm lg:text-base ${data.invoice ? 'text-gray-800' : ''}`}>{data.invoice?.name || 'PILIH FILE →'}</span>
-
-              <input
-                type="file"
-                accept=".jpg, .png, .jpeg"
-                id="invoice"
-                name="invoice"
-                className="absolute inset-0 opacity-0 cursor-pointer"
-                onChange={(e) => {
-                  const file = (e.target as HTMLInputElement).files?.[0]
-                  if (file) {
-                    setData({ ...data, invoice: file })
-                  }
-                }}
-              />
-            </label>
-            {error?.invoice && <p className="text-red-500 text-xs">{error.invoice}</p>}
-          </div>
-
+          {/* --- Field Umum Lanjutan (User & Admin) --- */}
           <div className="flex flex-col gap-1">
             <label htmlFor="kategori" className="text-sm lg:text-base font-fira-code">
               KATEGORI LOMBA

@@ -1,42 +1,95 @@
+import { useMemo, useState } from 'react'
 import { GenericRankTable } from '@/components/ui/table'
 import { useTeamList } from '@/hooks/custom-hooks/useTeamList'
 import { useMounted } from '@/hooks/useMounted'
 import { TeamColumns, teamExcelMapper } from '@/lib'
-import { DownloadButton } from '../tools/download'
-import { useMemo } from 'react'
 import { IFilterConfig } from '@/lib/types'
 import { formatCapitalize, generateOptions } from '@/lib/function/func'
 import { FilterControls } from '../tools/filter'
+import { DownloadButton } from '../tools/download'
+import { TeamDetailModal } from '@/components/ui/modal'
+import { useUpdateStatusRegistration } from '@/hooks/useUpdateStatusRegistration'
+import Loader from '@/components/ui/loader'
 
-export function TeamList({ data }: { data: ITeam[] }) {
+interface TeamListProps {
+  data: IRegistrationData[] | ITournamentData | ITeam[]
+  type?: 'user' | 'admin'
+  slug?: string
+}
+
+export function TeamList({ data, type = 'user', slug }: TeamListProps) {
+  const [selectedRegistration, setSelectedRegistration] = useState<IRegistrationData | null>(null)
   const mounted = useMounted()
 
-  // Panggil Custom Hook
-  const { filters, handlers, pagination, data: listData } = useTeamList(data)
+  const normalizedTeams: IRegistrationData[] = useMemo(() => {
+    if (type === 'admin' && data && 'registrations' in data) {
+      const tournament = data as ITournamentData
+      if (!tournament.registrations) return []
+
+      return tournament.registrations
+    }
+    return (data as IRegistrationData[]) || []
+  }, [data, type])
+
+  const { filters, handlers, pagination, data: listData } = useTeamList(normalizedTeams)
+  const { mutate, isPending } = useUpdateStatusRegistration(slug as string)
+
+  const handleViewTeam = (team: IRegistrationData) => {
+    if (type === 'admin') {
+      const tournamentData = data as ITournamentData
+
+      const registrationData = tournamentData.registrations?.find((reg) => reg.team?.uid === team.team?.uid)
+      if (registrationData) {
+        // Construct full data untuk modal
+        const fullData: IRegistrationData = {
+          ...registrationData,
+          team: team.team, // Pastikan data team yang terbaru/lengkap masuk sini
+        }
+        setSelectedRegistration(fullData)
+      } else {
+        console.warn('Registration data missing for team:', team.uid)
+        // Fallback atau error handling jika diperlukan
+      }
+    } else {
+      console.log('User viewing team:', team.team?.name)
+    }
+  }
+
+  const handleApprove = async (id: string) => {
+    mutate({ status: 'APPROVED', uid: id })
+
+    setSelectedRegistration(null)
+  }
+
+  const handleReject = async (id: string) => {
+    mutate({ status: 'REJECTED', uid: id })
+
+    setSelectedRegistration(null)
+  }
 
   const categoryOptions = useMemo(() => {
     return generateOptions(
-      data,
-      (team) => team.category,
+      normalizedTeams,
+      (team) => team.team?.category,
       (val) => val.toUpperCase(),
     )
-  }, [data])
+  }, [normalizedTeams])
 
   const paymentOptions = useMemo(() => {
     return generateOptions(
-      data,
-      (team) => team.registrations?.[0]?.status,
+      normalizedTeams,
+      (team) => team.status,
       (val) => formatCapitalize(val),
     )
-  }, [data])
+  }, [normalizedTeams])
 
   const statusOptions = useMemo(() => {
     return generateOptions(
-      data,
-      (team) => (team.registrations?.[0].attendeance?.isPresent ? 'Present' : 'Absent'),
+      normalizedTeams,
+      (team) => (team.attendeance?.isPresent ? 'Present' : 'Absent'),
       (val) => formatCapitalize(val),
     )
-  }, [data])
+  }, [normalizedTeams])
 
   const filterConfigs: IFilterConfig[] = [
     {
@@ -63,11 +116,12 @@ export function TeamList({ data }: { data: ITeam[] }) {
   ]
 
   if (!mounted) return null
+  if (isPending) return <Loader show />
 
   return (
     <>
       <div className="mb-6">
-        <h1 className="text-2xl lg:text-3xl font-bold uppercase tracking-tight text-slate-900">TEAM LIST</h1>
+        <h1 className="text-2xl lg:text-3xl font-bold uppercase tracking-tight text-slate-900">{type === 'admin' ? 'TOURNAMENT PARTICIPANTS' : 'TEAM LIST'}</h1>
         <div className="h-1 w-20 bg-[#FBFF00] mt-2 rounded-full"></div>
       </div>
 
@@ -80,11 +134,16 @@ export function TeamList({ data }: { data: ITeam[] }) {
             onChange: handlers.setSearch,
             placeholder: 'Search teams...',
           }}
-          action={<DownloadButton data={listData.filtered} mapper={teamExcelMapper} fileName="Data_Tim" />}
+          action={<DownloadButton data={listData.filtered} mapper={teamExcelMapper} fileName={type === 'admin' ? 'Data_Peserta' : 'Data_Tim'} />}
+          type={type}
         />
 
-        {/* Generic Table Render */}
-        <GenericRankTable data={listData.paginated} columns={TeamColumns} />
+        <GenericRankTable
+          data={listData.paginated}
+          columns={TeamColumns}
+          onRowClick={type === 'admin' ? handleViewTeam : undefined}
+          rowClassName={type === 'admin' ? 'cursor-pointer hover:bg-slate-50 transition-colors' : ''}
+        />
 
         {/* Pagination Controls */}
         {pagination.totalPages > 1 && (
@@ -109,6 +168,10 @@ export function TeamList({ data }: { data: ITeam[] }) {
           </div>
         )}
       </div>
+
+      {selectedRegistration && type === 'admin' && (
+        <TeamDetailModal isOpen={!!selectedRegistration} onClose={() => setSelectedRegistration(null)} data={selectedRegistration} onApprove={handleApprove} onReject={handleReject} />
+      )}
     </>
   )
 }

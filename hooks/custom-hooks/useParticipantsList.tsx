@@ -1,6 +1,7 @@
+import { IParticipantRow } from '@/lib/types'
 import { useState, useMemo } from 'react'
 
-export function useParticipantsList(initialData: ITeam[], itemsPerPage = 10) {
+export function useParticipantsList(initialData: IParticipantRow[], itemsPerPage = 10) {
   const [statusFilter, setStatusFilter] = useState('all') // Filter Attendance
   const [paymentFilter, setPaymentFilter] = useState('all') // Filter Payment
   const [categoryFilter, setCategoryFilter] = useState('all') // Filter Category
@@ -33,22 +34,22 @@ export function useParticipantsList(initialData: ITeam[], itemsPerPage = 10) {
 
     return initialData.filter((team) => {
       const searchLower = searchQuery.toLowerCase()
-      const matchTeamName = team.name.toLowerCase().includes(searchLower)
-      const matchParticipantName = team.participants.some((p) => p.name.toLowerCase().includes(searchLower))
+      const matchTeamName = team.teamName.toLowerCase().includes(searchLower)
+      const matchParticipantName = team.participantName.toLowerCase().includes(searchLower)
 
       const matchSearch = matchTeamName || matchParticipantName
 
-      const isPresent = team.registrations?.[0]?.attendeance?.isPresent
+      const isPresent = team.attendanceStatus
       let matchStatus = true
       if (statusFilter === 'present') matchStatus = isPresent === true
       else if (statusFilter === 'absent') matchStatus = isPresent === false
 
       let matchCategory = true
       if (categoryFilter !== 'all') {
-        matchCategory = team.category.toLowerCase() === categoryFilter.toLowerCase()
+        matchCategory = team.teamCategory.toLowerCase() === categoryFilter.toLowerCase()
       }
 
-      const payStatus = team.registrations?.[0]?.status
+      const payStatus = team.registrationStatus
       let matchPayment = true
       if (paymentFilter !== 'all') {
         matchPayment = payStatus === paymentFilter

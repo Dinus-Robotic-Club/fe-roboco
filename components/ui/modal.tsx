@@ -1,13 +1,17 @@
 'use client'
 
-import { ArrowRight, Check, Copy, FileImage, Image as Image_Preview, X } from 'lucide-react'
+import { ArrowRight, Building2, Calendar, Check, Copy, CreditCard, FileImage, FileText, Image as Image_Preview, Phone, Shield, User, Users, X } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { FaCloudDownloadAlt } from 'react-icons/fa'
 import { toast } from 'sonner'
 import Loader from './loader'
 import { CAPTION_TEXT } from '@/lib/statis-data'
-import { IValidationProps } from '@/lib/types'
+import { IModalProps, IValidationProps } from '@/lib/types'
+import { StatusBadge } from './badge'
+import { DataRow } from './row'
+import { formatDate } from '@/lib/function'
+import { ImageThumbnail } from './thumbnail'
 
 export default function ImageUploadModal({
   onClose,
@@ -296,4 +300,187 @@ function ValidationModal({ setShowModalStart, action, title, desc, confirm_text 
   )
 }
 
-export { ImageUploadModal, ValidationModal }
+const TeamDetailModal: React.FC<IModalProps> = ({ isOpen, onClose, data, onApprove, onReject }) => {
+  const [selectedParticipant, setSelectedParticipant] = useState<IParticipant | null>(null)
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
+
+  if (!isOpen || !data.team) return null
+
+  const { team } = data
+
+  console.log('Team Detail Modal Data:', data.teamId)
+
+  return (
+    <>
+      {/* --- Main Backdrop --- */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
+        {/* --- Main Modal Card --- */}
+        <div className="bg-white w-full max-w-5xl h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row animate-in fade-in zoom-in-95 duration-200">
+          {/* LEFT COLUMN: Team Info & Invoice */}
+          <div className="w-full md:w-7/12 overflow-y-auto p-6 md:p-8 border-r border-slate-100 scrollbar-hide">
+            {/* Header */}
+            <div className="flex justify-between items-start mb-8">
+              <div className="flex items-center gap-4">
+                {/* Team Logo Container - Added relative for fill */}
+                <div className="relative w-16 h-16 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden shrink-0">
+                  {team.logo ? (
+                    <Image src={team.logo} alt={team.name} fill className="object-cover" sizes="64px" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-slate-300">
+                      <Shield className="w-8 h-8" />
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900 leading-tight">{team.name}</h2>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-slate-500 font-medium bg-slate-100 px-2 py-0.5 rounded text-xs">{team.category}</span>
+                    <StatusBadge>{data.status}</StatusBadge>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Content Grid */}
+            <div className="space-y-8">
+              <section>
+                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Registration Info</h3>
+                <div className="grid grid-cols-2 gap-y-4 gap-x-6">
+                  <DataRow icon={FileText} label="Registration UID" value={<span className="font-mono text-xs">{data.uid}</span>} />
+                  <DataRow icon={Calendar} label="Registered At" value={formatDate(data.registeredAt)} />
+                  <DataRow icon={Building2} label="Community" value={team.community?.name || '-'} />
+                  <DataRow icon={Shield} label="Team UID" value={<span className="font-mono text-xs">{team.uid}</span>} />
+                </div>
+              </section>
+
+              <section>
+                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2 flex items-center gap-2">
+                  <CreditCard className="w-4 h-4" />
+                  Payment Proof
+                </h3>
+                <div className="max-w-xs">
+                  {/* ImageThumbnail already updated above */}
+                  <ImageThumbnail src={data.invoice} alt="Payment Invoice" label="Invoice" onClick={() => setPreviewImage(data.invoice)} />
+                </div>
+              </section>
+
+              <div className="flex gap-3 pt-6 mt-6 border-t border-slate-100">
+                <button
+                  onClick={() => onReject(data.teamId)}
+                  className="flex-1 px-4 py-3 bg-white border border-red-200 text-red-600 rounded-xl font-bold hover:bg-red-50 transition-colors flex items-center justify-center gap-2">
+                  <X className="w-4 h-4" /> Reject Team
+                </button>
+                <button
+                  onClick={() => onApprove(data.teamId)}
+                  className="flex-1 px-4 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-slate-200">
+                  <Check className="w-4 h-4" /> Approve Team
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: Participants List */}
+          <div className="w-full md:w-5/12 bg-slate-50 p-6 md:p-8 flex flex-col h-full border-l border-slate-100">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <Users className="w-5 h-5 text-slate-400" />
+                Roster ({team.participants.length})
+              </h3>
+              <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-lg transition-colors text-slate-500">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+              {team.participants.map((member) => (
+                <div
+                  key={member.uid}
+                  onClick={() => setSelectedParticipant(member)}
+                  className="bg-white p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-md cursor-pointer transition-all flex items-center gap-4 group">
+                  {/* Participant Avatar - Added relative */}
+                  <div className="relative w-12 h-12 rounded-full bg-slate-100 overflow-hidden shrink-0 border border-slate-100">
+                    <Image src={member.image} alt={member.name} fill className="object-cover" sizes="48px" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-slate-800 truncate group-hover:text-blue-600 transition-colors">{member.name}</p>
+                    <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+                      <span className={`px-1.5 py-0.5 rounded font-semibold ${member.roleInTeam === 'LEADER' ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>{member.roleInTeam}</span>
+                      <span>•</span>
+                      <span className="truncate">{member.phone}</span>
+                    </div>
+                  </div>
+                  <div className="text-slate-300 group-hover:text-blue-500">
+                    <User className="w-5 h-5" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* --- Participant Detail Modal (Nested) --- */}
+      {selectedParticipant && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative animate-in zoom-in-95 duration-200">
+            <button onClick={() => setSelectedParticipant(null)} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors z-10">
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-center mb-6">
+              {/* Detail Avatar - Added relative */}
+              <div className="relative w-24 h-24 rounded-full bg-slate-100 mx-auto mb-4 border-4 border-white shadow-lg overflow-hidden">
+                <Image src={selectedParticipant.image} alt={selectedParticipant.name} fill className="object-cover" sizes="96px" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900">{selectedParticipant.name}</h3>
+              <p className="text-sm text-slate-500 font-medium mt-1">
+                {selectedParticipant.roleInTeam} — {team.name}
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-slate-50 p-4 rounded-xl flex items-center gap-3 border border-slate-100">
+                <Phone className="w-5 h-5 text-slate-400" />
+                <div>
+                  <p className="text-xs text-slate-400 uppercase font-bold">Phone Number</p>
+                  <p className="text-sm font-semibold text-slate-800">{selectedParticipant.phone}</p>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs text-slate-400 uppercase font-bold mb-2 ml-1">Identity Card (KTP)</p>
+                <ImageThumbnail src={selectedParticipant.identityCardImage} alt="Identity Card" label="ID Card" onClick={() => setPreviewImage(selectedParticipant.identityCardImage)} />
+              </div>
+
+              {selectedParticipant.twibbon && (
+                <div className="bg-slate-50 p-4 rounded-xl flex items-center gap-3 border border-slate-100">
+                  <Image_Preview className="w-5 h-5 text-slate-400" />
+                  <div className="flex-1">
+                    <p className="text-xs text-slate-400 uppercase font-bold">Twibbon Link</p>
+                    <a href={selectedParticipant.twibbon} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-blue-600 hover:text-blue-800 underline truncate">
+                      {selectedParticipant.twibbon}
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {previewImage && (
+        <div className="fixed inset-0 z-60 bg-black/95 backdrop-blur flex items-center justify-center p-4 cursor-zoom-out" onClick={() => setPreviewImage(null)}>
+          {/* Wrapper relative diperlukan untuk next/image fill */}
+          <div className="relative w-full h-full max-w-6xl max-h-[85vh]">
+            <Image src={previewImage} alt="Preview" fill className="object-contain animate-in zoom-in-90 duration-300 drop-shadow-2xl" sizes="100vw" priority unoptimized />
+          </div>
+          <button className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full backdrop-blur-md transition-all z-50">
+            <X className="w-8 h-8" />
+          </button>
+        </div>
+      )}
+    </>
+  )
+}
+
+export { ImageUploadModal, ValidationModal, TeamDetailModal }

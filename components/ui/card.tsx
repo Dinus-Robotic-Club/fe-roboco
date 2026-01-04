@@ -8,9 +8,9 @@ import { ArrowRight, Calendar, LucideIcon, MapPin, Trophy, Users } from 'lucide-
 import { ITournamentCardProps } from '@/lib/types'
 import { useRouter } from 'next/navigation'
 
-function Card({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div data-slot="card" className={cn('bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm', className)} {...props} />
-}
+const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+  <div className={`bg-white p-6 rounded-2xl border border-slate-100 shadow-sm ${className}`}>{children}</div>
+)
 
 function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (

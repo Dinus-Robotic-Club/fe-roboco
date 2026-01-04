@@ -12,6 +12,7 @@ interface IRegistrationData {
   createdAt: string
   updatedAt: string
   attendeance?: IAttendeanceData | null
+  team?: ITeam | null
 }
 
 interface IAttendeanceData {
@@ -25,22 +26,36 @@ interface IAttendeanceData {
 interface ITeamBody {
   name: string
   communityName: string
-  password: string
+  password?: string
   confirmPassword?: string
   category: string
-  invoice: File | null
+  invoice?: File | null
   email: string
-  logo: File | null
+  logo?: File | null
   tournamentId: string
 }
 
 interface IParticipantsBody {
   participantsName: string
   participantsRoleInTeam: string
-  participantsImage: File | null
-  participantsIdentityCardImage: File | null
+  participantsImage?: File | null
+  participantsIdentityCardImage?: File | null
   participantsTwibbon: string
   participantsPhone: string
+}
+
+interface ICreateTeamAdmin {
+  name: string
+  email: string
+  communityName: string
+  category: string
+  tournamentId: string
+  password?: string // Opsional
+  // Array of strings (Sesuai request backend)
+  participantsName: string[]
+  participantsRoleInTeam: string[]
+  participantsPhone: string[]
+  participantsTwibbon: string[]
 }
 
 interface IBodyRegisterTeam {

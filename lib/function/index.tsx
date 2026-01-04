@@ -3,6 +3,7 @@ import Image from 'next/image'
 import * as z from 'zod'
 import slugify from 'slugify'
 import { VARIANTS } from '..'
+import { IParticipantRow } from '../types'
 
 // fungsi untuk memformat tanggal ke format yang lebih ramah pengguna
 export const formatDate = (dateString: string) => {
@@ -245,3 +246,22 @@ export const getStatusStyle = (status: string): string => {
   }
 }
 
+export const flattenParticipants = (teams: ITeam[]): IParticipantRow[] => {
+  return teams.flatMap((team) => {
+    const reg = team.registrations?.[0]
+
+    return team.participants.map((participant) => ({
+      participantId: participant.uid,
+      participantName: participant.name,
+      participantRole: participant.roleInTeam,
+      participantAvatar: participant.image,
+
+      teamId: team.uid,
+      teamName: team.name,
+      teamCategory: team.category,
+
+      registrationStatus: reg?.status || 'PENDING',
+      attendanceStatus: reg?.attendeance?.isPresent || false,
+    }))
+  })
+}

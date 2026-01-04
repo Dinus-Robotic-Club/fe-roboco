@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { Fira_Code, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'sonner'
@@ -34,8 +35,10 @@ export default function RootLayout({
       <body className={`${plusJakartaSans.variable} ${firaCode.variable} antialiased`}>
         <QueryProvider>
           <AuthProvider>
-            <Toaster expand={true} richColors position="top-right" />
-            <main>{children}</main>
+            <Suspense fallback={<></>}>
+              <Toaster expand={true} richColors position="top-right" />
+              <main>{children}</main>
+            </Suspense>
           </AuthProvider>
         </QueryProvider>
       </body>

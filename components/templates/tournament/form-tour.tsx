@@ -81,7 +81,7 @@ const FormInputTurney = ({ isForm, setIsForm, isStage, setIsStage, submitForm, i
                 <FieldLabel label="Banner / Gambar" icon={FileImage} />
                 <input
                   type="file"
-                  accept=".jpg, .png, .jpeg"
+                  accept=".jpg, .png, .jpeg, .webp"
                   onChange={handleFileChange}
                   className="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#FBFF00] file:text-black hover:file:bg-yellow-400 transition-all cursor-pointer border border-slate-200 rounded-lg bg-white"
                 />

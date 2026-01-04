@@ -59,17 +59,6 @@ export const useTournamentLogic = () => {
   if (isSuccess) {
     setIsDialogOpen(false)
     toast.success('Turnamen berhasil dibuat!')
-    setIsForm({
-      name: '',
-      slug: '',
-      stageType: null,
-      startDate: '',
-      description: '',
-      endDate: '',
-      image: null,
-      location: '',
-      playoffType: null,
-    })
   }
 
   // Filtering Logic

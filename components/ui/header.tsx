@@ -4,6 +4,11 @@ interface HeaderProps {
   className?: string
 }
 
+interface SectionHeaderProps {
+  icon: React.ReactNode
+  title: string
+}
+
 const HeaderDashboard = ({ title, name, className }: HeaderProps) => {
   return (
     <div className={`h-75 md:h-100 bg-white w-full flex flex-col justify-center items-center pt-17.5 2xl:pt-20 font-plus-jakarta-sans shadow-xl gap-3 ${className}`}>
@@ -42,4 +47,12 @@ const MatchStatusHeader = ({ isLive, isFinished, category, roundLabel }: { isLiv
   </div>
 )
 
-export { HeaderDashboard, MatchStatusHeader }
+const SectionHeader: React.FC<SectionHeaderProps> = ({ icon, title }) => (
+  <div className="flex items-center gap-3 mb-6">
+    {/* Icon wrapper yang konsisten */}
+    <div className="p-2.5 bg-gray-50 rounded-lg text-gray-700">{icon}</div>
+    <h3 className="font-bold text-gray-800 text-lg">{title}</h3>
+  </div>
+)
+
+export { HeaderDashboard, MatchStatusHeader, SectionHeader }
