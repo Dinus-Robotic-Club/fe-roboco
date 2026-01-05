@@ -11,6 +11,7 @@ import { TeamDetailModal } from '@/components/ui/modal'
 import { useUpdateStatusRegistration } from '@/hooks/useUpdateStatusRegistration'
 import Loader from '@/components/ui/loader'
 
+// Ensure these interfaces match your global types
 interface TeamListProps {
   data: IRegistrationData[] | ITournamentData | ITeam[]
   type?: 'user' | 'admin'
@@ -20,76 +21,70 @@ interface TeamListProps {
 export function TeamList({ data, type = 'user', slug }: TeamListProps) {
   const [selectedRegistration, setSelectedRegistration] = useState<IRegistrationData | null>(null)
   const mounted = useMounted()
-
-  const normalizedTeams: IRegistrationData[] = useMemo(() => {
-    if (type === 'admin' && data && 'registrations' in data) {
-      const tournament = data as ITournamentData
-      if (!tournament.registrations) return []
-
-      return tournament.registrations
-    }
-    return (data as IRegistrationData[]) || []
-  }, [data, type])
-
-  const { filters, handlers, pagination, data: listData } = useTeamList(normalizedTeams)
   const { mutate, isPending } = useUpdateStatusRegistration(slug as string)
 
-  const handleViewTeam = (team: IRegistrationData) => {
+  const normalizedData = useMemo(() => {
     if (type === 'admin') {
-      const tournamentData = data as ITournamentData
-
-      const registrationData = tournamentData.registrations?.find((reg) => reg.team?.uid === team.team?.uid)
-      if (registrationData) {
-        // Construct full data untuk modal
-        const fullData: IRegistrationData = {
-          ...registrationData,
-          team: team.team, // Pastikan data team yang terbaru/lengkap masuk sini
-        }
-        setSelectedRegistration(fullData)
-      } else {
-        console.warn('Registration data missing for team:', team.uid)
-        // Fallback atau error handling jika diperlukan
+      if (data && 'registrations' in data) {
+        const tournament = data as ITournamentData
+        return tournament.registrations || []
       }
+      return (data as IRegistrationData[]) || []
+    }
+
+    return (data as ITeam[]) || []
+  }, [data, type])
+
+  const { filters, handlers, pagination, data: listData } = useTeamList(normalizedData, 10, type)
+
+  const handleViewTeam = (item: IRegistrationData | ITeam) => {
+    if (type === 'admin') {
+      const regData = item as IRegistrationData
+
+      setSelectedRegistration(regData)
     } else {
-      console.log('User viewing team:', team.team?.name)
+      const team = item as ITeam
+      console.log('User viewing team:', team.name)
     }
   }
 
   const handleApprove = async (id: string) => {
     mutate({ status: 'APPROVED', uid: id })
-
     setSelectedRegistration(null)
   }
 
   const handleReject = async (id: string) => {
     mutate({ status: 'REJECTED', uid: id })
-
     setSelectedRegistration(null)
   }
 
+  // 3. OPTION GENERATORS (Updated to use normalizedData safely)
   const categoryOptions = useMemo(() => {
     return generateOptions(
-      normalizedTeams,
-      (team) => team.team?.category,
-      (val) => val.toUpperCase(),
+      normalizedData,
+      (item: IRegistrationData | ITeam) => (type === 'admin' ? (item as IRegistrationData).team?.category : (item as ITeam).category),
+      (val) => val?.toUpperCase() || '',
     )
-  }, [normalizedTeams])
+  }, [normalizedData, type])
 
   const paymentOptions = useMemo(() => {
     return generateOptions(
-      normalizedTeams,
-      (team) => team.status,
-      (val) => formatCapitalize(val),
+      normalizedData,
+      (item: IRegistrationData | ITeam) => (type === 'admin' ? (item as IRegistrationData).status : (item as ITeam).registrations?.[0]?.status),
+      (val) => formatCapitalize(val || ''),
     )
-  }, [normalizedTeams])
+  }, [normalizedData, type])
 
   const statusOptions = useMemo(() => {
     return generateOptions(
-      normalizedTeams,
-      (team) => (team.attendeance?.isPresent ? 'Present' : 'Absent'),
+      normalizedData,
+      (item: IRegistrationData | ITeam) => {
+        const isPresent = type === 'admin' ? (item as IRegistrationData).attendeance?.isPresent : (item as ITeam).registrations?.[0]?.attendeance?.isPresent
+        return isPresent ? 'Present' : 'Absent'
+      },
       (val) => formatCapitalize(val),
     )
-  }, [normalizedTeams])
+  }, [normalizedData, type])
 
   const filterConfigs: IFilterConfig[] = [
     {
@@ -116,10 +111,11 @@ export function TeamList({ data, type = 'user', slug }: TeamListProps) {
   ]
 
   if (!mounted) return null
-  if (isPending) return <Loader show />
 
   return (
     <>
+      <Loader show={isPending} />
+
       <div className="mb-6">
         <h1 className="text-2xl lg:text-3xl font-bold uppercase tracking-tight text-slate-900">{type === 'admin' ? 'TOURNAMENT PARTICIPANTS' : 'TEAM LIST'}</h1>
         <div className="h-1 w-20 bg-[#FBFF00] mt-2 rounded-full"></div>
@@ -140,7 +136,7 @@ export function TeamList({ data, type = 'user', slug }: TeamListProps) {
 
         <GenericRankTable
           data={listData.paginated}
-          columns={TeamColumns}
+          columns={TeamColumns} // Make sure your Columns handle both types or use conditional columns
           onRowClick={type === 'admin' ? handleViewTeam : undefined}
           rowClassName={type === 'admin' ? 'cursor-pointer hover:bg-slate-50 transition-colors' : ''}
         />

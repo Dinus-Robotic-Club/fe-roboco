@@ -28,12 +28,17 @@ const NavItem: React.FC<INavItemProps> = ({ item, isActive, onClick, className =
 const Navbar: React.FC<NavData> = ({ left, right }) => {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  // Tambahkan state mounted untuk mencegah hydration mismatch
+  const [isMounted, setIsMounted] = useState(false)
 
   const pathname = usePathname()
   const router = useRouter()
   const { user } = useAuth()
 
   useEffect(() => {
+    // Set mounted true setelah render pertama di client
+    setIsMounted(true)
+
     const handleScroll = () => setScrolled(window.scrollY > 30)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
@@ -61,6 +66,10 @@ const Navbar: React.FC<NavData> = ({ left, right }) => {
   }
 
   const authAwareRightMenu = useMemo(() => {
+    // PENTING: Jika belum mounted (SSR), jangan gunakan logika user.
+    // Kembalikan menu default (misal: tombol 'Masuk') agar HTML server & client sama.
+    if (!isMounted) return right
+
     return right
       .map((item) => {
         if (item.title === 'Masuk' && user) {
@@ -73,9 +82,13 @@ const Navbar: React.FC<NavData> = ({ left, right }) => {
         return item
       })
       .filter((item): item is NavItemType => Boolean(item))
-  }, [right, user])
+  }, [right, user, isMounted]) // Tambahkan isMounted ke dependency
 
   const mobileMenu = useMemo(() => [...left, ...authAwareRightMenu], [left, authAwareRightMenu])
+
+  // Jangan render apapun sampai client siap jika props sangat dinamis,
+  // TAPI untuk Navbar sebaiknya tetap render struktur dasar agar tidak layout shift.
+  // Dengan fix 'isMounted' di atas, struktur di bawah aman.
 
   return (
     <nav

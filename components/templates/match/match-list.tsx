@@ -1,10 +1,21 @@
 import { EmptyState } from '@/components/ui/empty'
 import { IMatchListProps } from '@/lib/types'
 import { CardMatch } from './match'
+import { Trophy } from 'lucide-react'
 
-function MatchList({ data, user, emptyTitle = 'COMING SOON', emptyDescription = 'Arena Pertandingan Robot Segera Tiba...' }: IMatchListProps) {
+function MatchList({ data, user, emptyTitle = 'COMING SOON', emptyDescription = 'Arena Pertandingan Robot Segera Tiba...', type = 'user', onCreate }: IMatchListProps) {
   if (!data || data.length === 0) {
-    return <EmptyState variant="public" className="w-full max-w-4xl h-auto" title={emptyTitle} description={emptyDescription} />
+    return (
+      <EmptyState
+        title={emptyTitle}
+        description={emptyDescription}
+        variant="public"
+        icon={Trophy}
+        onCreate={type === 'admin' ? onCreate : undefined}
+        createLabel="Buat Match"
+        className="w-full max-w-4xl h-auto"
+      />
+    )
   }
 
   return (

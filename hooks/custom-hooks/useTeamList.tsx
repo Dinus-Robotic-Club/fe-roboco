@@ -1,72 +1,83 @@
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
-export function useTeamList(initialData: IRegistrationData[], itemsPerPage = 10) {
+export function useTeamList(initialData: IRegistrationData[] | ITeam[], itemsPerPage = 10, type: 'user' | 'admin' = 'user') {
   const [statusFilter, setStatusFilter] = useState('all')
   const [paymentFilter, setPaymentFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
 
-  const handleStatusChange = (value: string) => {
-    setStatusFilter(value)
-    setCurrentPage(1)
+  const resetPage = () => setCurrentPage(1)
+
+  const handlers = {
+    setStatus: (val: string) => {
+      setStatusFilter(val)
+      resetPage()
+    },
+    setPayment: (val: string) => {
+      setPaymentFilter(val)
+      resetPage()
+    },
+    setCategory: (val: string) => {
+      setCategoryFilter(val)
+      resetPage()
+    },
+    setSearch: (val: string) => {
+      setSearchQuery(val)
+      resetPage()
+    },
+    nextPage: () => setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev)),
+    prevPage: () => setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev)),
   }
 
-  const handlePaymentChange = (value: string) => {
-    setPaymentFilter(value)
-    setCurrentPage(1)
-  }
-
-  const handleCategoryChange = (value: string) => {
-    setCategoryFilter(value)
-    setCurrentPage(1)
-  }
-
-  const handleSearch = (value: string) => {
-    setSearchQuery(value)
-    setCurrentPage(1)
-  }
-
-  // Memoized Filtered Data
+  // --- CORE LOGIC: Filtering & Normalization ---
   const filteredData = useMemo(() => {
-    if (!initialData) return []
+    if (!initialData || initialData.length === 0) return []
 
-    return initialData.filter((team) => {
-      const matchSearch = team.team?.name.toLowerCase().includes(searchQuery.toLowerCase())
+    return initialData.filter((item: IRegistrationData | ITeam) => {
+      let name = ''
+      let category = ''
+      let paymentStatus = ''
+      let isPresent: boolean | undefined = false
 
-      const isPresent = team.attendeance?.isPresent
+      if (type === 'admin') {
+        const reg = item as IRegistrationData
+        name = reg.team?.name || ''
+        category = reg.team?.category || ''
+        paymentStatus = reg.status
+        isPresent = reg.attendeance?.isPresent
+      } else {
+        const team = item as ITeam
+        name = team.name || ''
+        category = team.category || ''
+        paymentStatus = team.registrations?.[0]?.status || ''
+        isPresent = team.registrations?.[0]?.attendeance?.isPresent
+      }
 
-      let matchStatus = true
-      if (statusFilter === 'present') matchStatus = isPresent === true
-      else if (statusFilter === 'absent') matchStatus = isPresent === false
+      const matchSearch = name.toLowerCase().includes(searchQuery.toLowerCase())
 
-      // Kategori
+      let matchAttendance = true
+      if (statusFilter === 'present') matchAttendance = isPresent === true
+      else if (statusFilter === 'absent') matchAttendance = isPresent === false
+
       let matchCategory = true
-      if (categoryFilter !== 'all') matchCategory = team.team?.category.toLowerCase() === categoryFilter.toLowerCase()
+      if (categoryFilter !== 'all') {
+        matchCategory = category.toLowerCase() === categoryFilter.toLowerCase()
+      }
 
-      // Status Pembayaran (Payment)
-      // Asumsi: team.registrations[0].status
-      const payStatus = team.status
       let matchPayment = true
-      if (paymentFilter !== 'all') matchPayment = payStatus === paymentFilter
+      if (paymentFilter !== 'all') {
+        matchPayment = paymentStatus.toLowerCase() === paymentFilter.toLowerCase()
+      }
 
-      return matchStatus && matchCategory && matchPayment && matchSearch
+      return matchSearch && matchAttendance && matchCategory && matchPayment
     })
-  }, [initialData, searchQuery, statusFilter, categoryFilter, paymentFilter])
+  }, [initialData, searchQuery, statusFilter, categoryFilter, paymentFilter, type])
 
-  // Pagination Logic
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage)
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage) || 1
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem)
-
-  const goToNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1)
-  }
-
-  const goToPrevPage = () => {
-    if (currentPage > 1) setCurrentPage((prev) => prev - 1)
-  }
 
   return {
     filters: {
@@ -75,23 +86,17 @@ export function useTeamList(initialData: IRegistrationData[], itemsPerPage = 10)
       category: categoryFilter,
       search: searchQuery,
     },
-    handlers: {
-      setStatus: handleStatusChange,
-      setPayment: handlePaymentChange,
-      setCategory: handleCategoryChange,
-      setSearch: handleSearch,
-      nextPage: goToNextPage,
-      prevPage: goToPrevPage,
-    },
+    handlers,
     pagination: {
       currentPage,
       totalPages,
       itemsPerPage,
       indexOfFirstItem,
+      totalItems: filteredData.length,
     },
     data: {
-      filtered: filteredData, // Data full hasil filter (buat download excel)
-      paginated: currentItems, // Data per page (buat tabel)
+      filtered: filteredData,
+      paginated: currentItems,
     },
   }
 }

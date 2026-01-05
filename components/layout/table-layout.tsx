@@ -1,11 +1,6 @@
 import { IRankLayoutProps } from '@/lib/types'
-import { EmptyState } from '../ui/empty'
 
-export function RankLayout({ title, highlight, isEmpty, children }: IRankLayoutProps) {
-  if (isEmpty) {
-    return <EmptyState variant="public" className="w-full max-w-4xl h-auto" title="COMING SOON" description="Arena Pertandingan Robot Segera Tiba... " />
-  }
-
+export function RankLayout({ title, highlight, children }: IRankLayoutProps) {
   return (
     <div className="w-full flex flex-col items-center font-plus-jakarta-sans">
       {/* Title Section */}

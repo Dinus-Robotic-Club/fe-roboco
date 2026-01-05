@@ -27,9 +27,10 @@ export const getAllMatchHistoryById = (): Promise<IApiResponse<MatchListResponse
   })
 }
 
-export const createMatchRound = (tourId: string, matchId: string): Promise<IApiResponse<IRound>> => {
+export const createMatchRound = (tourId: string, matchId: string, token: string): Promise<IApiResponse<IRound>> => {
   return apiFetch<IApiResponse<IRound>>(`${BASE}/api/matches/round/${tourId}/create/${matchId}`, {
     method: 'POST',
+    token: token,
   })
 }
 

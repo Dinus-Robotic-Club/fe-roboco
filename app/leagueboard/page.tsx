@@ -30,18 +30,28 @@ const Leagueboard = () => {
     return <Loader show />
   }
 
+  const filteredData = groups?.data?.filter((group) => {
+    const isSoccerGroup = group.teams.some((t) => t.team.category === 'SOCCER')
+    if (activeNav === 'group-rank-soccer') {
+      return isSoccerGroup
+    } else if (activeNav === 'group-rank-sumo') {
+      return !isSoccerGroup
+    }
+    return true
+  })
+
   let ComponentToRender
 
   if (activeNav === 'basis-rank') {
     ComponentToRender = <BasisRank data={communityByRank.data?.communities} />
   } else if (activeNav === 'group-rank-soccer') {
-    ComponentToRender = <GroupRank data={groups?.data || []} defaultCategory="SOCCER" />
+    ComponentToRender = <GroupRank data={filteredData || []} title="SOCCER" />
   } else if (activeNav === 'group-rank-sumo') {
-    ComponentToRender = <GroupRank data={groups?.data || []} defaultCategory="SUMO" />
+    ComponentToRender = <GroupRank data={filteredData || []} title="SUMO" />
   } else if (activeNav === 'on-going match') {
-    ComponentToRender = <MatchList data={onGoing?.data as ICardMatch[]} user={session} />
+    ComponentToRender = <MatchList data={onGoing?.data as ICardMatch[]} user={session} type="user" />
   } else if (activeNav === 'match-history') {
-    ComponentToRender = <MatchList data={history?.data as ICardMatch[]} user={session} />
+    ComponentToRender = <MatchList data={history?.data as ICardMatch[]} user={session} type="user" />
   } else if (activeNav === 'playoff-sumo') {
     ComponentToRender = <Playoff title="Playoff SUMO" matches={bracket6Teams} />
   } else if (activeNav === 'playoff-soccer') {

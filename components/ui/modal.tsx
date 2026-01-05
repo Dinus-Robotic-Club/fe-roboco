@@ -291,7 +291,12 @@ function ValidationModal({ setShowModalStart, action, title, desc, confirm_text 
           <button className="px-4 py-2 bg-gray-200 rounded" onClick={() => setShowModalStart(false)}>
             Batal
           </button>
-          <button className="px-4 py-2 bg-green-600 text-white rounded" onClick={action}>
+          <button
+            className="px-4 py-2 bg-green-600 text-white rounded"
+            onClick={() => {
+              action()
+              setShowModalStart(false)
+            }}>
             {confirm_text}
           </button>
         </div>
@@ -307,8 +312,6 @@ const TeamDetailModal: React.FC<IModalProps> = ({ isOpen, onClose, data, onAppro
   if (!isOpen || !data.team) return null
 
   const { team } = data
-
-  console.log('Team Detail Modal Data:', data.teamId)
 
   return (
     <>

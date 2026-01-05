@@ -41,6 +41,18 @@ interface ICardMatch {
   group: IGroup | null
   events: IMatchEvent[]
   score: IScore[]
+  refree: IRefreeMatch | null
+  rounds: IRound[]
+}
+
+interface IRefreeMatch {
+  uid: string
+  name: string
+  email: string
+  role: string
+  avatar: string | null
+  createdAt: string
+  updatedAt: string
 }
 
 interface IMatchEvent {

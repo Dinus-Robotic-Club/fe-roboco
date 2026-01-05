@@ -5,13 +5,13 @@ import { HeaderDashboard } from '@/components/ui/header'
 import { ValidationModal } from '@/components/ui/modal'
 import { useMatchLogic } from '@/hooks/custom-hooks/useMatchLogic'
 import { ArrowLeftIcon, FlagTriangleRightIcon, Pause, Play } from 'lucide-react'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import MatchAction from './match-action'
 
-export default function MatchControlInterface({ roundId }: { roundId: string }) {
+export default function MatchControlInterface({ matchId }: { matchId: string }) {
   const router = useRouter()
-  const { matchData, state, actions } = useMatchLogic(roundId)
+  const { matchData, state, actions } = useMatchLogic(matchId)
   const [showFinishModal, setShowFinishModal] = useState(false)
 
   if (!matchData) return null
@@ -19,14 +19,14 @@ export default function MatchControlInterface({ roundId }: { roundId: string }) 
   const isSumo = state.matchType === 'SUMO'
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen bg-grid">
       <HeaderDashboard title={`${isSumo ? 'Sumo' : 'Soccer'} Control`} name="Admin" />
 
       <main className="max-w-5xl mx-auto p-4 md:p-6 pb-24">
         {/* MATCH INFO HEADER */}
         <div className="text-center mb-8">
           <span className="bg-white border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider text-slate-500 uppercase shadow-sm">
-            {matchData.group?.name || 'Bracket'} — Round {matchData.rounds.map((round) => round.roundNumber) ?? 1}
+            {matchData.group?.name || 'Bracket'} — Round {matchData.rounds.length > 0 ? Math.max(...matchData.rounds.map((r) => r.roundNumber)) : 1}
           </span>
         </div>
 
@@ -70,8 +70,6 @@ export default function MatchControlInterface({ roundId }: { roundId: string }) 
 
         {/* CONTROLS & ACTIONS */}
         <div className="mt-8 grid gap-8">
-          {/* Game Actions (Goal, Foul, Card) */}
-          {/* Pass handler dari hook ke component UI ini */}
           <MatchAction startMatch={state.isPlaying} handleScoreAction={(type, team) => actions.handleAction(type as 'GOAL' | 'PENALTY' | 'YELLOW' | 'RED', team)} timeline={state.timeline} />
 
           {/* Bottom Floating Control Bar */}

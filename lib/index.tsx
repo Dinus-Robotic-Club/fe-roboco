@@ -154,13 +154,19 @@ export const sumoColumns: IRankColumn<IGroupTeamStats>[] = [
   },
 ]
 
-export const TeamColumns: IRankColumn<IRegistrationData>[] = [
+export const TeamColumns: IRankColumn<IRegistrationData | ITeam>[] = [
   {
     header: 'Nama tim',
     colSpan: 4,
     className: 'text-sm font-semibold',
     title: 'Nama tim',
-    accessor: (d, i) => renderTeamInfo(d.team?.name as string, d.team?.community?.name, d.team?.logo as string, i),
+    accessor: (d, i) => {
+      if ('team' in d) {
+        return renderTeamInfo(d.team?.name as string, d.team?.community?.name, d.team?.logo as string, i)
+      } else if ('registrations' in d) {
+        return renderTeamInfo(d.name, d.community?.name, d.logo as string, i)
+      }
+    },
   },
   {
     header: 'Tanggal Daftar',
@@ -174,21 +180,32 @@ export const TeamColumns: IRankColumn<IRegistrationData>[] = [
     colSpan: 2,
     className: 'text-center text-sm font-semibold',
     title: 'Category',
-    accessor: (d) => <StatusBadge>{d.team?.category}</StatusBadge>,
+    accessor: (d) => {
+      const category = 'team' in d ? d.team?.category : (d as ITeam).category
+      return <StatusBadge>{category}</StatusBadge>
+    },
   },
   {
-    header: 'status',
+    header: 'Status',
     colSpan: 2,
     className: 'text-center text-sm font-semibold',
     title: 'Status',
-    accessor: (d) => <StatusBadge>{d.status}</StatusBadge>,
+    accessor: (d) => {
+      const status = 'status' in d ? d.status : (d as ITeam).registrations?.[0]?.status
+
+      return <StatusBadge>{status || '-'}</StatusBadge>
+    },
   },
   {
     header: 'Attendance',
     colSpan: 2,
     className: 'text-center text-sm font-semibold',
     title: 'Attendance',
-    accessor: (d) => <StatusBadge>{d.attendeance?.isPresent ? 'Present' : 'Absent'}</StatusBadge>,
+    accessor: (d) => {
+      const isPresent = 'attendeance' in d ? d.attendeance?.isPresent : (d as ITeam).registrations?.[0]?.attendeance?.isPresent
+
+      return <StatusBadge>{isPresent ? 'Present' : 'Absent'}</StatusBadge>
+    },
   },
 ]
 
@@ -267,16 +284,32 @@ export const basisColumns: IRankColumn<ICommunity>[] = [
   },
 ]
 
-export const teamExcelMapper = (team: IRegistrationData): ExcelRow => ({
-  No: team.uid.substring(0, 5),
-  'Nama Tim': team.team?.name,
-  Kategori: team.team?.category.toUpperCase(),
-  'Asal Instansi': team.team?.community?.name || '-',
-  'Status Pembayaran': team.status || 'N/A',
-  Kehadiran: team.attendeance?.isPresent ? 'Hadir' : 'Tidak Hadir',
-  'Tanggal Daftar': new Date(team.createdAt).toLocaleDateString('id-ID'),
-  'Total Anggota': team.team?.participants.length,
-})
+export const teamExcelMapper = (row: IRegistrationData | ITeam): ExcelRow => {
+  const isRegistration = 'team' in row
+
+  const name = isRegistration ? row.team?.name : (row as ITeam).name
+
+  const category = isRegistration ? row.team?.category : (row as ITeam).category
+
+  const community = isRegistration ? row.team?.community?.name : (row as ITeam).community?.name
+
+  const status = isRegistration ? (row as IRegistrationData).status : (row as ITeam).registrations?.[0]?.status
+
+  const isPresent = isRegistration ? (row as IRegistrationData).attendeance?.isPresent : (row as ITeam).registrations?.[0]?.attendeance?.isPresent
+
+  const participantsCount = isRegistration ? row.team?.participants?.length : (row as ITeam).participants?.length
+
+  return {
+    No: row.uid.substring(0, 5).toUpperCase(),
+    'Nama Tim': name || '-',
+    Kategori: category?.toUpperCase() || '-',
+    'Asal Instansi': community || '-',
+    'Status Pembayaran': status || 'N/A',
+    Kehadiran: isPresent ? 'Hadir' : 'Tidak Hadir',
+    'Tanggal Daftar': new Date(row.createdAt).toLocaleDateString('id-ID'),
+    'Total Anggota': participantsCount || 0,
+  }
+}
 
 export const participantExcelMapper = (team: IParticipantRow): ExcelRow => {
   return {

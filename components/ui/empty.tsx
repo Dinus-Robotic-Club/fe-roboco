@@ -1,17 +1,28 @@
-import React from 'react'
-import { LucideIcon, Search, PackageOpen, Swords, AlertCircle, Trophy } from 'lucide-react'
+import React, { ReactNode } from 'react'
+import { LucideIcon, Search, PackageOpen, Swords, AlertCircle, Trophy, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface EmptyStateProps {
   title?: string
   description?: string
   icon?: LucideIcon
-  action?: React.ReactNode
-  className?: string
   variant?: 'default' | 'search' | 'public'
+  className?: string
+  action?: ReactNode
+  onCreate?: () => void
+  createLabel?: string
 }
 
-const EmptyState = ({ title = 'Data tidak ditemukan', description = 'Belum ada data yang tersedia saat ini.', icon: Icon = PackageOpen, action, className, variant = 'default' }: EmptyStateProps) => {
+const EmptyState = ({
+  title = 'Data tidak ditemukan',
+  description = 'Belum ada data yang tersedia saat ini.',
+  icon: Icon = PackageOpen,
+  action,
+  onCreate,
+  createLabel = 'Tambah Data Baru',
+  className,
+  variant = 'default',
+}: EmptyStateProps) => {
   if (variant === 'search') {
     return (
       <div className={cn('flex flex-col items-center justify-center py-16 px-4 text-center animate-in fade-in zoom-in-95 duration-500', className)}>
@@ -28,18 +39,28 @@ const EmptyState = ({ title = 'Data tidak ditemukan', description = 'Belum ada d
   return (
     <div
       className={cn(
-        'flex flex-col items-center h-screen justify-center py-20 px-4 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50 hover:bg-slate-50 transition-colors duration-300',
+        'flex flex-col items-center min-h-[500px] justify-center py-20 px-4 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50 hover:bg-slate-50 transition-colors duration-300',
         className,
       )}>
-      <div className="bg-white p-4 rounded-2xl text-4xl  shadow-sm border border-slate-100 mb-4 transform transition-transform hover:scale-110 duration-300">
-        {variant !== 'public' ? <Icon className="w-10 h-10 text-slate-400" /> : '🫵'}
+      <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mb-6 transform transition-transform group-hover:scale-110 duration-300">
+        {variant !== 'public' ? <Icon className="w-12 h-12 text-slate-400" strokeWidth={1.5} /> : <span className="text-4xl">🫵</span>}
       </div>
 
-      <h3 className="text-2xl font-bold text-slate-900 mb-2">{title}</h3>
+      <h3 className="text-2xl font-bold text-slate-900 mb-3 tracking-tight">{title}</h3>
+      <p className="text-slate-500 text-base max-w-md mx-auto mb-8 leading-relaxed text-balance">{description}</p>
 
-      <p className="text-slate-500 text-lg max-w-md mx-auto mb-8 leading-relaxed">{description}</p>
-
-      {action && <div className="flex gap-3">{action}</div>}
+      <div className="flex gap-3">
+        {action ? (
+          action
+        ) : onCreate ? (
+          <button
+            onClick={onCreate}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#FBFF00] hover:bg-yellow-300 text-slate-900 font-bold rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95">
+            <Plus className="w-5 h-5" />
+            {createLabel}
+          </button>
+        ) : null}
+      </div>
     </div>
   )
 }

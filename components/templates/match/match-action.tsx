@@ -10,7 +10,6 @@ import { TbRectangleVerticalFilled } from 'react-icons/tb'
 function MatchAction({ startMatch, handleScoreAction, timeline }: IMatchActionProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  // Auto scroll ke bawah saat ada event baru
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight
@@ -18,7 +17,7 @@ function MatchAction({ startMatch, handleScoreAction, timeline }: IMatchActionPr
   }, [timeline])
 
   return (
-    <div className="w-full max-w-5xl mx-auto mt-8 flex flex-col gap-6">
+    <div className="w-full max-w-5xl mx-auto mt-8 flex flex-col gap-6 mb-23">
       {/* SECTION A: TIMELINE FEED */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-72">
         <div className="bg-slate-50 px-4 py-3 border-b border-slate-100 flex justify-between items-center">
@@ -41,7 +40,7 @@ function MatchAction({ startMatch, handleScoreAction, timeline }: IMatchActionPr
       {/* SECTION B: CONTROL PANEL */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 relative">
         {/* Divider Visual di Desktop */}
-        <div className="hidden md:block absolute left-1/2 -translate-x-1/2 top-4 bottom-4 w-px bg-gradient-to-b from-transparent via-slate-200 to-transparent" />
+        <div className="hidden md:block absolute left-1/2 -translate-x-1/2 top-4 bottom-4 w-px bg-linear-to-b from-transparent via-slate-200 to-transparent" />
 
         {/* Home Controls */}
         <div className="space-y-4">
@@ -51,14 +50,7 @@ function MatchAction({ startMatch, handleScoreAction, timeline }: IMatchActionPr
           </div>
           <div className="grid grid-cols-2 gap-3">
             {ACTIONS_CONFIG.map((action) => (
-              <ActionButton
-                key={action.id}
-                config={action}
-                disabled={!startMatch}
-                align="left"
-                // Mengirim action.id ('GOAL', 'YELLOW', dst) ke hook
-                onClick={() => handleScoreAction(action.id as ManualActionType, 'home')}
-              />
+              <ActionButton key={action.id} config={action} disabled={!startMatch} align="left" onClick={() => handleScoreAction(action.id as ManualActionType, 'home')} />
             ))}
           </div>
         </div>
@@ -71,14 +63,7 @@ function MatchAction({ startMatch, handleScoreAction, timeline }: IMatchActionPr
           </div>
           <div className="grid grid-cols-2 gap-3">
             {ACTIONS_CONFIG.map((action) => (
-              <ActionButton
-                key={action.id}
-                config={action}
-                disabled={!startMatch}
-                align="right"
-                // Mengirim action.id ('GOAL', 'YELLOW', dst) ke hook
-                onClick={() => handleScoreAction(action.id as ManualActionType, 'away')}
-              />
+              <ActionButton key={action.id} config={action} disabled={!startMatch} align="right" onClick={() => handleScoreAction(action.id as ManualActionType, 'away')} />
             ))}
           </div>
         </div>

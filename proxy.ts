@@ -8,9 +8,9 @@ import { getToken } from 'next-auth/jwt'
 // Format: Path awalan -> Array Role yang BOLEH masuk.
 // Halaman yang TIDAK ada di sini otomatis dianggap PUBLIC.
 const PRIVATE_ROUTES = [
-  { path: '/admin', roles: ['ADMIN'] },
-  { path: '/refree', roles: ['REFREE', 'ADMIN'] }, // Sesuaikan casing role lo (UPPERCASE/lowercase)
-  { path: '/pendaf', roles: ['PENDAF', 'ADMIN'] },
+  { path: '/admin', roles: ['ADMIN', 'REFREE', 'PENDAF'] },
+  { path: '/admin/refree', roles: ['REFREE', 'ADMIN'] }, // Sesuaikan casing role lo (UPPERCASE/lowercase)
+  { path: '/admin/pendaf', roles: ['PENDAF', 'ADMIN'] },
   { path: '/user', roles: ['PARTICIPANT', 'PENDAF', 'REFREE', 'ADMIN'] },
   { path: '/dashboard', roles: ['PARTICIPANT', 'ADMIN'] }, // Contoh tambahan
   { path: '/uploads', roles: ['PARTICIPANT', 'PENDAF', 'REFREE', 'ADMIN'] },

@@ -7,19 +7,22 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { MatchDetailContent } from './match-detail'
 import { ValidationModal } from '@/components/ui/modal'
+import Loader from '@/components/ui/loader'
 
 const CardMatch = ({ data, user }: { data: ICardMatch; user: IAuthUser | null }) => {
   const router = useRouter()
   const [showModalStart, setShowModalStart] = useState(false)
   const [isDetailOpen, setIsDetailOpen] = useState(false)
-  const { mutate } = useCreateMatchRound()
+  const { mutateAsync, isPending } = useCreateMatchRound()
 
-  const goToMatch = () => {
-    mutate({ tourId: data.tournamentId, matchId: data.uid })
-    router.push(`/admin/match/${data.uid}`)
+  const goToMatch = async () => {
+    await mutateAsync({ tourId: data.tournamentId, matchId: data.uid })
+    router.push(`/admin/refree/match/${data.uid}`)
   }
 
-  const isAdmin = user?.role === 'ADMIN'
+  if (isPending) return <Loader show />
+
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'REFREE'
   const isLive = data?.status === 'ONGOING' || data?.status === 'LIVE'
   const isFinished = data?.status === 'FINISHED'
 

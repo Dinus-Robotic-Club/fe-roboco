@@ -1,8 +1,18 @@
+// utils/api-fetch.ts
 import { getSession } from 'next-auth/react'
 
-export async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
-  const session = await getSession()
-  const token = session?.accessToken
+// Tambahkan properti token di options
+interface ApiFetchOptions extends RequestInit {
+  token?: string
+}
+
+export async function apiFetch<T>(url: string, options?: ApiFetchOptions): Promise<T> {
+  let token = options?.token
+
+  if (!token) {
+    const session = await getSession()
+    token = session?.accessToken
+  }
 
   const isFormData = options?.body instanceof FormData
 
@@ -16,6 +26,7 @@ export async function apiFetch<T>(url: string, options?: RequestInit): Promise<T
     cache: 'no-store',
   })
 
+  // ... error handling
   if (!res.ok) {
     const errorBody = await res.json().catch(() => ({}))
     throw new Error(errorBody?.message || `API Error: ${res.status}`)

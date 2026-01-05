@@ -5,14 +5,17 @@ import { useParams } from 'next/navigation'
 import { useAuth } from '@/context/auth-context'
 import Loader from '@/components/ui/loader'
 import MatchControlInterface from '@/components/templates/match/match-control'
+import { useMounted } from '@/hooks/useMounted'
 
 function MatchControlWrapper() {
   const params = useParams()
-  const roundId = params.slug as string
+  const mounted = useMounted()
+  const matchId = params.slug as string
 
-  if (!roundId) return null
+  if (!matchId) return null
 
-  return <MatchControlInterface roundId={roundId} />
+  if (!mounted) return null
+  return <MatchControlInterface matchId={matchId} />
 }
 
 const MatchControl = () => {
@@ -20,7 +23,7 @@ const MatchControl = () => {
 
   if (isLoading) return <Loader show />
   return (
-    <Suspense fallback={<Loader show />}>
+    <Suspense fallback={<></>}>
       <MatchControlWrapper />
     </Suspense>
   )

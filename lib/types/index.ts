@@ -87,6 +87,8 @@ export interface IMatchListProps {
   user: IAuthUser | null
   emptyTitle?: string
   emptyDescription?: string
+  type?: 'admin' | 'user'
+  onCreate?: () => void
 }
 
 export interface IRankColumn<T> {
@@ -109,7 +111,6 @@ export interface IGenericRankTableProps<T> {
 export interface IRankLayoutProps {
   title: string
   highlight?: string // Bagian judul yang berwarna kuning
-  isEmpty: boolean
   children: React.ReactNode
 }
 
