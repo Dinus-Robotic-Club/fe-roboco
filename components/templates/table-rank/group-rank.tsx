@@ -3,7 +3,7 @@
 import { GenericRankTable } from '@/components/ui/table'
 import { RankLayout } from '@/components/layout/table-layout'
 import { soccerColumns, sumoColumns } from '@/lib'
-import { Trophy } from 'lucide-react'
+import { Trophy, Award, CheckCircle, XCircle } from 'lucide-react'
 import { EmptyState } from '@/components/ui/empty'
 
 // --- Types ---
@@ -17,6 +17,34 @@ interface GroupRankProps {
   type?: 'user' | 'admin'
   title: string
 }
+
+// Legend untuk menunjukkan keterangan warna
+const PlayoffQualificationLegend = () => (
+  <div className="flex flex-wrap items-center gap-4 mb-6 px-4 py-3 bg-white rounded-xl border border-slate-200 shadow-sm w-fit">
+    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Keterangan:</span>
+    <div className="flex items-center gap-2">
+      <div className="w-4 h-4 bg-amber-50 border-l-4 border-l-amber-400 rounded-sm" />
+      <div className="flex items-center gap-1">
+        <Award className="w-3.5 h-3.5 text-amber-500" />
+        <span className="text-xs font-semibold text-slate-700">Juara Grup</span>
+      </div>
+    </div>
+    <div className="flex items-center gap-2">
+      <div className="w-4 h-4 bg-emerald-50/80 border-l-4 border-l-emerald-400 rounded-sm" />
+      <div className="flex items-center gap-1">
+        <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+        <span className="text-xs font-semibold text-slate-700">Lolos Playoff</span>
+      </div>
+    </div>
+    <div className="flex items-center gap-2">
+      <div className="w-4 h-4 bg-red-50 border-l-4 border-l-red-400 rounded-sm" />
+      <div className="flex items-center gap-1">
+        <XCircle className="w-3.5 h-3.5 text-red-500" />
+        <span className="text-xs font-semibold text-slate-700">Tidak Lolos</span>
+      </div>
+    </div>
+  </div>
+)
 
 export function GroupRank({ data, activeFilter, onFilterChange, onCreate, type = 'user', title }: GroupRankProps) {
   const getEmptyDescription = () => {
@@ -46,16 +74,21 @@ export function GroupRank({ data, activeFilter, onFilterChange, onCreate, type =
 
       {/* 2. Content View */}
       {data && data.length > 0 ? (
-        <div className="grid gap-8 w-full grid-cols-1 xl:grid-cols-2 animate-in fade-in duration-500">
-          {data.map((group, i) => {
-            // Logic visual: Menentukan kolom berdasarkan isi data
-            const isSoccerGroup = group.teams.some((t) => t.team.category === 'SOCCER')
-            const columns = isSoccerGroup ? soccerColumns : sumoColumns
-            const categoryLabel = isSoccerGroup ? 'Soccer' : 'Sumo'
+        <>
+          {/* Legend */}
+          <PlayoffQualificationLegend />
 
-            return <GenericRankTable key={i} title={group.name} subtitle={`${categoryLabel} Standings`} data={group.teams} columns={columns} />
-          })}
-        </div>
+          <div className="grid gap-8 w-full grid-cols-1 xl:grid-cols-2 animate-in fade-in duration-500">
+            {data.map((group, i) => {
+              // Logic visual: Menentukan kolom berdasarkan isi data
+              const isSoccerGroup = group.teams.some((t) => t.team.category === 'SOCCER')
+              const columns = isSoccerGroup ? soccerColumns : sumoColumns
+              const categoryLabel = isSoccerGroup ? 'Soccer' : 'Sumo'
+
+              return <GenericRankTable key={i} title={group.name} subtitle={`${categoryLabel} Standings`} data={group.teams} columns={columns} />
+            })}
+          </div>
+        </>
       ) : (
         // 3. Empty State View
         <EmptyState

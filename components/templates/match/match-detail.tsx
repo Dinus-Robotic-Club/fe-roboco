@@ -7,7 +7,7 @@ import { IThemeConfig } from '@/lib/types'
 import { Activity, Calendar, CircleDot, Clock, Flag, Info, Layers, TrendingUp, Trophy, Zap } from 'lucide-react'
 
 export const MatchDetailContent = ({ data }: { data: ICardMatch }) => {
-  const theme = getCategoryTheme(data.category) as IThemeConfig
+  const theme = getCategoryTheme(data.category ?? 'SOCCER') as IThemeConfig
 
   // Data Processing
   const sortedEvents = [...data.events].sort((a, b) => a.minute - b.minute)
@@ -26,8 +26,8 @@ export const MatchDetailContent = ({ data }: { data: ICardMatch }) => {
         <MetadataItem
           icon={Layers}
           label="Kategori"
-          value={data.category}
-          subValue={<span className="text-[10px] text-slate-500 font-medium px-2 py-0.5 bg-slate-100 rounded-full border border-slate-200">{data.roundLabel}</span>}
+          value={data.category ?? '-'}
+          subValue={<span className="text-[10px] text-slate-500 font-medium px-2 py-0.5 bg-slate-100 rounded-full border border-slate-200">{data.roundLabel ?? '-'}</span>}
         />
 
         <MetadataItem icon={Trophy} label="Sistem" value={`Best Of ${data.bestOf}`} />
@@ -53,8 +53,8 @@ export const MatchDetailContent = ({ data }: { data: ICardMatch }) => {
                 <StatBar label="Skor Akhir" valueA={scoreA} valueB={scoreB} total={totalScore} theme={theme} />
                 <StatBar
                   label="Dominasi Event"
-                  valueA={data.events.filter((e) => e.teamId === data.teamA.uid).length}
-                  valueB={data.events.filter((e) => e.teamId === data.teamB.uid).length}
+                  valueA={data.events.filter((e) => data.teamA && e.teamId === data.teamA.uid).length}
+                  valueB={data.events.filter((e) => data.teamB && e.teamId === data.teamB.uid).length}
                   total={data.events.length}
                   theme={theme}
                 />
@@ -99,7 +99,7 @@ export const MatchDetailContent = ({ data }: { data: ICardMatch }) => {
               ) : (
                 <div className="space-y-6">
                   {sortedEvents.map((event) => (
-                    <TimelineMatch key={event.uid} event={event} teamA={data.teamA} teamB={data.teamB} category={data.category} theme={theme} />
+                    <TimelineMatch key={event.uid} event={event} teamA={data.teamA ?? undefined} teamB={data.teamB ?? undefined} category={data.category ?? 'SOCCER'} theme={theme} />
                   ))}
                 </div>
               )}

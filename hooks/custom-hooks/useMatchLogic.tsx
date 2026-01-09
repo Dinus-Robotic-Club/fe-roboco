@@ -8,14 +8,13 @@ import { useUpdateScoreMatch } from '../useUpdateScoreMatch'
 import { useEndMatchRound } from '../useEndMatchRound'
 import { useCreateMatchRound } from '../useCreateMatchRound'
 import { ITimelineAction } from '@/lib/types'
-import { useQueryClient } from '@tanstack/react-query' // Opsional: untuk invalidasi manual
+import { useQueryClient } from '@tanstack/react-query'
 
 export function useMatchLogic(matchId: string) {
   const router = useRouter()
   const queryClient = useQueryClient()
 
   // --- QUERIES & MUTATIONS ---
-  // Pastikan useGetMatchRound mengembalikan object query lengkap (termasuk refetch)
   const { data: response, refetch } = useGetMatchRound(matchId)
 
   const { mutateAsync: updateScore } = useUpdateScoreMatch()
@@ -39,6 +38,13 @@ export function useMatchLogic(matchId: string) {
 
   const [timeline, setTimeline] = useState<ITimelineAction[]>([])
   const timerRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Store last known good state for error recovery
+  const lastGoodStateRef = useRef<{
+    homeScore: number
+    awayScore: number
+    timeline: ITimelineAction[]
+  } | null>(null)
 
   useEffect(() => {
     if (!matchData || !matchData.rounds) return
@@ -65,9 +71,15 @@ export function useMatchLogic(matchId: string) {
     setHomeScore(currentActiveRound.scoreA)
     setAwayScore(currentActiveRound.scoreB)
 
+    // Store as last known good state
+    lastGoodStateRef.current = {
+      homeScore: currentActiveRound.scoreA,
+      awayScore: currentActiveRound.scoreB,
+      timeline: [],
+    }
+
     // D. Reconstruct Timeline (Fix filter by Round ID)
     if (matchData.events && Array.isArray(matchData.events)) {
-      // Filter event HANYA untuk ronde yang sedang aktif
       const roundEvents = matchData.events.filter((e) => e.roundId === currentActiveRound.uid)
 
       const mappedTimeline: ITimelineAction[] = roundEvents.map((ev: IMatchEvent) => {
@@ -77,19 +89,69 @@ export function useMatchLogic(matchId: string) {
         else if (ev.type === 'PENALTY') type = 'penalty'
         else if (ev.type === 'GOAL' || ev.type === 'KNOCKOUT') type = 'point'
 
-        const isHome = ev.teamId === matchData.teamA.uid
+        const isHome = ev.teamId === matchData.teamA?.uid
 
         return {
-          name: isHome ? matchData.teamA.name : matchData.teamB.name,
+          name: isHome ? matchData.teamA?.name : matchData.teamB?.name,
           team: isHome ? 'home' : 'away',
           time: `${ev.minute}'`,
           type: type,
         }
       })
 
-      setTimeline(mappedTimeline.sort((a, b) => parseInt(a.time) - parseInt(b.time)))
+      const sortedTimeline = mappedTimeline.sort((a, b) => parseInt(a.time as string) - parseInt(b.time as string))
+      setTimeline(sortedTimeline)
+
+      // Update last good state with timeline
+      lastGoodStateRef.current = {
+        homeScore: currentActiveRound.scoreA,
+        awayScore: currentActiveRound.scoreB,
+        timeline: sortedTimeline,
+      }
     }
-  }, [matchData, currentActiveRound, isSumo]) // Hapus matchId dari dependency agar tidak re-run berlebih
+  }, [matchData, currentActiveRound, isSumo])
+
+  // --- RESTORE DATA FROM SERVER ON ERROR ---
+  const restoreFromServer = useCallback(async () => {
+    toast.info('Memulihkan data dari server...')
+    try {
+      const result = await refetch()
+      const freshData = result.data?.data as IMatchRound | undefined
+      const freshRound = freshData?.rounds?.find((r) => r.status === 'ACTIVE')
+
+      if (freshRound) {
+        setHomeScore(freshRound.scoreA)
+        setAwayScore(freshRound.scoreB)
+
+        // Restore timeline from events
+        if (freshData?.events && Array.isArray(freshData.events)) {
+          const roundEvents = freshData.events.filter((e) => e.roundId === freshRound.uid)
+          const mappedTimeline: ITimelineAction[] = roundEvents.map((ev: IMatchEvent) => {
+            let type: ITimelineAction['type'] = 'point'
+            if (ev.type === 'YELLOW_CARD') type = 'yellow'
+            else if (ev.type === 'RED_CARD') type = 'red'
+            else if (ev.type === 'PENALTY') type = 'penalty'
+            else if (ev.type === 'GOAL' || ev.type === 'KNOCKOUT') type = 'point'
+
+            const isHome = ev.teamId === freshData.teamA?.uid
+
+            return {
+              name: isHome ? freshData.teamA?.name : freshData.teamB?.name,
+              team: isHome ? 'home' : 'away',
+              time: `${ev.minute}'`,
+              type: type,
+            }
+          })
+          setTimeline(mappedTimeline.sort((a, b) => parseInt(a.time as string) - parseInt(b.time as string)))
+        }
+
+        toast.success('Data berhasil dipulihkan')
+      }
+    } catch (restoreError) {
+      console.error('Error restoring data:', restoreError)
+      toast.error('Gagal memulihkan data')
+    }
+  }, [refetch])
 
   // --- 3. TIMER LOGIC ---
   const toggleTimer = useCallback(() => {
@@ -125,8 +187,15 @@ export function useMatchLogic(matchId: string) {
       return
     }
 
-    const teamId = team === 'home' ? matchData.teamA.uid : matchData.teamB.uid
-    const teamName = team === 'home' ? matchData.teamA.name : matchData.teamB.name
+    const teamId = team === 'home' ? matchData.teamA?.uid : matchData.teamB?.uid
+    const teamName = team === 'home' ? matchData.teamA?.name : matchData.teamB?.name
+
+    // Store current state before optimistic update (for rollback)
+    const previousState = {
+      homeScore,
+      awayScore,
+      timeline: [...timeline],
+    }
 
     // 1. Optimistic Update (UI duluan)
     const timeString = formatTime(secondsLeft)
@@ -159,57 +228,78 @@ export function useMatchLogic(matchId: string) {
       await updateScore({
         matchId: matchData.uid,
         body: {
-          teamId,
+          teamId: teamId!,
           type: backendEventType,
           value: 1,
           minute: currentMinute,
         },
       })
 
+      // SUMO: Langsung proceed ke round berikutnya setelah GOAL (tanpa endRound)
       if (isSumo && type === 'GOAL') {
+        // Calculate the new scores after optimistic update
+        const newHomeScore = team === 'home' ? homeScore + 1 : homeScore
+        const newAwayScore = team === 'away' ? awayScore + 1 : awayScore
+
         let roundWinner: 'home' | 'away' | 'draw' = 'draw'
-        if (homeScore > awayScore) roundWinner = 'home'
-        else if (awayScore > homeScore) roundWinner = 'away'
-        checkMatchStatusAndProceed(roundWinner)
+        if (newHomeScore > newAwayScore) roundWinner = 'home'
+        else if (newAwayScore > newHomeScore) roundWinner = 'away'
+
+        // SUMO: Skip endRound, go directly to checkMatchStatus
+        await checkMatchStatusForSumo(roundWinner)
       }
     } catch (error) {
       toast.error('Gagal update skor ke server')
-      console.log('Error updating score:', error)
+      console.error('Error updating score:', error)
 
-      setTimeline((prev) => prev.slice(0, -1))
-      if (type === 'GOAL') {
-        if (team === 'home') setHomeScore((h) => Math.max(0, h - 1))
-        else setAwayScore((a) => Math.max(0, a - 1))
-      }
+      // RESTORE: Rollback to previous state first (simple rollback)
+      setHomeScore(previousState.homeScore)
+      setAwayScore(previousState.awayScore)
+      setTimeline(previousState.timeline)
+
+      // Then fetch fresh data from server for complete restore
+      await restoreFromServer()
     }
   }
 
-  const checkMatchStatusAndProceed = async (currentRoundWinner: 'home' | 'away' | 'draw') => {
+  // SUMO specific: Only updateScore + createRound (NO endRound)
+  const checkMatchStatusForSumo = async (currentRoundWinner: 'home' | 'away' | 'draw') => {
     if (!matchData) return
 
-    let currentWinsA = homeRoundsWon
-    let currentWinsB = awayRoundsWon
+    // Stop timer
+    if (timerRef.current) clearInterval(timerRef.current)
+    setIsPlaying(false)
+    toast.loading('Memproses hasil ronde SUMO...')
 
-    if (currentRoundWinner === 'home') currentWinsA++
-    else if (currentRoundWinner === 'away') currentWinsB++
+    try {
+      // Calculate wins including current round
+      let currentWinsA = homeRoundsWon
+      let currentWinsB = awayRoundsWon
+      if (currentRoundWinner === 'home') currentWinsA++
+      else if (currentRoundWinner === 'away') currentWinsB++
 
-    const bestOf = matchData.bestOf || 3
-    const winThreshold = Math.ceil(bestOf / 2)
+      const bestOf = matchData.bestOf || 3
+      const winThreshold = Math.ceil(bestOf / 2)
 
-    if (currentWinsA >= winThreshold || currentWinsB >= winThreshold) {
-      const winnerName = currentWinsA >= winThreshold ? matchData.teamA.name : matchData.teamB.name
-      toast.dismiss()
-      toast.success(`PERTANDINGAN SELESAI! Pemenang: ${winnerName}`)
+      const matchFinished = currentWinsA >= winThreshold || currentWinsB >= winThreshold
 
-      await queryClient.invalidateQueries({ queryKey: ['match-group'] })
+      if (matchFinished) {
+        // Match is over
+        const winnerName = currentWinsA >= winThreshold ? matchData.teamA?.name : matchData.teamB?.name
+        toast.dismiss()
+        toast.success(`PERTANDINGAN SELESAI! Pemenang: ${winnerName}`)
 
-      setTimeout(() => {
-        router.push('/admin/refree/match')
-      }, 1500)
-    } else {
-      toast.loading('Menyiapkan Ronde Berikutnya...')
+        await queryClient.invalidateQueries({ queryKey: ['match-group'] })
+        await queryClient.invalidateQueries({ queryKey: ['get-ongoing-match'] })
 
-      try {
+        setTimeout(() => {
+          router.push('/admin/refree/match')
+        }, 1500)
+      } else {
+        // Match continues - create new round (SUMO: NO endRound call)
+        toast.dismiss()
+        toast.loading('Menyiapkan Ronde Berikutnya...')
+
         await createRound({
           tourId: matchData.tournamentId,
           matchId: matchData.uid,
@@ -219,25 +309,112 @@ export function useMatchLogic(matchId: string) {
         const nextRoundNum = (currentActiveRound?.roundNumber || 0) + 1
         toast.success(`Lanjut ke Ronde ${nextRoundNum}`)
 
-        // Reset Local State
+        // Reset Local State for new round
+        const defaultDuration = currentActiveRound?.duration || 3
+        setSecondsLeft(defaultDuration * 60)
+        setHomeScore(0)
+        setAwayScore(0)
+        setTimeline([])
+        setHomeRoundsWon(currentWinsA)
+        setAwayRoundsWon(currentWinsB)
+
+        refetch()
+      }
+    } catch (error: unknown) {
+      toast.dismiss()
+      console.error('Error in checkMatchStatusForSumo:', error)
+      toast.error('Gagal memproses hasil ronde SUMO')
+
+      // Restore from server on error
+      await restoreFromServer()
+    }
+  }
+
+  // SOCCER: Uses endRound hook
+  const checkMatchStatusAndProceed = async (currentRoundWinner: 'home' | 'away' | 'draw') => {
+    if (!matchData) return
+
+    // Stop timer
+    if (timerRef.current) clearInterval(timerRef.current)
+    setIsPlaying(false)
+
+    try {
+      // 1. End the current round on backend (SOCCER only)
+      const result = (await endRound({ matchId: matchData.uid })) as { data?: IEndRoundResponse }
+
+      // 2. Check if match is finished based on backend response OR local calculation
+      let matchFinished = result?.data?.matchFinished || result?.data?.updatedMatch?.status === 'FINISHED'
+
+      // Calculate wins including current round
+      let currentWinsA = homeRoundsWon
+      let currentWinsB = awayRoundsWon
+      if (currentRoundWinner === 'home') currentWinsA++
+      else if (currentRoundWinner === 'away') currentWinsB++
+
+      const bestOf = matchData.bestOf || 3
+      const winThreshold = Math.ceil(bestOf / 2)
+
+      // Logic: Jika sudah mencapai threshold, paksa finish jika backend belum finish
+      if (!matchFinished && (currentWinsA >= winThreshold || currentWinsB >= winThreshold)) {
+        matchFinished = true
+      }
+
+      if (matchFinished) {
+        // Match is over
+        const winnerName = currentWinsA >= winThreshold ? matchData.teamA?.name : matchData.teamB?.name
+        toast.dismiss()
+        toast.success(`PERTANDINGAN SELESAI! Pemenang: ${winnerName}`)
+
+        await queryClient.invalidateQueries({ queryKey: ['match-group'] })
+        await queryClient.invalidateQueries({ queryKey: ['get-ongoing-match'] })
+
+        setTimeout(() => {
+          router.push('/admin/refree/match')
+        }, 1500)
+      } else {
+        // Match continues - create new round
+        toast.dismiss()
+        toast.loading('Menyiapkan Ronde Berikutnya...')
+
+        await createRound({
+          tourId: matchData.tournamentId,
+          matchId: matchData.uid,
+        })
+
+        toast.dismiss()
+        const nextRoundNum = (currentActiveRound?.roundNumber || 0) + 1
+        toast.success(`Lanjut ke Ronde ${nextRoundNum}`)
+
+        // Reset Local State for new round
         const defaultDuration = isSumo ? currentActiveRound?.duration : 3
         setSecondsLeft(defaultDuration! * 60)
         setHomeScore(0)
         setAwayScore(0)
         setTimeline([])
-
         setHomeRoundsWon(currentWinsA)
         setAwayRoundsWon(currentWinsB)
 
-        setIsPlaying(false)
-        if (timerRef.current) clearInterval(timerRef.current)
-
         refetch()
-      } catch (error) {
-        toast.dismiss()
-        toast.error('Gagal membuat ronde baru')
-        console.log('Error creating new round:', error)
       }
+    } catch (error: unknown) {
+      toast.dismiss()
+
+      // Check if error indicates match is already finished
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      if (errorMessage.includes('already finished') || errorMessage.includes('finished') || errorMessage.includes('round not found') || errorMessage.includes('not found')) {
+        toast.success('Pertandingan sudah selesai!')
+        await queryClient.invalidateQueries({ queryKey: ['match-group'] })
+        setTimeout(() => {
+          router.push('/admin/refree/match')
+        }, 1500)
+        return
+      }
+
+      toast.error('Gagal memproses hasil ronde')
+      console.error('Error in checkMatchStatusAndProceed:', error)
+
+      // Restore from server on error
+      await restoreFromServer()
     }
   }
 
@@ -250,23 +427,30 @@ export function useMatchLogic(matchId: string) {
     toast.loading('Menyelesaikan Ronde...')
 
     try {
-      await endRound({ matchId: matchData.uid })
-
       let roundWinner: 'home' | 'away' | 'draw' = 'draw'
       if (homeScore > awayScore) roundWinner = 'home'
       else if (awayScore > homeScore) roundWinner = 'away'
 
-      await checkMatchStatusAndProceed(roundWinner)
+      // SUMO: Skip endRound, SOCCER: Use endRound
+      if (isSumo) {
+        await checkMatchStatusForSumo(roundWinner)
+      } else {
+        // FIXED: Don't call endRound here because checkMatchStatusAndProceed calls it internally.
+        // This prevents the double-hit bug.
+        await checkMatchStatusAndProceed(roundWinner)
+      }
     } catch (e) {
       toast.dismiss()
       toast.error('Gagal menyelesaikan ronde secara manual')
-      console.log('Error ending round manually:', e)
+      console.error('Error ending round manually:', e)
+
+      // Restore from server on error
+      await restoreFromServer()
     }
   }
 
   return {
     matchData,
-    // Jika tidak ada active round, mungkin match baru selesai atau belum mulai
     currentRoundNumber: currentActiveRound?.roundNumber || matchData?.rounds?.length || 0,
     isMatchActive: !!currentActiveRound,
     state: {

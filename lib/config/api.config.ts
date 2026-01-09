@@ -1,20 +1,25 @@
-// utils/api-fetch.ts
-import { getSession } from 'next-auth/react'
+import Cookies from 'js-cookie'
 
-// Tambahkan properti token di options
 interface ApiFetchOptions extends RequestInit {
   token?: string
 }
 
+const ACCESS_TOKEN_KEY = 'accessToken'
+
 export async function apiFetch<T>(url: string, options?: ApiFetchOptions): Promise<T> {
+  // Get token from options or from cookies (client-side)
   let token = options?.token
 
-  if (!token) {
-    const session = await getSession()
-    token = session?.accessToken
+  if (token === undefined && typeof window !== 'undefined') {
+    token = Cookies.get(ACCESS_TOKEN_KEY)
   }
 
   const isFormData = options?.body instanceof FormData
+
+  // [🌐 API REQUEST] Logger
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[🌐 API REQUEST] URL: ${url} Time: ${new Date().toLocaleTimeString()}`)
+  }
 
   const res = await fetch(url, {
     ...options,
@@ -26,7 +31,6 @@ export async function apiFetch<T>(url: string, options?: ApiFetchOptions): Promi
     cache: 'no-store',
   })
 
-  // ... error handling
   if (!res.ok) {
     const errorBody = await res.json().catch(() => ({}))
     throw new Error(errorBody?.message || `API Error: ${res.status}`)

@@ -1,9 +1,9 @@
 'use client'
 
 import Navbar from '@/components/ui/navbar'
-import { bracket6Teams, nav_admin, nav_tournament } from '@/lib/statis-data'
+import { nav_admin, nav_tournament } from '@/lib/statis-data'
 import { HeaderDashboard } from '@/components/ui/header'
-import { Suspense, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Footer } from '@/components/ui/footer'
 import { useGetDetailTournament } from '@/hooks/useGetDetailTournament'
 import { useParams } from 'next/navigation'
@@ -18,17 +18,32 @@ import { Playoff } from '@/components/templates/bracket/bracket'
 import Config from '@/components/templates/config-turney/config'
 import { useGenerateGroups } from '@/hooks/useGenerateGroups'
 import { useCreateMatch } from '@/hooks/useCreateMatch'
+import { UserManagement } from '@/components/templates/user-management/user-management'
+import { useCreateUser } from '@/hooks/useCreateUser'
+import { useGetAllUser } from '@/hooks/useGetAllUser'
+import { useGetPlayoff } from '@/hooks/useGetPlayoff'
+import { useGeneratePlayoff } from '@/hooks/useGeneratePlayoff'
+import { transformPlayoffToMatchBracket } from '@/lib/api/playoff'
+import { EmptyState } from '@/components/ui/empty'
+import { Trophy } from 'lucide-react'
 
 const PageComponent = ({ session }: { session: IAuthUser | null }) => {
   const [isActiveNav, setIsActiveNav] = useState('overview')
   const [filter, setFilter] = useState<CategoryFilter>('ALL')
+  const [bracketCategory, setBracketCategory] = useState<'SOCCER' | 'SUMO'>('SOCCER')
 
   const params = useParams()
   const tournamentSlug = params.slug as string
 
-  const { data: tournamentDetail } = useGetDetailTournament(tournamentSlug)
+  const { data: tournamentDetail, isLoading: isTournamentLoading } = useGetDetailTournament(tournamentSlug)
   const { mutate: generateGroup, isPending: isGenerating } = useGenerateGroups(tournamentDetail?.data?.uid || '', tournamentSlug)
   const { mutate: createMatch, isPending: isCreating } = useCreateMatch(tournamentDetail?.data?.uid || '', tournamentSlug)
+  const { mutate: createUser, isPending: isCreatingUser } = useCreateUser()
+  const { data: allUser, isLoading: isUserLoading } = useGetAllUser()
+  const { data: playoffData, isLoading: isPlayoffLoading } = useGetPlayoff(tournamentDetail?.data?.uid || '')
+  const { mutate: generatePlayoff, isPending: isGeneratingPlayoff } = useGeneratePlayoff(tournamentDetail?.data?.uid || '', tournamentSlug)
+
+  const isLoading = isTournamentLoading || isUserLoading || isPlayoffLoading || isGenerating || isCreating || isGeneratingPlayoff || isCreatingUser
 
   // 3. Data Source & Filtering
   const allGroups = useMemo(() => tournamentDetail?.data?.groups || [], [tournamentDetail])
@@ -40,29 +55,73 @@ const PageComponent = ({ session }: { session: IAuthUser | null }) => {
     })
   }, [allGroups, filter])
 
+  // Transform playoff data to bracket format
+  const soccerBracketMatches = useMemo(() => {
+    if (!playoffData?.data?.soccer) return []
+    return transformPlayoffToMatchBracket(playoffData.data.soccer)
+  }, [playoffData])
+
+  const sumoBracketMatches = useMemo(() => {
+    if (!playoffData?.data?.sumo) return []
+    return transformPlayoffToMatchBracket(playoffData.data.sumo)
+  }, [playoffData])
+
+  const currentBracketMatches = bracketCategory === 'SOCCER' ? soccerBracketMatches : sumoBracketMatches
+
   let componentToRender
 
   if (isActiveNav === 'teams') {
-    componentToRender = <TeamList data={tournamentDetail.data as ITournamentData} type="admin" slug={tournamentSlug} />
+    componentToRender = <TeamList data={tournamentDetail?.data as ITournamentData} type="admin" slug={tournamentSlug} />
   } else if (isActiveNav === 'participants') {
-    componentToRender = <ParticipantsList data={tournamentDetail.data?.registrations?.map((reg) => reg.team) as ITeam[]} />
+    componentToRender = <ParticipantsList data={tournamentDetail?.data?.registrations?.map((reg) => reg.team) as ITeam[]} />
   } else if (isActiveNav === 'config') {
     componentToRender = <Config />
   } else if (isActiveNav === 'bracket') {
-    componentToRender = <Playoff title="Playoff SUMO" matches={bracket6Teams} />
+    const hasBrackets = soccerBracketMatches.length > 0 || sumoBracketMatches.length > 0
+
+    if (!hasBrackets) {
+      componentToRender = (
+        <EmptyState
+          icon={Trophy}
+          title="Bracket Belum Tersedia"
+          description="Buat bracket playoff setelah fase grup selesai. Semua pertandingan grup harus diselesaikan terlebih dahulu."
+          onCreate={() => generatePlayoff()}
+          createLabel="Buat Bracket Playoff"
+          className="w-full max-w-4xl"
+        />
+      )
+    } else {
+      componentToRender = (
+        <div className="w-full flex flex-col items-center">
+          {/* Category Toggle */}
+          <div className="flex items-center gap-2 mb-6">
+            {['SOCCER', 'SUMO'].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setBracketCategory(cat as 'SOCCER' | 'SUMO')}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-wider transition-all duration-200 border
+                ${bracketCategory === cat ? 'bg-[#FBFF00] border-[#FBFF00] text-black shadow-sm' : 'bg-transparent border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-800'}`}>
+                {cat}
+              </button>
+            ))}
+          </div>
+          <Playoff title={`Playoff ${bracketCategory}`} matches={currentBracketMatches} />
+        </div>
+      )
+    }
   } else if (isActiveNav === 'group') {
     componentToRender = <GroupRank data={filteredGroups} activeFilter={filter} onFilterChange={setFilter} type="admin" onCreate={() => generateGroup()} title="GROUP RANK" />
   } else if (isActiveNav === 'match') {
-    componentToRender = <MatchList data={tournamentDetail.data?.matches as ICardMatch[]} user={session} type="admin" onCreate={() => createMatch()} />
+    componentToRender = <MatchList data={tournamentDetail?.data?.matches as ICardMatch[]} user={session} type="admin" onCreate={() => createMatch()} />
   } else if (isActiveNav === 'user') {
-    componentToRender = null
+    componentToRender = <UserManagement users={allUser?.data || []} onAddUser={(data) => createUser(data)} isPending={isCreatingUser} />
   } else {
     componentToRender = null
   }
 
   return (
     <div className="bg-grid h-full w-full">
-      <Loader show={isGenerating || isCreating} />
+      <Loader show={isLoading} />
 
       <Navbar left={nav_admin.left} right={nav_admin.right} />
       <HeaderDashboard title="Detail Turnamen" name=" " />
@@ -88,11 +147,7 @@ const Page = () => {
   const { isLoading, user: session } = useAuth()
 
   if (isLoading) return <Loader show />
-  return (
-    <Suspense fallback={<></>}>
-      <PageComponent session={session as IAuthUser | null} />
-    </Suspense>
-  )
+  return <PageComponent session={session as IAuthUser | null} />
 }
 
 export default Page

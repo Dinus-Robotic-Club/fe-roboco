@@ -1,9 +1,10 @@
 import { getAllTeam } from '@/lib/api/team'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 
 export const useGetAllTeams = () => {
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: ['get-all-teams'],
     queryFn: getAllTeam,
+    enabled: true,
   })
 }

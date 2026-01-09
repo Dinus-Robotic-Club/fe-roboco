@@ -1,6 +1,20 @@
 import { colSpanClasses } from '@/lib'
 import { IGenericRankTableProps } from '@/lib/types'
 
+// Helper untuk menentukan style baris berdasarkan posisi ranking
+const getRowPositionStyle = (position: number): string => {
+  if (position === 0) {
+    // Rank 1: Juara Grup - Gold/Amber
+    return 'bg-amber-50 border-l-4 border-l-amber-400'
+  } else if (position < 4) {
+    // Rank 2-4: Lolos Playoff - Green
+    return 'bg-emerald-50/50 border-l-4 border-l-emerald-400'
+  } else {
+    // Rank 5+: Tidak Lolos - Red
+    return 'bg-red-50/50 border-l-4 border-l-red-400'
+  }
+}
+
 // Update Interface ini di file types kamu (atau biarkan disini jika ingin collocated)
 
 export function GenericRankTable<T>({ data, columns, title, subtitle, onRowClick, rowClassName = '' }: IGenericRankTableProps<T>) {
@@ -42,12 +56,10 @@ export function GenericRankTable<T>({ data, columns, title, subtitle, onRowClick
                     className={`
                       grid grid-cols-12 px-4 py-3.5 items-center 
                       transition-all duration-200 group relative
-                      ${onRowClick ? 'cursor-pointer hover:bg-slate-50 active:bg-slate-100' : 'hover:bg-slate-50/50'}
+                      ${getRowPositionStyle(rowIdx)}
+                      ${onRowClick ? 'cursor-pointer hover:brightness-95 active:brightness-90' : 'hover:brightness-[0.98]'}
                       ${rowClassName} 
                     `}>
-                    {/* Hover Indicator Line (Optional Aesthetic) */}
-                    {onRowClick && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#FBFF00] opacity-0 group-hover:opacity-100 transition-opacity" />}
-
                     {columns.map((col, colIdx) => {
                       const spanClass = colSpanClasses[col.colSpan || 1] || 'col-span-1'
                       return (

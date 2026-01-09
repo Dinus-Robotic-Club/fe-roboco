@@ -4,13 +4,16 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { FaEye, FaEyeSlash, FaLock } from 'react-icons/fa'
 import { useRouter } from 'next/navigation'
-import { signIn } from 'next-auth/react'
 import { AtSign } from 'lucide-react'
 import { ILoginError } from '@/lib/types/auth'
 import { useMounted } from '@/hooks/useMounted'
+import { useAuth } from '@/context/auth-context'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { login } = useAuth()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -42,27 +45,45 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      const res = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
+      // Call backend login API directly
+      const res = await fetch(`${API_URL}/api/auth/user/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       })
 
-      if (res?.error) {
-        try {
-          const errorObj = JSON.parse(res.error)
-          setErrors(errorObj)
-        } catch {
-          setErrors({ general: res.error })
-        }
+      const data = await res.json()
+
+      if (!res.ok) {
+        setErrors({ general: data.message || 'Login failed' })
         return
       }
 
-      const sessionRes = await fetch('/api/auth/session')
-      const sessionData = await sessionRes.json()
+      // Extract token and user from response
+      const token = data.data.token
+      const user = data.data.user
 
-      if (sessionData?.user?.role === 'ADMIN') {
+      if (!token) {
+        setErrors({ general: 'Invalid response from server' })
+        return
+      }
+
+      // Use the new auth context login function
+      login(token, {
+        uidUser: user.uid,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      })
+
+      // Role-based redirect
+      const userRole = user.role
+      if (userRole === 'ADMIN') {
         router.push('/admin/dashboard')
+      } else if (userRole === 'REFEREE' || userRole === 'REFREE') {
+        router.push('/admin/refree/match')
+      } else if (userRole === 'PENDAF') {
+        router.push('/admin/pendaf/list-participant')
       } else {
         router.push('/dashboard')
       }
@@ -71,10 +92,6 @@ export default function LoginPage() {
 
       if (err instanceof Error) {
         setErrors({ general: err.message })
-      } else if (typeof err === 'string') {
-        setErrors({ general: err })
-      } else if (err && typeof err === 'object' && 'message' in err) {
-        setErrors({ general: String(err.message) })
       } else {
         setErrors({ general: 'Terjadi kesalahan pada server.' })
       }

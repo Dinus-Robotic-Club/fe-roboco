@@ -1,5 +1,5 @@
 import { ExcelRow, IParticipantRow, IRankColumn } from './types'
-import { formatDate, renderTeamInfo } from './function'
+import { formatDate, getImageUrl, renderTeamInfo } from './function'
 import Image from 'next/image'
 import { StatusBadge } from '@/components/ui/badge'
 import { GiGoalKeeper, GiSoccerBall } from 'react-icons/gi'
@@ -261,7 +261,7 @@ export const basisColumns: IRankColumn<ICommunity>[] = [
         <span className="text-lg font-semibold w-6 text-slate-400 shrink-0">{index + 1}.</span>
 
         <div className="flex bg-logo-team w-12 h-12 shrink-0 items-center justify-center drop-shadow-sm">
-          <Image src={`${process.env.NEXT_PUBLIC_API_URL}${item.team[0]?.logo || ''}`} alt="logo" width={100} height={100} className="w-full h-full p-1 object-contain" unoptimized />
+          <Image src={getImageUrl(item.team[0]?.logo)} alt="logo" width={100} height={100} className="w-full h-full p-1 object-contain" unoptimized />
         </div>
 
         <div className="flex flex-col min-w-0">

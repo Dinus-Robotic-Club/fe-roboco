@@ -9,6 +9,7 @@ interface IParticipant {
   identityCardImage: string
   phone: string
   twibbon: string
+  certificate?: string | null
   roleInTeam: ParticipantRole
   createdAt: string
   updatedAt: string

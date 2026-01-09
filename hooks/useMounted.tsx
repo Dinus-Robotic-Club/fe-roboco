@@ -1,10 +1,10 @@
 'use client'
-import { useState, useLayoutEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 export function useMounted() {
   const [mounted, setMounted] = useState(false)
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setMounted(true)
   }, [])
 

@@ -1,8 +1,6 @@
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
-import { getServerSession } from 'next-auth'
+// Manual auth utilities - NextAuth has been removed
+// This file is kept for compatibility but all auth logic is now in:
+// - /lib/utils/auth-cookie.ts (cookie utilities)
+// - /context/auth-context.tsx (auth context/provider)
 
-export async function auth() {
-  return await getServerSession(authOptions)
-}
-
-export { signIn, signOut } from 'next-auth/react'
+export { getAuthToken, getUserData, setAuthToken, removeAuthToken } from '@/lib/utils/auth-cookie'

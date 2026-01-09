@@ -1,9 +1,10 @@
-import { getAllCommunity } from "@/lib/api/team"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { getAllCommunity } from '@/lib/api/team'
+import { useQuery } from '@tanstack/react-query'
 
 export const useGetCommunity = () => {
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: ['all-community'],
     queryFn: getAllCommunity,
+    enabled: true,
   })
 }

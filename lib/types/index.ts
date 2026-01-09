@@ -40,6 +40,7 @@ export interface IApiResponse<T> {
 export interface ITeamDisplayProps {
   team: { name: string; logo: string; communityName: string }
   align: 'left' | 'right'
+  isTBD?: boolean
 }
 
 export interface IScoreboardProps {
@@ -112,6 +113,7 @@ export interface IRankLayoutProps {
   title: string
   highlight?: string // Bagian judul yang berwarna kuning
   children: React.ReactNode
+  isEmpty?: boolean // To conditionally show empty state
 }
 
 export interface INavItemProps {
@@ -225,10 +227,10 @@ export interface ITabItemProps {
 }
 
 export interface ITimelineAction {
-  name: string
-  team: string
-  time: string
-  type: 'point' | 'penalty' | 'foul' | 'yellow' | 'red'
+  name?: string
+  team?: string
+  time?: string
+  type?: 'point' | 'penalty' | 'foul' | 'yellow' | 'red'
   player?: string
 }
 
@@ -241,16 +243,27 @@ export interface IMatchActionProps {
 }
 
 export interface IParticipantRow {
-  // Info Member
+  // Core identifiers (for compatibility with both naming conventions)
+  uid: string
   participantId: string
+
+  // Info Member
+  name: string
   participantName: string
+  roleInTeam: string
   participantRole: string
-  participantAvatar?: string // jika ada
+  image?: string | null
+  participantAvatar?: string | null
+  phone: string
+  twibbon?: string
+  certificate?: string | null
 
   // Info Tim (Parent)
   teamId: string
   teamName: string
   teamCategory: string
+  teamLogo?: string | null
+  communityName?: string
 
   // Info Status (Dari Registration Tim)
   registrationStatus: string

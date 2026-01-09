@@ -53,6 +53,35 @@ export const nav_admin = createNav({
   ],
 })
 
+// Navbar for REFEREE role - only match management
+export const nav_referee = createNav({
+  left: [{ title: 'Pertandingan', href: '/admin/refree/match' }],
+  right: [{ title: 'Keluar', href: '/auth/login' }],
+})
+
+// Navbar for PENDAF role - registration and attendance
+export const nav_pendaf = createNav({
+  left: [
+    { title: 'Kehadiran', href: '/admin/pendaf/checking-ticket' },
+    { title: 'Peserta', href: '/admin/pendaf/list-participant' },
+    { title: 'Tambah Tim', href: '/admin/pendaf/register-team' },
+  ],
+  right: [{ title: 'Keluar', href: '/auth/login' }],
+})
+
+// Helper function to get navbar based on user role
+export const getNavByRole = (role?: string | null): NavData => {
+  switch (role) {
+    case 'REFEREE':
+      return nav_referee
+    case 'PENDAF':
+      return nav_pendaf
+    case 'ADMIN':
+    default:
+      return nav_admin
+  }
+}
+
 export const nav_participants = createNav({
   left: [
     { title: 'Tournament', href: '#' },
@@ -148,19 +177,19 @@ export const timeline = [
   {
     title: 'Close Registration',
     description: 'Penutupan pendaftaran, kesempatan terakhir untuk masuk dalam kompetisi ini.',
-    date: '8 Januari 2026',
+    date: '12 Januari 2026',
     icon: ClipboardList,
   },
   {
     title: 'Technical Meeting',
     description: 'Sesi pengarahan teknis bagi seluruh peserta sebelum memasuki arena kompetisi.',
-    date: '10 Januari 2026',
+    date: '12 Januari 2026',
     icon: UsersRound,
   },
   {
     title: 'Main Event',
     description: 'Pertandingan utama dimulai, para peserta beradu strategi untuk menjadi yang terbaik.',
-    date: '20 Januari 2026',
+    date: '24 Januari 2026',
     icon: SwordsIcon,
   },
 ]

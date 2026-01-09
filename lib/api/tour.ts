@@ -21,9 +21,10 @@ export const updateTournament = (uid: string, data: FormData): Promise<IApiRespo
   })
 }
 
-export const getDetailTournament = (slug: string): Promise<IApiResponse<ITournamentData>> => {
+export const getDetailTournament = (slug: string, token?: string): Promise<IApiResponse<ITournamentData>> => {
   return apiFetch<IApiResponse<ITournamentData>>(`${BASE}/api/tournament/get/${slug}`, {
     method: 'GET',
+    token,
   })
 }
 

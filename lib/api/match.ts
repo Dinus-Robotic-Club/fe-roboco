@@ -3,27 +3,31 @@ import { IApiResponse } from '../types'
 
 const BASE = process.env.NEXT_PUBLIC_API_URL
 
-export const getAllMatchOnGoing = (): Promise<IApiResponse<MatchListResponse>> => {
+export const getAllMatchOnGoing = (token?: string): Promise<IApiResponse<MatchListResponse>> => {
   return apiFetch<IApiResponse<MatchListResponse>>(`${BASE}/api/matches/ongoing`, {
     method: 'GET',
+    token,
   })
 }
 
-export const getAllMatchHistory = (): Promise<IApiResponse<MatchListResponse>> => {
+export const getAllMatchHistory = (token?: string): Promise<IApiResponse<MatchListResponse>> => {
   return apiFetch<IApiResponse<MatchListResponse>>(`${BASE}/api/matches/history`, {
     method: 'GET',
+    token,
   })
 }
 
-export const getAllMatchOnGoingById = (): Promise<IApiResponse<MatchListResponse>> => {
+export const getAllMatchOnGoingById = (token?: string): Promise<IApiResponse<MatchListResponse>> => {
   return apiFetch<IApiResponse<MatchListResponse>>(`${BASE}/api/matches/team/ongoing`, {
     method: 'GET',
+    token,
   })
 }
 
-export const getAllMatchHistoryById = (): Promise<IApiResponse<MatchListResponse>> => {
+export const getAllMatchHistoryById = (token?: string): Promise<IApiResponse<MatchListResponse>> => {
   return apiFetch<IApiResponse<MatchListResponse>>(`${BASE}/api/matches/team/history`, {
     method: 'GET',
+    token,
   })
 }
 
@@ -34,9 +38,10 @@ export const createMatchRound = (tourId: string, matchId: string, token: string)
   })
 }
 
-export const getMatchRound = (matchId: string): Promise<IApiResponse<IMatchRound>> => {
+export const getMatchRound = (matchId: string, token?: string): Promise<IApiResponse<IMatchRound>> => {
   return apiFetch<IApiResponse<IMatchRound>>(`${BASE}/api/matches/round/${matchId}`, {
     method: 'GET',
+    token,
   })
 }
 

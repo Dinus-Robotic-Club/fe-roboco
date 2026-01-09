@@ -148,19 +148,19 @@ const TeamScoreCard = ({
   isSumo,
   align = 'left',
 }: {
-  name: string
-  school: string
-  logo: string
-  score: number
-  roundsWon: number
-  isSumo: boolean
+  name?: string
+  school?: string
+  logo?: string
+  score?: number
+  roundsWon?: number
+  isSumo?: boolean
   align?: 'left' | 'right'
 }) => (
   <div className={`flex flex-col ${align === 'right' ? 'items-end' : 'items-start'} flex-1 min-w-0`}>
     <div className={`flex items-center gap-4 ${align === 'right' ? 'flex-row-reverse' : 'flex-row'}`}>
       {/* Logo */}
       <div className="bg-slate-50 border border-slate-100 rounded-xl p-2 w-16 h-16 shadow-sm flex items-center justify-center">
-        <Image src={`${process.env.NEXT_PUBLIC_API_URL}${logo ?? '/logo-only.svg'}`} alt={name} width={40} height={40} className="w-auto h-auto" unoptimized />
+        <Image src={getImageUrl(logo)} alt={name as string} width={40} height={40} className="w-auto h-auto" unoptimized />
       </div>
 
       {/* Name & School */}
@@ -181,7 +181,7 @@ const TeamScoreCard = ({
               _,
               i, // Asumsi BO3 (max 2 win)
             ) => (
-              <div key={i} className={`w-3 h-3 rounded-full ${i < roundsWon ? 'bg-[#FBFF00] shadow-[0_0_8px_#FBFF00]' : 'bg-slate-200'}`} />
+              <div key={i} className={`w-3 h-3 rounded-full ${i < roundsWon! ? 'bg-[#FBFF00] shadow-[0_0_8px_#FBFF00]' : 'bg-slate-200'}`} />
             ),
           )}
         </div>

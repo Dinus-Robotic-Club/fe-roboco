@@ -56,10 +56,11 @@ export const useTournamentLogic = () => {
     mutate(formData)
   }
 
-  if (isSuccess) {
-    setIsDialogOpen(false)
-    toast.success('Turnamen berhasil dibuat!')
-  }
+  useEffect(() => {
+    if (isSuccess) {
+      setIsDialogOpen(false)
+    }
+  }, [isSuccess])
 
   // Filtering Logic
   const filteredData = tournaments?.data?.filter((t) => t.name.toLowerCase().includes(searchQuery.toLowerCase()))

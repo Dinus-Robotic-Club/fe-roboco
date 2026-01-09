@@ -4,11 +4,11 @@ import React, { useState, useEffect, useMemo } from 'react'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { FiAlignRight, FiX } from 'react-icons/fi'
-import { signOut } from 'next-auth/react'
 import { useAuth } from '@/context/auth-context'
 import NavLogo from './nav-logo'
 import { INavItemProps, NavData, NavItemType } from '@/lib/types/index'
 import { CTA_BUTTONS } from '@/lib/statis-data'
+import { isRegistrationOpen } from '@/lib/utils/registration-deadline'
 
 const NavItem: React.FC<INavItemProps> = ({ item, isActive, onClick, className = '' }) => {
   const isCta = CTA_BUTTONS.includes(item.title as 'Masuk' | 'Keluar' | 'Dashboard')
@@ -33,7 +33,7 @@ const Navbar: React.FC<NavData> = ({ left, right }) => {
 
   const pathname = usePathname()
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
 
   useEffect(() => {
     // Set mounted true setelah render pertama di client
@@ -47,7 +47,7 @@ const Navbar: React.FC<NavData> = ({ left, right }) => {
   const handleNavClick = (e: React.MouseEvent, href: string, title: string) => {
     if (title === 'Keluar') {
       e.preventDefault()
-      signOut({ redirect: true, callbackUrl: '/auth/login' })
+      logout()
       return
     }
 
@@ -65,15 +65,37 @@ const Navbar: React.FC<NavData> = ({ left, right }) => {
     router.push(href)
   }
 
+  // Filter out "Daftar" link when registration is closed
+  const registrationAwareRightMenu = useMemo(() => {
+    if (!isMounted) return right
+
+    return right.filter((item) => {
+      // Hide "Daftar" link when registration is closed
+      if (item.title === 'Daftar' && !isRegistrationOpen()) {
+        return false
+      }
+      return true
+    })
+  }, [right, isMounted])
+
   const authAwareRightMenu = useMemo(() => {
     // PENTING: Jika belum mounted (SSR), jangan gunakan logika user.
     // Kembalikan menu default (misal: tombol 'Masuk') agar HTML server & client sama.
-    if (!isMounted) return right
+    if (!isMounted) return registrationAwareRightMenu
 
-    return right
+    return registrationAwareRightMenu
       .map((item) => {
         if (item.title === 'Masuk' && user) {
-          const dashboardHref = user.role === 'ADMIN' ? '/admin/dashboard' : '/dashboard'
+          let dashboardHref = '/dashboard'
+
+          if (user.role === 'ADMIN') {
+            dashboardHref = '/admin/dashboard'
+          } else if (user.role === 'REFREE' || user.role === 'REFEREE') {
+            dashboardHref = '/admin/refree/match'
+          } else if (user.role === 'PENDAF') {
+            dashboardHref = '/admin/pendaf/list-participant'
+          }
+
           return { ...item, title: 'Dashboard', href: dashboardHref }
         }
         if (item.title === 'Keluar' && !user) {
@@ -82,7 +104,7 @@ const Navbar: React.FC<NavData> = ({ left, right }) => {
         return item
       })
       .filter((item): item is NavItemType => Boolean(item))
-  }, [right, user, isMounted]) // Tambahkan isMounted ke dependency
+  }, [registrationAwareRightMenu, user, isMounted]) // Tambahkan isMounted ke dependency
 
   const mobileMenu = useMemo(() => [...left, ...authAwareRightMenu], [left, authAwareRightMenu])
 

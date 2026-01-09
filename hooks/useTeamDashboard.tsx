@@ -1,9 +1,10 @@
 import { getTeamDashboard } from '@/lib/api/team'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 
 export const useTeamDashboard = () => {
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: ['dashboard-teams'],
     queryFn: getTeamDashboard,
+    enabled: true,
   })
 }

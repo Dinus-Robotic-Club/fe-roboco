@@ -7,15 +7,20 @@ import { useCreateTeamByAdmin } from '@/hooks/useCreateTeamByAdmin'
 import { useGetCommunity } from '@/hooks/useGetCommunity'
 import { useGetTournaments } from '@/hooks/useGetTournaments'
 import { useMounted } from '@/hooks/useMounted'
-import { nav_admin } from '@/lib/statis-data'
+import { getNavByRole } from '@/lib/statis-data'
+import { useAuth } from '@/context/auth-context'
 import Image from 'next/image'
-import { FormEvent, Suspense, useState } from 'react'
+import { FormEvent, useState } from 'react'
 
 function Register() {
+  const { user } = useAuth()
+  const nav = getNavByRole(user?.role)
   const mounted = useMounted()
-  const { data: communities } = useGetCommunity()
-  const { data: tournaments } = useGetTournaments()
+  const { data: communities, isLoading: isCommunityLoading } = useGetCommunity()
+  const { data: tournaments, isLoading: isTournamentLoading } = useGetTournaments()
   const { mutate, isPending } = useCreateTeamByAdmin()
+
+  const isLoading = isCommunityLoading || isTournamentLoading
 
   const [team, setTeam] = useState<ITeamBody>({
     name: '',
@@ -79,8 +84,8 @@ function Register() {
 
   return (
     <main className="w-full relative flex flex-col items-center bg-grid">
-      <Loader show={isPending} />
-      <Navbar left={nav_admin.left} right={nav_admin.right} />
+      <Loader show={isPending || isLoading} />
+      <Navbar left={nav.left} right={nav.right} />
       <div className="z-10 min-h-175 w-full shadow-lg absolute top-0 left-0 right-0 bg-white"></div>
 
       <div className="flex flex-col max-w-5xl justify-center items-center font-plus-jakarta-sans w-full px-10 gap-4 text-center mt-52 mb-32 z-20">
@@ -89,7 +94,7 @@ function Register() {
 
       <div className="max-h-full md:max-h-127.5 w-full max-w-294 relative flex justify-center items-center flex-col px-3 sm:px-6 lg:px-20 z-20 mb-28 py-10 mx-auto shadow-md lg:shadow-none bg-[#fcff00] lg:bg-transparent">
         <Image src="/bg-registration-team.svg" alt="Registration Team" fill className="rounded-md object-cover hidden lg:block" />
-        <FormRegistationTeam data={team} setData={setTeam} listTour={tournaments.data} error={error.team} listCommunity={communities.data} type="admin" />
+        <FormRegistationTeam data={team} setData={setTeam} listTour={tournaments?.data || []} error={error.team} listCommunity={communities?.data || []} type="admin" />
       </div>
 
       <div className="w-full flex flex-col justify-center items-center mb-28">
@@ -118,11 +123,7 @@ function Register() {
 }
 
 const RegisterPage = () => {
-  return (
-    <Suspense fallback={<></>}>
-      <Register />
-    </Suspense>
-  )
+  return <Register />
 }
 
 export default RegisterPage

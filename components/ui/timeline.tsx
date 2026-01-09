@@ -1,8 +1,8 @@
 import { ACTIONS_CONFIG } from '@/lib'
 import { IThemeConfig, ITimelineAction } from '@/lib/types'
 
-const TimelineMatch = ({ event, teamA, teamB, category, theme }: { event: IMatchEvent; teamA: ITeam; teamB: ITeam; category: string; theme: IThemeConfig }) => {
-  const isTeamA = event.teamId === teamA.uid
+const TimelineMatch = ({ event, teamA, teamB, category, theme }: { event: IMatchEvent; teamA?: ITeam; teamB?: ITeam; category: string; theme: IThemeConfig }) => {
+  const isTeamA = event.teamId === teamA?.uid
   const timeDisplay = category === 'SUMO' ? `R${event.minute}` : `${event.minute}'`
   const EventIcon = theme.icon
 
@@ -24,7 +24,7 @@ const TimelineMatch = ({ event, teamA, teamB, category, theme }: { event: IMatch
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 truncate">{event.type || theme.label}</span>
-            <span className="text-xs font-bold text-slate-800 leading-tight truncate">{isTeamA ? teamA.name : teamB.name}</span>
+            <span className="text-xs font-bold text-slate-800 leading-tight truncate">{isTeamA ? teamA?.name ?? 'TBD' : teamB?.name ?? 'TBD'}</span>
           </div>
           <div className="ml-auto pl-3 border-l border-slate-50">
             <span className="text-sm font-bold text-emerald-500">+1</span>
@@ -54,7 +54,7 @@ export const TimelineItem = ({ event }: { event: ITimelineAction }) => {
       <div className="shrink-0 w-12 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-mono font-bold text-slate-600 z-10 border-2 border-white shadow-sm">{event.time}</div>
 
       {/* Connecting Line (Optional Aesthetic) */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-px bg-slate-100 -z-0" />
+      <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-px bg-slate-100 z-0" />
 
       {/* Away Side */}
       <div className={`flex-1 flex items-center justify-start gap-3 ${!isHome ? 'opacity-100' : 'opacity-0'}`}>

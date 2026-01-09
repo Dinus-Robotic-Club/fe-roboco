@@ -38,9 +38,9 @@ export default function MatchControlInterface({ matchId }: { matchId: string }) 
           <div className="p-6 lg:p-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-4">
             {/* HOME TEAM */}
             <TeamScoreCard
-              name={matchData.teamA.name}
-              school={matchData.teamA.community?.name as string}
-              logo={matchData.teamA.logo as string}
+              name={matchData.teamA?.name}
+              school={matchData.teamA?.community?.name as string}
+              logo={matchData.teamA?.logo as string}
               score={state.homeScore}
               roundsWon={state.homeRoundsWon}
               isSumo={isSumo}
@@ -57,9 +57,9 @@ export default function MatchControlInterface({ matchId }: { matchId: string }) 
 
             {/* AWAY TEAM */}
             <TeamScoreCard
-              name={matchData.teamB.name}
-              school={matchData.teamB.community?.name as string}
-              logo={matchData.teamB.logo as string}
+              name={matchData.teamB?.name}
+              school={matchData.teamB?.community?.name as string}
+              logo={matchData.teamB?.logo as string}
               score={state.awayScore}
               roundsWon={state.awayRoundsWon}
               isSumo={isSumo}

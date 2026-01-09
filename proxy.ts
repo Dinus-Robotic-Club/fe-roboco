@@ -1,119 +1,105 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { getToken } from 'next-auth/jwt'
 
 // ==============================================================================
-// 1. KONFIGURASI PRIVATE ROUTES (STRICT MODE)
+// 1. KONFIGURASI ROUTES
 // ==============================================================================
-// Format: Path awalan -> Array Role yang BOLEH masuk.
-// Halaman yang TIDAK ada di sini otomatis dianggap PUBLIC.
+
+// Routes yang HANYA boleh diakses tamu (kalau dah login, tendang ke dashboard)
+const AUTH_ROUTES = ['/auth/login', '/auth/register']
+
+// Routes yang BUTUH login (Prefix-based)
+// Definisikan path dan role yang diizinkan
 const PRIVATE_ROUTES = [
   { path: '/admin', roles: ['ADMIN', 'REFREE', 'PENDAF'] },
-  { path: '/admin/refree', roles: ['REFREE', 'ADMIN'] }, // Sesuaikan casing role lo (UPPERCASE/lowercase)
-  { path: '/admin/pendaf', roles: ['PENDAF', 'ADMIN'] },
+  { path: '/dashboard', roles: ['PARTICIPANT', 'ADMIN', 'REFREE'] }, // Tambah REFREE jika perlu
   { path: '/user', roles: ['PARTICIPANT', 'PENDAF', 'REFREE', 'ADMIN'] },
-  { path: '/dashboard', roles: ['PARTICIPANT', 'ADMIN'] }, // Contoh tambahan
   { path: '/uploads', roles: ['PARTICIPANT', 'PENDAF', 'REFREE', 'ADMIN'] },
 ]
 
-// ==============================================================================
-// 2. KONFIGURASI RATE LIMIT & BOT
-// ==============================================================================
-const rateLimitMap = new Map()
-const LIMIT_TIME_WINDOW = 60 * 1000
-const MAX_REQUESTS = 100
-
-const GOOD_BOTS = ['googlebot', 'bingbot', 'slurp', 'duckduckbot', 'baiduspider', 'yandexbot', 'facebot', 'twitterbot']
+// Cookie Names
+const ACCESS_TOKEN_KEY = 'accessToken'
+const USER_DATA_KEY = 'userData'
 
 // ==============================================================================
-// 3. HELPER FUNCTIONS
+// 2. HELPER FUNCTIONS
 // ==============================================================================
-const getIP = (req: NextRequest) => {
-  const forwardedFor = req.headers.get('x-forwarded-for')
-  if (forwardedFor) return forwardedFor.split(',')[0].trim()
-  const realIp = req.headers.get('x-real-ip')
-  if (realIp) return realIp.trim()
-  return req.ip || '127.0.0.1'
-}
-
-const isSearchEngineBot = (req: NextRequest): boolean => {
-  const ua = req.headers.get('user-agent')?.toLowerCase() || ''
-  return GOOD_BOTS.some((bot) => ua.includes(bot))
+const getUserRole = (req: NextRequest): string | null => {
+  const userDataCookie = req.cookies.get(USER_DATA_KEY)?.value
+  if (!userDataCookie) return null
+  try {
+    const data = JSON.parse(userDataCookie)
+    return data.role || null
+  } catch {
+    return null
+  }
 }
 
 // ==============================================================================
-// 4. MAIN MIDDLEWARE LOGIC
+// 3. MAIN MIDDLEWARE LOGIC
 // ==============================================================================
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
-  const ip = getIP(req)
-  const isBot = isSearchEngineBot(req)
+  const token = req.cookies.get(ACCESS_TOKEN_KEY)?.value
+  const userRole = getUserRole(req)
 
-  // --- A. RATE LIMITER ---
-  if (!isBot) {
-    const now = Date.now()
-    const windowStart = now - LIMIT_TIME_WINDOW
-    const requestHistory = rateLimitMap.get(ip) || []
-    const activeRequests = requestHistory.filter((timestamp: number) => timestamp > windowStart)
-
-    if (activeRequests.length >= MAX_REQUESTS) {
-      console.warn(`[RATE LIMIT] IP: ${ip} blocked accessing ${pathname}`)
-      return new NextResponse(JSON.stringify({ success: false, message: 'Too many requests.' }), {
-        status: 429,
-        headers: { 'content-type': 'application/json' },
-      })
-    }
-    activeRequests.push(now)
-    rateLimitMap.set(ip, activeRequests)
+  // --- A. IGNORE ASSETS & API ---
+  // Jangan proses middleware untuk file statis atau API internal Next.js
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.includes('.') // file extension like .svg, .png
+  ) {
+    return NextResponse.next()
   }
 
-  // --- B. AUTHENTICATION & RBAC (STRICT) ---
+  // --- B. AUTH ROUTE HANDLING (Login/Register) ---
+  // Jika user sudah login tapi coba buka /auth/login, redirect ke Dashboard
+  if (token && AUTH_ROUTES.some((route) => pathname.startsWith(route))) {
+    // Tentukan tujuan redirect berdasarkan role (Optional Logic)
+    let redirectUrl = '/dashboard'
+    if (userRole === 'ADMIN') redirectUrl = '/admin'
 
-  // 1. Cek apakah route ini ada di daftar PRIVATE_ROUTES
+    return NextResponse.redirect(new URL(redirectUrl, req.url))
+  }
+
+  // --- C. PRIVATE ROUTE HANDLING ---
+  // Cari apakah path yang diakses termasuk private
   const protectedRoute = PRIVATE_ROUTES.find((route) => pathname.startsWith(route.path))
 
-  // Siapkan variable response default (Next/Allow)
-  let response = NextResponse.next()
-
   if (protectedRoute) {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
-
-    console.log(token?.role)
-
-    // Case 2a: Belum Login (Token null) -> Redirect Login
+    // 1. Jika TIDAK ADA token (Belum Login) -> Redirect ke Login
     if (!token) {
       const loginUrl = new URL('/auth/login', req.url)
-      loginUrl.searchParams.set('callbackUrl', encodeURI(req.url))
-      response = NextResponse.redirect(loginUrl)
+      // Simpan URL asal agar bisa redirect balik setelah login
+      loginUrl.searchParams.set('callbackUrl', encodeURI(pathname))
+      return NextResponse.redirect(loginUrl)
     }
-    // Case 2b: Sudah Login -> Cek Role
-    else {
-      const userRole = (token.role as string) || 'GUEST'
 
-      const isAllowed = protectedRoute.roles.includes(userRole)
+    // 2. Jika ADA token, tapi Role tidak sesuai (Forbidden)
+    const isAllowed = userRole && protectedRoute.roles.includes(userRole)
 
-      if (!isAllowed) {
-        console.warn(`[ACCESS DENIED] User: ${token.email} Role: [${userRole}] tried accessing: [${pathname}]`)
-        // Redirect ke halaman 403 Forbidden
-        response = NextResponse.rewrite(new URL('/403', req.url))
-      }
-      // Jika allowed, response tetap NextResponse.next() (default)
+    if (!isAllowed) {
+      // Opsi 1: Redirect ke 403 (Buat halaman app/403/page.tsx)
+      // return NextResponse.rewrite(new URL('/403', req.url))
+
+      // Opsi 2: Redirect ke dashboard default mereka (Lebih user friendly)
+      return NextResponse.redirect(new URL('/dashboard', req.url))
     }
   }
 
-  // --- C. SECURITY HEADERS ---
+  // --- D. FINAL RESPONSE & HEADERS ---
+  const response = NextResponse.next()
+
+  // Security Headers (Standard Practice)
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('X-DNS-Prefetch-Control', 'on')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-
-  if (process.env.NODE_ENV === 'production') {
-    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
-  }
 
   return response
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  // Matcher lebih spesifik agar tidak membebani server
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }

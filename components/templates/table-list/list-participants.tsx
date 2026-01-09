@@ -1,18 +1,26 @@
+'use client'
+
 import { useParticipantsList } from '@/hooks/custom-hooks/useParticipantsList'
 import { useMounted } from '@/hooks/useMounted'
 import { formatCapitalize, generateOptions } from '@/lib/function/func'
-import { IFilterConfig } from '@/lib/types'
-import { useMemo } from 'react'
+import { IFilterConfig, IParticipantRow } from '@/lib/types'
+import { useMemo, useState } from 'react'
 import { FilterControls } from '../tools/filter'
 import { DownloadButton } from '../tools/download'
 import { participantExcelMapper, ParticipantsColumns } from '@/lib'
 import { GenericRankTable } from '@/components/ui/table'
 import { flattenParticipants } from '@/lib/function'
+import { ParticipantDetailModal } from '../participant/participant-detail-modal'
+import { useUpdateParticipantCertificate } from '@/hooks/useUpdateParticipantCertificate'
 
 export function ParticipantsList({ data }: { data: ITeam[] }) {
   const mounted = useMounted()
+  const [selectedParticipant, setSelectedParticipant] = useState<IParticipantRow | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const flatData = useMemo(() => flattenParticipants(data), [data])
+
+  const { mutateAsync: uploadCertificate, isPending: isUploading } = useUpdateParticipantCertificate()
 
   // Gunakan hook khusus Participants
   const { filters, handlers, pagination, data: listData } = useParticipantsList(flatData)
@@ -66,7 +74,41 @@ export function ParticipantsList({ data }: { data: ITeam[] }) {
     },
   ]
 
+  const handleRowClick = (participant: IParticipantRow) => {
+    setSelectedParticipant(participant)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setSelectedParticipant(null)
+  }
+
+  const handleUploadCertificate = async (participantId: string, file: File) => {
+    await uploadCertificate({ participantId, file })
+    handleCloseModal()
+  }
+
   if (!mounted) return null
+
+  // Transform selected participant to modal format
+  const modalParticipant = selectedParticipant
+    ? {
+        uid: selectedParticipant.uid,
+        name: selectedParticipant.name,
+        phone: selectedParticipant.phone,
+        roleInTeam: selectedParticipant.roleInTeam,
+        image: selectedParticipant.image,
+        twibbon: selectedParticipant.twibbon,
+        certificate: selectedParticipant.certificate,
+        team: {
+          name: selectedParticipant.teamName,
+          category: selectedParticipant.teamCategory,
+          logo: selectedParticipant.teamLogo,
+          community: selectedParticipant.communityName ? { name: selectedParticipant.communityName } : null,
+        },
+      }
+    : null
 
   return (
     <>
@@ -88,7 +130,7 @@ export function ParticipantsList({ data }: { data: ITeam[] }) {
         />
 
         {/* Generic Table Render */}
-        <GenericRankTable data={listData.paginated} columns={ParticipantsColumns} />
+        <GenericRankTable data={listData.paginated} columns={ParticipantsColumns} onRowClick={handleRowClick} />
 
         {/* Pagination Controls */}
         {pagination.totalPages > 1 && (
@@ -113,6 +155,9 @@ export function ParticipantsList({ data }: { data: ITeam[] }) {
           </div>
         )}
       </div>
+
+      {/* Participant Detail Modal */}
+      <ParticipantDetailModal participant={modalParticipant} isOpen={isModalOpen} onClose={handleCloseModal} onUploadCertificate={handleUploadCertificate} isUploading={isUploading} />
     </>
   )
 }

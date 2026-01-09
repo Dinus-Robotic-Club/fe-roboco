@@ -1,6 +1,6 @@
 import { IRankLayoutProps } from '@/lib/types'
 
-export function RankLayout({ title, highlight, children }: IRankLayoutProps) {
+export function RankLayout({ title, highlight, children, isEmpty }: IRankLayoutProps) {
   return (
     <div className="w-full flex flex-col items-center font-plus-jakarta-sans">
       {/* Title Section */}
@@ -11,7 +11,7 @@ export function RankLayout({ title, highlight, children }: IRankLayoutProps) {
         <div className="h-1 w-20 bg-[#FBFF00] mx-auto mt-2 rounded-full"></div>
       </div>
 
-      <div className="w-full max-w-7xl">{children}</div>
+      <div className="w-full max-w-7xl">{isEmpty ? <p className="text-center text-slate-500 py-8">No data available</p> : children}</div>
     </div>
   )
 }

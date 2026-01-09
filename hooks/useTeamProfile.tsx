@@ -1,9 +1,10 @@
-import { getTeamProfile } from "@/lib/api/team"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { getTeamProfile } from '@/lib/api/team'
+import { useQuery } from '@tanstack/react-query'
 
 export const useTeamProfile = () => {
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: ['profile-teams'],
     queryFn: getTeamProfile,
+    enabled: true,
   })
 }

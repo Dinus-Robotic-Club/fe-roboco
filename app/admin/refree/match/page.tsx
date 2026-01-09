@@ -7,19 +7,24 @@ import { HeaderDashboard } from '@/components/ui/header'
 import Loader from '@/components/ui/loader'
 import Navbar from '@/components/ui/navbar'
 import { useMatchManager } from '@/hooks/custom-hooks/useMatchManager'
+import { useSocket } from '@/hooks/useSocket'
 import { TABS } from '@/lib'
-import { nav_admin } from '@/lib/statis-data'
-import { Suspense } from 'react'
+import { getNavByRole } from '@/lib/statis-data'
+import { Pagination } from '@/components/ui/pagination'
 
 function MatchAdmin() {
-  const { user, isLoading, state, setters, filteredData } = useMatchManager()
+  const { user, isLoading, state, setters, filteredData, tournamentId } = useMatchManager()
+  const nav = getNavByRole(user?.role)
+
+  // Connect to WebSocket for real-time updates
+  useSocket(tournamentId)
 
   if (isLoading) return <Loader show />
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-grid">
-      <Navbar left={nav_admin.left} right={nav_admin.right} />
-      <HeaderDashboard title="Match Lists 🎮" name="Admin" />
+      <Navbar left={nav.left} right={nav.right} />
+      <HeaderDashboard title="Match Lists 🎮" name={user?.name || 'Admin'} />
 
       <main className="w-full p-4 md:p-6 mb-20 items-center flex flex-col">
         {/* Navigation Tabs */}
@@ -29,8 +34,11 @@ function MatchAdmin() {
         <FilterBar search={state.search} category={state.category} onSearchChange={setters.setSearch} onCategoryChange={setters.setCategory} />
 
         {/* Content List */}
-        <div className="w-full h-auto flex flex-col items-center gap-10 mt-16 mb-20 font-plus-jakarta-sans">
+        <div className="w-full h-auto flex flex-col items-center gap-6 mt-8 mb-20 font-plus-jakarta-sans">
           {state.activeNav === TABS.ONGOING ? <MatchList data={filteredData} user={user} /> : <MatchList data={filteredData} user={user} />}
+
+          {/* Pagination */}
+          <Pagination currentPage={state.page} totalPages={state.totalPages} onPageChange={setters.setPage} totalItems={state.totalItems} itemsPerPage={state.limit} />
         </div>
       </main>
     </div>
@@ -38,11 +46,7 @@ function MatchAdmin() {
 }
 
 const MatchAdminPage = () => {
-  return (
-    <Suspense fallback={<Loader show />}>
-      <MatchAdmin />
-    </Suspense>
-  )
+  return <MatchAdmin />
 }
 
 export default MatchAdminPage

@@ -21,8 +21,8 @@ interface ICardMatch {
   tournamentId: string
   groupId: string | null
   bracketId: string | null
-  teamAId: string
-  teamBId: string
+  teamAId: string | null
+  teamBId: string | null
   bestOf: number
   scoreA: number
   scoreB: number
@@ -31,18 +31,18 @@ interface ICardMatch {
   nextMatchWinSlotIsB: boolean
   nextMatchLoseSlotIsB: boolean
   winnerId: string | null
-  status: 'FINISHED' | 'LIVE' | 'UPCOMING' | 'ONGOING' | 'CANCELLED'
-  roundLabel: string
-  category: 'SOCCER' | 'SUMO'
+  status: 'FINISHED' | 'LIVE' | 'UPCOMING' | 'ONGOING' | 'CANCELLED' | 'PENDING'
+  roundLabel: string | null
+  category: 'SOCCER' | 'SUMO' | null
   createdAt: string
   updatedAt: string
-  teamA: ITeam
-  teamB: ITeam
+  teamA: ITeam | null
+  teamB: ITeam | null
   group: IGroup | null
   events: IMatchEvent[]
-  score: IScore[]
+  score?: IScore[]
   refree: IRefreeMatch | null
-  rounds: IRound[]
+  rounds?: IRound[]
 }
 
 interface IRefreeMatch {
@@ -77,4 +77,16 @@ interface IScoreUpdateBody {
   type: string
   value: number
   minute: number
+}
+
+interface IEndRoundResponse {
+  matchId: string
+  roundId: string
+  matchFinished: boolean
+  winnerId: string | null
+  updatedMatch?: {
+    uid: string
+    status: string
+    winnerId: string | null
+  }
 }

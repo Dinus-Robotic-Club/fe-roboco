@@ -1,4 +1,5 @@
 import { ITeamRowProps } from '@/lib/types'
+import { getImageUrl } from '@/lib/function'
 import Image from 'next/image'
 
 export const TeamRow: React.FC<ITeamRowProps> = ({ team, isTop, hoveredTeamId, setHoveredTeamId, score, isEliminated }) => {
@@ -26,15 +27,8 @@ export const TeamRow: React.FC<ITeamRowProps> = ({ team, isTop, hoveredTeamId, s
       {isEliminated && <div className="absolute inset-0 bg-black/10 pointer-events-none" />}
 
       <div className="flex items-center gap-3 relative z-10">
-        <div
-          className={`w-7 h-7 flex items-center justify-center rounded-full overflow-hidden shrink-0 border border-gray-100 shadow-sm
-          ${!team?.logoUrl ? 'bg-gray-100' : 'bg-white'}
-        `}>
-          {team?.logoUrl ? (
-            <Image width={40} height={40} src={team.logoUrl} alt={team.name} className="w-full h-full object-cover" />
-          ) : (
-            <span className="text-[10px] font-bold text-gray-400">{team?.name?.substring(0, 2) ?? '??'}</span>
-          )}
+        <div className={`w-7 h-7 flex items-center justify-center rounded-full overflow-hidden shrink-0 border border-gray-100 shadow-sm bg-white`}>
+          <Image width={40} height={40} src={getImageUrl(team?.logoUrl)} alt={team?.name ?? 'TBD'} className="w-full h-full object-contain p-0.5" unoptimized />
         </div>
 
         <span className={`text-xs font-semibold uppercase tracking-tight line-clamp-1 max-w-30 ${textClass}`} title={team?.name}>

@@ -73,7 +73,8 @@ export const scrollToFirstError = (issues: z.ZodIssue[]) => {
 }
 
 // fungsi untuk mendapatkan URL lengkap gambar dari path yang diberikan
-export const getImageUrl = (path: string) => `${process.env.NEXT_PUBLIC_API_URL}${path}`
+// Jika path null/undefined, kembalikan default logo lokal tanpa API URL
+export const getImageUrl = (path?: string | null) => (path ? `${process.env.NEXT_PUBLIC_API_URL}${path}` : '/logo-only.svg')
 
 // fungsi untuk mendapatkan tema berdasarkan kategori pertandingan
 export const getCategoryTheme = (category: string) => {
@@ -107,18 +108,11 @@ export const getCategoryTheme = (category: string) => {
 }
 
 // fungsi untuk merender informasi tim dalam format tertentu
-export const renderTeamInfo = (teamName: string, communityName: string | undefined, logoUrl: string, index: number) => (
+export const renderTeamInfo = (teamName: string, communityName: string | undefined, logoUrl?: string | null, index: number = 0) => (
   <div className="flex items-center gap-4">
     <span className="text-sm font-medium text-slate-400 w-3">{index + 1}</span>
     <div className="flex bg-logo-team w-12 h-12 shrink-0 items-center justify-center drop-shadow-sm transition-transform group-hover:scale-105">
-      <Image
-        src={logoUrl.startsWith('http') ? logoUrl : `${process.env.NEXT_PUBLIC_API_URL}${logoUrl}`}
-        alt={teamName}
-        width={100}
-        height={100}
-        className="w-full h-full p-2.5 object-contain"
-        unoptimized
-      />
+      <Image src={getImageUrl(logoUrl)} alt={teamName} width={100} height={100} className="w-full h-full p-2.5 object-contain" unoptimized />
     </div>
     <div className="flex flex-col">
       <p className="font-bold text-sm text-slate-900 line-clamp-1">{teamName}</p>
@@ -251,15 +245,27 @@ export const flattenParticipants = (teams: ITeam[]): IParticipantRow[] => {
     const reg = team.registrations?.[0]
 
     return team.participants.map((participant) => ({
+      // Participant fields
+      uid: participant.uid,
       participantId: participant.uid,
       participantName: participant.name,
+      name: participant.name,
       participantRole: participant.roleInTeam,
+      roleInTeam: participant.roleInTeam,
       participantAvatar: participant.image,
+      image: participant.image,
+      phone: participant.phone || '',
+      twibbon: participant.twibbon || '',
+      certificate: participant.certificate || null,
 
+      // Team fields
       teamId: team.uid,
       teamName: team.name,
       teamCategory: team.category,
+      teamLogo: team.logo,
+      communityName: team.community?.name || '',
 
+      // Registration fields
       registrationStatus: reg?.status || 'PENDING',
       attendanceStatus: reg?.attendeance?.isPresent || false,
     }))

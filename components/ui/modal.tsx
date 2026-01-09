@@ -10,7 +10,7 @@ import { CAPTION_TEXT } from '@/lib/statis-data'
 import { IModalProps, IValidationProps } from '@/lib/types'
 import { StatusBadge } from './badge'
 import { DataRow } from './row'
-import { formatDate } from '@/lib/function'
+import { formatDate, getImageUrl } from '@/lib/function'
 import { ImageThumbnail } from './thumbnail'
 
 export default function ImageUploadModal({
@@ -327,7 +327,7 @@ const TeamDetailModal: React.FC<IModalProps> = ({ isOpen, onClose, data, onAppro
                 {/* Team Logo Container - Added relative for fill */}
                 <div className="relative w-16 h-16 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden shrink-0">
                   {team.logo ? (
-                    <Image src={team.logo} alt={team.name} fill className="object-cover" sizes="64px" />
+                    <Image src={getImageUrl(team.logo)} alt={team.name} fill className="object-cover" sizes="64px" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-slate-300">
                       <Shield className="w-8 h-8" />
@@ -402,7 +402,7 @@ const TeamDetailModal: React.FC<IModalProps> = ({ isOpen, onClose, data, onAppro
                   className="bg-white p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-md cursor-pointer transition-all flex items-center gap-4 group">
                   {/* Participant Avatar - Added relative */}
                   <div className="relative w-12 h-12 rounded-full bg-slate-100 overflow-hidden shrink-0 border border-slate-100">
-                    <Image src={member.image} alt={member.name} fill className="object-cover" sizes="48px" />
+                    <Image src={getImageUrl(member.image)} alt={member.name} fill className="object-cover" sizes="48px" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-slate-800 truncate group-hover:text-blue-600 transition-colors">{member.name}</p>
@@ -433,7 +433,7 @@ const TeamDetailModal: React.FC<IModalProps> = ({ isOpen, onClose, data, onAppro
             <div className="text-center mb-6">
               {/* Detail Avatar - Added relative */}
               <div className="relative w-24 h-24 rounded-full bg-slate-100 mx-auto mb-4 border-4 border-white shadow-lg overflow-hidden">
-                <Image src={selectedParticipant.image} alt={selectedParticipant.name} fill className="object-cover" sizes="96px" />
+                <Image src={getImageUrl(selectedParticipant.image)} alt={selectedParticipant.name} fill className="object-cover" sizes="96px" />
               </div>
               <h3 className="text-xl font-bold text-slate-900">{selectedParticipant.name}</h3>
               <p className="text-sm text-slate-500 font-medium mt-1">
@@ -475,7 +475,7 @@ const TeamDetailModal: React.FC<IModalProps> = ({ isOpen, onClose, data, onAppro
         <div className="fixed inset-0 z-60 bg-black/95 backdrop-blur flex items-center justify-center p-4 cursor-zoom-out" onClick={() => setPreviewImage(null)}>
           {/* Wrapper relative diperlukan untuk next/image fill */}
           <div className="relative w-full h-full max-w-6xl max-h-[85vh]">
-            <Image src={previewImage} alt="Preview" fill className="object-contain animate-in zoom-in-90 duration-300 drop-shadow-2xl" sizes="100vw" priority unoptimized />
+            <Image src={getImageUrl(previewImage)} alt="Preview" fill className="object-contain animate-in zoom-in-90 duration-300 drop-shadow-2xl" sizes="100vw" priority unoptimized />
           </div>
           <button className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full backdrop-blur-md transition-all z-50">
             <X className="w-8 h-8" />

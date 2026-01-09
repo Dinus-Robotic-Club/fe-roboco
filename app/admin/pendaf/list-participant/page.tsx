@@ -6,18 +6,22 @@ import { Footer } from '@/components/ui/footer'
 import { HeaderDashboard } from '@/components/ui/header'
 import Navbar from '@/components/ui/navbar'
 import { useGetAllTeams } from '@/hooks/useGetAllCommunity'
-import { nav_admin } from '@/lib/statis-data'
-import React, { Suspense, useState } from 'react'
+import { getNavByRole } from '@/lib/statis-data'
+import { useAuth } from '@/context/auth-context'
+import Loader from '@/components/ui/loader'
+import React, { useState } from 'react'
 
 const ListPage = () => {
+  const { user } = useAuth()
+  const nav = getNavByRole(user?.role)
   const [activeNav, setActiveNav] = useState('team-list')
   let ComponentToRender
-  const { data: teams } = useGetAllTeams()
+  const { data: teams, isLoading } = useGetAllTeams()
 
   if (activeNav === 'team-list') {
-    ComponentToRender = <TeamList data={teams.data as ITeam[]} />
+    ComponentToRender = <TeamList data={teams?.data as ITeam[]} />
   } else if (activeNav === 'member-list') {
-    ComponentToRender = <ParticipantsList data={teams.data as ITeam[]} />
+    ComponentToRender = <ParticipantsList data={teams?.data as ITeam[]} />
   } else {
     ComponentToRender = null
   }
@@ -27,8 +31,9 @@ const ListPage = () => {
   }
   return (
     <div className="bg-grid">
-      <Navbar left={nav_admin.left} right={nav_admin.right} />
-      <HeaderDashboard title="PARTICIPANTS" name="Admin" />
+      <Loader show={isLoading} />
+      <Navbar left={nav.left} right={nav.right} />
+      <HeaderDashboard title="PARTICIPANTS" name={user?.name || 'Pendaf'} />
       <div className="w-full h-auto py-12 px-3 flex flex-col items-center font-plus-jakarta-sans mb-20 ">
         <nav className="flex flex-wrap gap-6 justify-center text-sm lg:text-base">
           <p
@@ -50,11 +55,7 @@ const ListPage = () => {
 }
 
 const Page = () => {
-  return (
-    <Suspense fallback={<></>}>
-      <ListPage />
-    </Suspense>
-  )
+  return <ListPage />
 }
 
 export default Page

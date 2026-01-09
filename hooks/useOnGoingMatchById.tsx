@@ -1,9 +1,15 @@
-import { getAllMatchOnGoingById } from "@/lib/api/match"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { getAllMatchOnGoingById } from '@/lib/api/match'
+import { useQuery } from '@tanstack/react-query'
+
+import { useAuth } from '@/context/auth-context'
 
 export const useGetOnGoingMatchById = () => {
-  return useSuspenseQuery({
-    queryKey: ['ongoing-match-id'],
-    queryFn: getAllMatchOnGoingById,
+  const { user } = useAuth()
+  const token = user?.accessToken ?? null
+
+  return useQuery({
+    queryKey: ['ongoing-match-id', token],
+    queryFn: () => getAllMatchOnGoingById(token || undefined),
+    enabled: true,
   })
 }

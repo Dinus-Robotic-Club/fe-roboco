@@ -3,7 +3,7 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: 'standalone',
-  allowedDevOrigins: ['http://localhost:3002', 'http://192.168.18.213:3002'],
+  allowedDevOrigins: ['http://localhost:3000', 'http://192.168.6.142:3000', 'http://172.20.10.4:3000', '172.20.10.4:3000'],
 
   images: {
     remotePatterns: [
@@ -21,7 +21,13 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'http',
-        hostname: '192.168.18.213',
+        hostname: '192.168.6.142',
+        port: '3000',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '172.20.10.4',
         port: '3000',
         pathname: '/**',
       },
