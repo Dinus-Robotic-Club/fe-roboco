@@ -38,6 +38,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'test-backend.dinusrobotic.org',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'backend-dnroboco.dinusrobotic.org',
         pathname: '/uploads/**',
       },
