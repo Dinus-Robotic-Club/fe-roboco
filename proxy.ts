@@ -11,10 +11,18 @@ const AUTH_ROUTES = ['/auth/login', '/auth/register']
 // Routes yang BUTUH login (Prefix-based)
 // Definisikan path dan role yang diizinkan
 const PRIVATE_ROUTES = [
-  { path: '/admin', roles: ['ADMIN', 'REFREE', 'PENDAF'] },
-  { path: '/dashboard', roles: ['PARTICIPANT', 'ADMIN', 'REFREE'] }, // Tambah REFREE jika perlu
-  { path: '/user', roles: ['PARTICIPANT', 'PENDAF', 'REFREE', 'ADMIN'] },
-  { path: '/uploads', roles: ['PARTICIPANT', 'PENDAF', 'REFREE', 'ADMIN'] },
+  // Specific Admin Routes (ORDER MATTERS: More specific first)
+  { path: '/admin/refree', roles: ['ADMIN', 'REFREE', 'REFEREE'] },
+  { path: '/admin/pendaf', roles: ['ADMIN', 'PENDAF'] },
+  { path: '/admin/dashboard', roles: ['ADMIN'] }, // Specific admin dashboard
+  { path: '/admin', roles: ['ADMIN'] }, // General admin fallback
+
+  // User Dashboard - Only PARTICIPANT
+  { path: '/dashboard', roles: ['PARTICIPANT'] },
+
+  // Shared routes
+  { path: '/user', roles: ['PARTICIPANT', 'PENDAF', 'REFREE', 'REFEREE', 'ADMIN'] },
+  { path: '/uploads', roles: ['PARTICIPANT', 'PENDAF', 'REFREE', 'REFEREE', 'ADMIN'] },
 ]
 
 // Cookie Names
@@ -80,11 +88,22 @@ export async function proxy(req: NextRequest) {
     const isAllowed = userRole && protectedRoute.roles.includes(userRole)
 
     if (!isAllowed) {
-      // Opsi 1: Redirect ke 403 (Buat halaman app/403/page.tsx)
-      // return NextResponse.rewrite(new URL('/403', req.url))
+      let targetUrl = '/dashboard'
 
-      // Opsi 2: Redirect ke dashboard default mereka (Lebih user friendly)
-      return NextResponse.redirect(new URL('/dashboard', req.url))
+      if (userRole === 'ADMIN') {
+        targetUrl = '/admin/dashboard'
+      } else if (userRole === 'REFREE' || userRole === 'REFEREE') {
+        targetUrl = '/admin/refree/match'
+      } else if (userRole === 'PENDAF') {
+        targetUrl = '/admin/pendaf'
+      }
+
+      // Hindari loop redirect jika targetUrl sama dengan current path
+      if (!pathname.startsWith(targetUrl)) {
+        return NextResponse.redirect(new URL(targetUrl, req.url))
+      }
+      // Jika sudah di targetUrl tapi masih forbidden (konfigurasi salah?), biarkan (atau 403)
+      // Idealnya konfigurasi routes harus sinkron dengan logika ini.
     }
   }
 

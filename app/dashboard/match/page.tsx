@@ -6,9 +6,12 @@ import Loader from '@/components/ui/loader'
 import { useAuth } from '@/context/auth-context'
 import { useGetHistoryMatchById } from '@/hooks/useHistoryMatchById'
 import { useGetOnGoingMatchById } from '@/hooks/useOnGoingMatchById'
+import { useGetTournaments } from '@/hooks/useGetTournaments'
+import { useSocket } from '@/hooks/useSocket'
 import { IAuthUser } from '@/lib/types/auth'
 import { useSearchParams } from 'next/navigation'
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useEffect, useCallback } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 
 function MatchPageContent({ user }: { user: IAuthUser | null }) {
   const searchParams = useSearchParams()
@@ -17,23 +20,85 @@ function MatchPageContent({ user }: { user: IAuthUser | null }) {
     return defaultTab === 'history' ? 'match-history' : 'on-going match'
   })
 
+  // Get tournament for socket
+  const { data: tournaments } = useGetTournaments()
+  const tournamentId = tournaments?.data?.[0]?.uid || ''
+
+  // Connect to socket for real-time updates
+  const { isConnected } = useSocket(tournamentId)
+  const queryClient = useQueryClient()
+
+  // Fetch user's matches
   const { data: onGoing } = useGetOnGoingMatchById()
   const { data: history } = useGetHistoryMatchById()
+
+  // Local state for real-time updates
+  const [onGoingMatches, setOnGoingMatches] = useState<ICardMatch[]>([])
+  const [historyMatches, setHistoryMatches] = useState<ICardMatch[]>([])
+
+  // Initialize state from fetched data
+  useEffect(() => {
+    if (onGoing?.data) {
+      setOnGoingMatches(onGoing.data)
+    }
+  }, [onGoing?.data])
+
+  useEffect(() => {
+    if (history?.data) {
+      setHistoryMatches(history.data)
+    }
+  }, [history?.data])
+
+  // Subscribe to query client updates (from useSocket hook events)
+  useEffect(() => {
+    const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
+      if (event.type === 'updated') {
+        // Check for ongoing match updates
+        if (event.query.queryKey[0] === 'all-ongoing-match-byId') {
+          const data = event.query.state.data as { data: ICardMatch[] } | undefined
+          if (data?.data) {
+            setOnGoingMatches(data.data)
+          }
+        }
+        // Check for history match updates
+        if (event.query.queryKey[0] === 'all-history-match-byId') {
+          const data = event.query.state.data as { data: ICardMatch[] } | undefined
+          if (data?.data) {
+            setHistoryMatches(data.data)
+          }
+        }
+      }
+    })
+
+    return () => unsubscribe()
+  }, [queryClient])
+
+  // Use local state for rendering
+  const displayOnGoing = onGoingMatches.length > 0 ? onGoingMatches : onGoing?.data || []
+  const displayHistory = historyMatches.length > 0 ? historyMatches : history?.data || []
 
   let ComponentToRender
 
   if (activeNav === 'on-going match') {
     ComponentToRender = (
-      <MatchList data={onGoing?.data as ICardMatch[]} user={user} emptyTitle="BELUM ADA PERTANDINGAN" emptyDescription="Tim ini belum memiliki list pertandingan yang akan berlangsung." />
+      <MatchList data={displayOnGoing as ICardMatch[]} user={user} emptyTitle="BELUM ADA PERTANDINGAN" emptyDescription="Tim ini belum memiliki list pertandingan yang akan berlangsung." />
     )
   } else if (activeNav === 'match-history') {
-    ComponentToRender = <MatchList data={history?.data as ICardMatch[]} user={user} emptyTitle="BELUM ADA RIWAYAT" emptyDescription="Tim ini belum menyelesaikan pertandingan apapun." />
+    ComponentToRender = <MatchList data={displayHistory as ICardMatch[]} user={user} emptyTitle="BELUM ADA RIWAYAT" emptyDescription="Tim ini belum menyelesaikan pertandingan apapun." />
   } else {
     ComponentToRender = null
   }
+
   return (
     <>
       <HeaderDashboard title="MATCH COLLECTION" />
+      {/* Connection indicator */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${isConnected ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+          {isConnected ? 'Live' : 'Offline'}
+        </div>
+      </div>
       <div className="w-full h-auto py-12 px-3 flex flex-col items-center font-plus-jakarta-sans">
         <nav className="flex flex-wrap gap-6 justify-center text-sm lg:text-base">
           <p
@@ -58,7 +123,7 @@ const MatchPage = () => {
 
   if (isLoading) return <Loader show />
   return (
-    <Suspense fallback={<></>}>
+    <Suspense fallback={<Loader show />}>
       <MatchPageContent user={user} />
     </Suspense>
   )

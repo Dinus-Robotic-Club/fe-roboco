@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense, useEffect } from 'react'
 import { Playoff } from '@/components/templates/bracket/bracket'
 import MatchList from '@/components/templates/match/match-list'
 import { BasisRank } from '@/components/templates/table-rank/com-rank'
@@ -14,36 +15,49 @@ import { useGetHistoryMatch } from '@/hooks/useGetHistoryMatch'
 import { useGetOnGoingMatch } from '@/hooks/useGetOnGoingMatch'
 import { useGetTournaments } from '@/hooks/useGetTournaments'
 import { useGetPlayoff } from '@/hooks/useGetPlayoff'
-import { transformPlayoffToMatchBracket } from '@/lib/api/playoff'
+import { useLeagueboardSocket } from '@/hooks/custom-hooks/useLeagueboardSocket'
 import { nav_home, nav_legaueboard } from '@/lib/statis-data'
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { IAuthUser } from '@/lib/types/auth'
 import Loader from '@/components/ui/loader'
 
-const Leagueboard = ({ session }: { session: IAuthUser | null }) => {
+const LeagueboardContent = ({ session }: { session: IAuthUser | null }) => {
   const [activeNav, setActiveNav] = useState('basis-rank')
 
-  const { data: onGoing, isLoading: isOngoingLoading } = useGetOnGoingMatch()
-  const { data: history, isLoading: isHistoryLoading } = useGetHistoryMatch()
-  const { data: communityByRank, isLoading: isRankLoading } = useGetCommunityByRank()
-  const { data: tournaments, isLoading: isTournamentsLoading } = useGetTournaments()
-  const { data: groups, isLoading: isGroupsLoading } = useGetAllGroup(tournaments?.data?.[0]?.uid || '')
-  const { data: playoffData, isLoading: isPlayoffLoading } = useGetPlayoff(tournaments?.data?.[0]?.uid || '')
+  // Initial data fetch via suspense queries
+  const { data: onGoing } = useGetOnGoingMatch()
+  const { data: history } = useGetHistoryMatch()
+  const { data: communityByRank } = useGetCommunityByRank()
+  const { data: tournaments } = useGetTournaments()
+  const tournamentId = tournaments?.data?.[0]?.uid || ''
+  const { data: groups } = useGetAllGroup(tournamentId)
+  const { data: playoffData } = useGetPlayoff(tournamentId)
 
-  const isLoading = isOngoingLoading || isHistoryLoading || isRankLoading || isTournamentsLoading || isGroupsLoading || isPlayoffLoading
+  // Socket hook for real-time updates
+  const { isConnected, initializeData, onGoingMatches, historyMatches, communityRank, groups: socketGroups, soccerBracket, sumoBracket } = useLeagueboardSocket(tournamentId)
 
-  // Transform playoff data to bracket format
-  const soccerBracketMatches = useMemo(() => {
-    if (!playoffData?.data?.soccer) return []
-    return transformPlayoffToMatchBracket(playoffData.data.soccer)
-  }, [playoffData])
+  // Initialize socket state with fetched data
+  useEffect(() => {
+    if (onGoing?.data || history?.data || communityByRank?.data || groups?.data || playoffData?.data) {
+      initializeData({
+        onGoingMatches: onGoing?.data || [],
+        historyMatches: history?.data || [],
+        communityRank: communityByRank?.data || undefined,
+        groups: groups?.data || [],
+        playoffData: playoffData?.data || null,
+      })
+    }
+  }, [onGoing?.data, history?.data, communityByRank?.data, groups?.data, playoffData?.data, initializeData])
 
-  const sumoBracketMatches = useMemo(() => {
-    if (!playoffData?.data?.sumo) return []
-    return transformPlayoffToMatchBracket(playoffData.data.sumo)
-  }, [playoffData])
+  // Use socket state if available, fallback to query data
+  const displayOnGoing = onGoingMatches.length > 0 ? onGoingMatches : onGoing?.data || []
+  const displayHistory = historyMatches.length > 0 ? historyMatches : history?.data || []
+  const displayCommunityRank = communityRank || communityByRank?.data
+  const displayGroups = socketGroups.length > 0 ? socketGroups : groups?.data || []
+  const displaySoccerBracket = soccerBracket
+  const displaySumoBracket = sumoBracket
 
-  const filteredData = groups?.data?.filter((group) => {
+  const filteredData = displayGroups.filter((group) => {
     const isSoccerGroup = group.teams.some((t) => t.team.category === 'SOCCER')
     if (activeNav === 'group-rank-soccer') {
       return isSoccerGroup
@@ -56,26 +70,26 @@ const Leagueboard = ({ session }: { session: IAuthUser | null }) => {
   let ComponentToRender
 
   if (activeNav === 'basis-rank') {
-    ComponentToRender = <BasisRank data={communityByRank?.data?.communities || []} />
+    ComponentToRender = <BasisRank data={displayCommunityRank?.communities || []} />
   } else if (activeNav === 'group-rank-soccer') {
     ComponentToRender = <GroupRank data={filteredData || []} title="SOCCER" />
   } else if (activeNav === 'group-rank-sumo') {
     ComponentToRender = <GroupRank data={filteredData || []} title="SUMO" />
   } else if (activeNav === 'on-going match') {
-    ComponentToRender = <MatchList data={onGoing?.data as ICardMatch[]} user={session} type="user" />
+    ComponentToRender = <MatchList data={displayOnGoing as ICardMatch[]} user={session} type="user" />
   } else if (activeNav === 'match-history') {
-    ComponentToRender = <MatchList data={history?.data as ICardMatch[]} user={session} type="user" />
+    ComponentToRender = <MatchList data={displayHistory as ICardMatch[]} user={session} type="user" />
   } else if (activeNav === 'playoff-sumo') {
     ComponentToRender =
-      sumoBracketMatches.length > 0 ? (
-        <Playoff title="Playoff SUMO" matches={sumoBracketMatches} />
+      displaySumoBracket.length > 0 ? (
+        <Playoff title="Playoff SUMO" matches={displaySumoBracket} />
       ) : (
         <div className="text-center py-20 text-gray-500">Bracket belum tersedia. Fase grup harus selesai terlebih dahulu.</div>
       )
   } else if (activeNav === 'playoff-soccer') {
     ComponentToRender =
-      soccerBracketMatches.length > 0 ? (
-        <Playoff title="Playoff SOCCER" matches={soccerBracketMatches} />
+      displaySoccerBracket.length > 0 ? (
+        <Playoff title="Playoff SOCCER" matches={displaySoccerBracket} />
       ) : (
         <div className="text-center py-20 text-gray-500">Bracket belum tersedia. Fase grup harus selesai terlebih dahulu.</div>
       )
@@ -84,11 +98,18 @@ const Leagueboard = ({ session }: { session: IAuthUser | null }) => {
   const handleClickNav = (key: string) => {
     setActiveNav(key)
   }
+
   return (
     <div className="bg-grid h-full w-full">
-      <Loader show={isLoading} />
       <Navbar left={nav_home.left} right={nav_home.right} />
       <HeaderDashboard title="LEAGUEBOARD" name=" " />
+      {/* Connection indicator */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${isConnected ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+          {isConnected ? 'Live' : 'Offline'}
+        </div>
+      </div>
       <div className="w-full h-auto py-12 px-3 flex flex-col items-center font-plus-jakarta-sans mb-20">
         <nav className="flex flex-wrap gap-6 justify-center text-sm lg:text-base">
           {nav_legaueboard.map((data) => (
@@ -112,7 +133,11 @@ const LeagueboardPage = () => {
 
   if (isLoading && !session) return <Loader show />
 
-  return <Leagueboard session={session} />
+  return (
+    <Suspense fallback={<Loader show />}>
+      <LeagueboardContent session={session} />
+    </Suspense>
+  )
 }
 
 export default LeagueboardPage

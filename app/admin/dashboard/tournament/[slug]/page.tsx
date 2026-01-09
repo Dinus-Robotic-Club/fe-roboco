@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense, useEffect } from 'react'
 import Navbar from '@/components/ui/navbar'
 import { nav_admin, nav_tournament } from '@/lib/statis-data'
 import { HeaderDashboard } from '@/components/ui/header'
@@ -26,6 +27,9 @@ import { useGeneratePlayoff } from '@/hooks/useGeneratePlayoff'
 import { transformPlayoffToMatchBracket } from '@/lib/api/playoff'
 import { EmptyState } from '@/components/ui/empty'
 import { Trophy } from 'lucide-react'
+import { useSocket } from '@/hooks/useSocket'
+import { useLeagueboardSocket } from '@/hooks/custom-hooks/useLeagueboardSocket'
+import { useRegistrationSocket } from '@/hooks/custom-hooks/useRegistrationSocket'
 
 const PageComponent = ({ session }: { session: IAuthUser | null }) => {
   const [isActiveNav, setIsActiveNav] = useState('overview')
@@ -35,15 +39,37 @@ const PageComponent = ({ session }: { session: IAuthUser | null }) => {
   const params = useParams()
   const tournamentSlug = params.slug as string
 
-  const { data: tournamentDetail, isLoading: isTournamentLoading } = useGetDetailTournament(tournamentSlug)
-  const { mutate: generateGroup, isPending: isGenerating } = useGenerateGroups(tournamentDetail?.data?.uid || '', tournamentSlug)
-  const { mutate: createMatch, isPending: isCreating } = useCreateMatch(tournamentDetail?.data?.uid || '', tournamentSlug)
-  const { mutate: createUser, isPending: isCreatingUser } = useCreateUser()
-  const { data: allUser, isLoading: isUserLoading } = useGetAllUser()
-  const { data: playoffData, isLoading: isPlayoffLoading } = useGetPlayoff(tournamentDetail?.data?.uid || '')
-  const { mutate: generatePlayoff, isPending: isGeneratingPlayoff } = useGeneratePlayoff(tournamentDetail?.data?.uid || '', tournamentSlug)
+  const { data: tournamentDetail } = useGetDetailTournament(tournamentSlug)
+  const tournamentId = tournamentDetail?.data?.uid || ''
 
-  const isLoading = isTournamentLoading || isUserLoading || isPlayoffLoading || isGenerating || isCreating || isGeneratingPlayoff || isCreatingUser
+  // Socket for real-time updates
+  const { isConnected } = useSocket(tournamentId)
+  const { initializeData, onGoingMatches: socketMatches, soccerBracket: socketSoccerBracket, sumoBracket: socketSumoBracket } = useLeagueboardSocket(tournamentId)
+
+  // Real-time registration updates
+  useRegistrationSocket(tournamentId, tournamentSlug)
+
+  const { mutate: generateGroup, isPending: isGenerating } = useGenerateGroups(tournamentId, tournamentSlug)
+  const { mutate: createMatch, isPending: isCreating } = useCreateMatch(tournamentId, tournamentSlug)
+  const { mutate: createUser, isPending: isCreatingUser } = useCreateUser()
+  const { data: allUser } = useGetAllUser()
+  const { data: playoffData } = useGetPlayoff(tournamentId)
+  const { mutate: generatePlayoff, isPending: isGeneratingPlayoff } = useGeneratePlayoff(tournamentId, tournamentSlug)
+
+  // Initialize socket state with fetched data
+  useEffect(() => {
+    if (tournamentDetail?.data?.matches || playoffData?.data) {
+      initializeData({
+        onGoingMatches: tournamentDetail?.data?.matches || [],
+        playoffData: playoffData?.data || null,
+      })
+    }
+  }, [tournamentDetail?.data?.matches, playoffData?.data, initializeData])
+
+  const isLoading = isGenerating || isCreating || isGeneratingPlayoff || isCreatingUser
+
+  // Use socket data if available, fallback to query data
+  const displayMatches = socketMatches.length > 0 ? socketMatches : tournamentDetail?.data?.matches || []
 
   // 3. Data Source & Filtering
   const allGroups = useMemo(() => tournamentDetail?.data?.groups || [], [tournamentDetail])
@@ -55,16 +81,18 @@ const PageComponent = ({ session }: { session: IAuthUser | null }) => {
     })
   }, [allGroups, filter])
 
-  // Transform playoff data to bracket format
+  // Use socket brackets if available, fallback to transformed query data
   const soccerBracketMatches = useMemo(() => {
+    if (socketSoccerBracket.length > 0) return socketSoccerBracket
     if (!playoffData?.data?.soccer) return []
     return transformPlayoffToMatchBracket(playoffData.data.soccer)
-  }, [playoffData])
+  }, [playoffData, socketSoccerBracket])
 
   const sumoBracketMatches = useMemo(() => {
+    if (socketSumoBracket.length > 0) return socketSumoBracket
     if (!playoffData?.data?.sumo) return []
     return transformPlayoffToMatchBracket(playoffData.data.sumo)
-  }, [playoffData])
+  }, [playoffData, socketSumoBracket])
 
   const currentBracketMatches = bracketCategory === 'SOCCER' ? soccerBracketMatches : sumoBracketMatches
 
@@ -112,7 +140,7 @@ const PageComponent = ({ session }: { session: IAuthUser | null }) => {
   } else if (isActiveNav === 'group') {
     componentToRender = <GroupRank data={filteredGroups} activeFilter={filter} onFilterChange={setFilter} type="admin" onCreate={() => generateGroup()} title="GROUP RANK" />
   } else if (isActiveNav === 'match') {
-    componentToRender = <MatchList data={tournamentDetail?.data?.matches as ICardMatch[]} user={session} type="admin" onCreate={() => createMatch()} />
+    componentToRender = <MatchList data={displayMatches as ICardMatch[]} user={session} type="admin" onCreate={() => createMatch()} />
   } else if (isActiveNav === 'user') {
     componentToRender = <UserManagement users={allUser?.data || []} onAddUser={(data) => createUser(data)} isPending={isCreatingUser} />
   } else {
@@ -122,6 +150,14 @@ const PageComponent = ({ session }: { session: IAuthUser | null }) => {
   return (
     <div className="bg-grid h-full w-full">
       <Loader show={isLoading} />
+
+      {/* Connection indicator */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${isConnected ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+          {isConnected ? 'Live' : 'Offline'}
+        </div>
+      </div>
 
       <Navbar left={nav_admin.left} right={nav_admin.right} />
       <HeaderDashboard title="Detail Turnamen" name=" " />
@@ -147,7 +183,11 @@ const Page = () => {
   const { isLoading, user: session } = useAuth()
 
   if (isLoading) return <Loader show />
-  return <PageComponent session={session as IAuthUser | null} />
+  return (
+    <Suspense fallback={<Loader show />}>
+      <PageComponent session={session as IAuthUser | null} />
+    </Suspense>
+  )
 }
 
 export default Page

@@ -2,6 +2,7 @@
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import CommunityInput from './community-input'
+import { FilePreviewCompact } from '@/components/ui/file-preview'
 
 // Tambahkan type props di sini
 interface FormRegistationTeamProps {
@@ -63,8 +64,8 @@ function FormRegistationTeam({
             {error?.email && <p className="text-red-500 text-xs">{error.email}</p>}
           </div>
 
-          {/* --- Field Khusus User (Logo, Password, Invoice) --- */}
-          {type === 'user' && (
+          {/* --- Field Khusus User & Admin (Logo, Password, Invoice) --- */}
+          {(type === 'user' || type === 'admin') && (
             <>
               {/* LOGO TIM */}
               <div className="flex flex-col gap-1">
@@ -89,13 +90,15 @@ function FormRegistationTeam({
                     }}
                   />
                 </label>
+                {/* Logo Preview */}
+                <FilePreviewCompact file={data.logo ?? null} onRemove={() => setData({ ...data, logo: null })} />
                 {error?.logo && <p className="text-red-500 text-xs">{error.logo}</p>}
               </div>
 
               {/* INVOICE */}
               <div className="flex flex-col gap-1">
                 <label htmlFor="invoice" className="text-sm lg:text-base font-fira-code tracking-wide">
-                  BUKTI PEMBAYARAN
+                  BUKTI PEMBAYARAN (OPSIONAL)
                 </label>
 
                 <label htmlFor="invoice" className="relative bg-white w-full h-12 sm:h-14 flex items-center px-4 cursor-pointer shadow-md">
@@ -103,7 +106,7 @@ function FormRegistationTeam({
 
                   <input
                     type="file"
-                    accept=".jpg, .png, .jpeg"
+                    accept=".jpg, .png, .jpeg, .pdf"
                     id="invoice"
                     name="invoice"
                     className="absolute inset-0 opacity-0 cursor-pointer"
@@ -115,6 +118,8 @@ function FormRegistationTeam({
                     }}
                   />
                 </label>
+                {/* Invoice Preview */}
+                <FilePreviewCompact file={data.invoice ?? null} onRemove={() => setData({ ...data, invoice: null })} />
                 {error?.invoice && <p className="text-red-500 text-xs">{error.invoice}</p>}
               </div>
             </>

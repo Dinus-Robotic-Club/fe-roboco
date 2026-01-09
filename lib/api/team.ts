@@ -10,10 +10,10 @@ export const createTeams = (data: FormData): Promise<IApiResponse<unknown>> => {
   })
 }
 
-export const createTeamsByAdmin = (data: ICreateTeamAdmin): Promise<IApiResponse<unknown>> => {
+export const createTeamsByAdmin = (data: FormData): Promise<IApiResponse<unknown>> => {
   return apiFetch<IApiResponse<unknown>>(`${BASE}/api/teams/create-by-admin`, {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data,
   })
 }
 
@@ -37,6 +37,13 @@ export const getTeamProfile = (): Promise<IApiResponse<ITeamDetail>> => {
 
 export const updateTeamProfile = (data: FormData): Promise<IApiResponse<unknown>> => {
   return apiFetch<IApiResponse<unknown>>(`${BASE}/api/teams/update`, {
+    method: 'PUT',
+    body: data,
+  })
+}
+
+export const updateParticipant = (uid: string, data: FormData): Promise<IApiResponse<unknown>> => {
+  return apiFetch<IApiResponse<unknown>>(`${BASE}/api/teams/update/participant/${uid}`, {
     method: 'PUT',
     body: data,
   })

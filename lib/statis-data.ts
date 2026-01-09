@@ -3,7 +3,7 @@ import { NavData } from './types'
 
 const createNav = (data: NavData) => data
 
-export const CTA_BUTTONS = ['Masuk', 'Keluar', 'Dashboard'] as const
+export const CTA_BUTTONS = ['Masuk', 'Keluar'] as const
 
 export const nav_home = createNav({
   left: [
@@ -32,12 +32,10 @@ export const nav_tournament = [
 export const nav_dashboard_main = createNav({
   left: [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Pertandingan', href: '/dashboard/match' },
+    { title: 'Profile', href: '/dashboard?view=team-profile' },
+    { title: 'Match', href: '/dashboard/match' },
   ],
-  right: [
-    { title: 'Papan liga', href: '/leagueboard' },
-    { title: 'Keluar', href: '/auth/login' },
-  ],
+  right: [{ title: 'Keluar', href: '/auth/login' }],
 })
 
 export const nav_admin = createNav({
@@ -55,7 +53,7 @@ export const nav_admin = createNav({
 
 // Navbar for REFEREE role - only match management
 export const nav_referee = createNav({
-  left: [{ title: 'Pertandingan', href: '/admin/refree/match' }],
+  left: [{ title: 'Match', href: '/admin/refree/match' }],
   right: [{ title: 'Keluar', href: '/auth/login' }],
 })
 

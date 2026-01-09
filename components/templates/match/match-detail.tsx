@@ -30,7 +30,7 @@ export const MatchDetailContent = ({ data }: { data: ICardMatch }) => {
           subValue={<span className="text-[10px] text-slate-500 font-medium px-2 py-0.5 bg-slate-100 rounded-full border border-slate-200">{data.roundLabel ?? '-'}</span>}
         />
 
-        <MetadataItem icon={Trophy} label="Sistem" value={`Best Of ${data.bestOf}`} />
+        <MetadataItem icon={Trophy} label="Sistem" value={data.category === 'SOCCER' ? '2 Babak' : `Best Of ${data.bestOf}`} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 min-h-100">

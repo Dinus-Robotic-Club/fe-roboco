@@ -1,6 +1,7 @@
 'use client'
 
 import { Square, SquareCheckBig } from 'lucide-react'
+import { FilePreviewCompact } from '@/components/ui/file-preview'
 
 type Props = {
   data: IParticipantsBody[]
@@ -56,8 +57,8 @@ export default function FormRegistrationPlayer({
             </select>
           </Field>
 
-          {/* KARTU IDENTITAS - Hanya Muncul untuk User */}
-          {type === 'user' && (
+          {/* KARTU IDENTITAS - Muncul untuk User & Admin */}
+          {(type === 'user' || type === 'admin') && (
             <Field label={`KARTU IDENTITAS ${index + 1} (KTP/KTM/KTS)`} error={errors[index]?.participantsIdentityCardImage}>
               <input
                 id={`participants-${index}-participantsIdentityCardImage`}
@@ -69,6 +70,8 @@ export default function FormRegistrationPlayer({
                   if (file) setData(index, { participantsIdentityCardImage: file })
                 }}
               />
+              {/* Identity Card Preview */}
+              <FilePreviewCompact file={player.participantsIdentityCardImage ?? null} onRemove={() => setData(index, { participantsIdentityCardImage: null })} />
             </Field>
           )}
 
@@ -85,6 +88,8 @@ export default function FormRegistrationPlayer({
                 <p className="truncate max-w-[85%] font-medium">{data[index]?.participantsImage instanceof File ? data[index].participantsImage.name : 'Atur Foto dan Twibbon'}</p>
                 {data[index]?.participantsImage ? <SquareCheckBig className="w-6 h-6" /> : <Square className="w-6 h-6" />}
               </button>
+              {/* Participant Image Preview */}
+              <FilePreviewCompact file={player.participantsImage ?? null} onRemove={() => setData(index, { participantsImage: null })} />
             </Field>
           )}
 

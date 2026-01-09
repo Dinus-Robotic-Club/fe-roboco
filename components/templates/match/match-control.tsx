@@ -26,7 +26,7 @@ export default function MatchControlInterface({ matchId }: { matchId: string }) 
         {/* MATCH INFO HEADER */}
         <div className="text-center mb-8">
           <span className="bg-white border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider text-slate-500 uppercase shadow-sm">
-            {matchData.group?.name || 'Bracket'} — Round {matchData.rounds.length > 0 ? Math.max(...matchData.rounds.map((r) => r.roundNumber)) : 1}
+            {matchData.group?.name || 'Bracket'} — {isSumo ? 'Round' : 'Babak'} {matchData.rounds.length > 0 ? Math.max(...matchData.rounds.map((r) => r.roundNumber)) : 1}
           </span>
         </div>
 

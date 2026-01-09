@@ -10,8 +10,14 @@ import { getNavByRole } from '@/lib/statis-data'
 import { useAuth } from '@/context/auth-context'
 import Loader from '@/components/ui/loader'
 import React, { useState } from 'react'
+import { useSocket } from '@/hooks/useSocket'
+import { useRegistrationSocket } from '@/hooks/custom-hooks/useRegistrationSocket'
 
 const ListPage = () => {
+  // Connect to global socket (or specific tournament if available, here we listen globally or conceptually)
+  useSocket()
+  useRegistrationSocket()
+
   const { user } = useAuth()
   const nav = getNavByRole(user?.role)
   const [activeNav, setActiveNav] = useState('team-list')

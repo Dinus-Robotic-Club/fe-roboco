@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import FormRegistrationPlayer from '@/components/pages/register/form-player'
 import FormRegistationTeam from '@/components/pages/register/form-team'
 import Loader from '@/components/ui/loader'
@@ -56,15 +57,13 @@ const RegistrationClosed = () => {
   )
 }
 
-function Register() {
+function RegisterContent() {
   const router = useRouter()
   const mounted = useMounted()
-  const { data: communities, isLoading: isCommunityLoading } = useGetCommunity()
-  const { data: tournaments, isLoading: isTournamentLoading } = useGetTournaments()
+  const { data: communities } = useGetCommunity()
+  const { data: tournaments } = useGetTournaments()
   const { mutate, isPending, isSuccess } = useCreateTeam()
   const [showModal, setShowModal] = useState<number | null>(null)
-
-  const isLoading = isCommunityLoading || isTournamentLoading
 
   const [team, setTeam] = useState<ITeamBody>({
     name: '',
@@ -155,7 +154,7 @@ function Register() {
 
   return (
     <main className="w-full relative flex flex-col items-center bg-grid">
-      <Loader show={isPending || isLoading} />
+      <Loader show={isPending} />
       <Navbar left={nav_home.left} right={nav_home.right} />
       <div className="z-10 min-h-175 w-full shadow-lg absolute top-0 left-0 right-0 bg-white"></div>
 
@@ -219,7 +218,11 @@ function Register() {
 }
 
 const RegisterPage = () => {
-  return <Register />
+  return (
+    <Suspense fallback={<Loader show />}>
+      <RegisterContent />
+    </Suspense>
+  )
 }
 
 export default RegisterPage

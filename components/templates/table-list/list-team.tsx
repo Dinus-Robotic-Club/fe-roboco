@@ -42,9 +42,6 @@ export function TeamList({ data, type = 'user', slug }: TeamListProps) {
       const regData = item as IRegistrationData
 
       setSelectedRegistration(regData)
-    } else {
-      const team = item as ITeam
-      console.log('User viewing team:', team.name)
     }
   }
 

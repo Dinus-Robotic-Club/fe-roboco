@@ -11,7 +11,7 @@ import { CTA_BUTTONS } from '@/lib/statis-data'
 import { isRegistrationOpen } from '@/lib/utils/registration-deadline'
 
 const NavItem: React.FC<INavItemProps> = ({ item, isActive, onClick, className = '' }) => {
-  const isCta = CTA_BUTTONS.includes(item.title as 'Masuk' | 'Keluar' | 'Dashboard')
+  const isCta = CTA_BUTTONS.includes(item.title as 'Masuk' | 'Keluar')
 
   const baseStyles = 'relative font-semibold text-black transition-all duration-300 scroll-smooth'
   const ctaStyles = 'bg-[#fcff00] border-[1.5px] border-black px-8 py-2 rounded-full shadow hover:bg-[#FDFF9F]'
@@ -157,13 +157,7 @@ const Navbar: React.FC<NavData> = ({ left, right }) => {
 
         <div className="flex flex-col gap-4 text-base font-medium text-gray-700 uppercase">
           {mobileMenu.map((item) => (
-            <NavItem
-              key={item.title}
-              item={item}
-              isActive={pathname === item.href}
-              onClick={handleNavClick}
-              className={CTA_BUTTONS.includes(item.title as 'Masuk' | 'Keluar' | 'Dashboard') ? 'text-center' : ''}
-            />
+            <NavItem key={item.title} item={item} isActive={pathname === item.href} onClick={handleNavClick} className={CTA_BUTTONS.includes(item.title as 'Masuk' | 'Keluar') ? 'text-center' : ''} />
           ))}
         </div>
 

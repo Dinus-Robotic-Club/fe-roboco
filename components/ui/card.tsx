@@ -54,8 +54,8 @@ const InsightCard = ({ icon: Icon, value, label }: { icon: LucideIcon; value: st
 
 const ParticipantCard = ({ participant }: { participant: IParticipant }) => (
   <div className="flex flex-col items-center">
-    <div className="bg-player h-53.75 w-53.75">
-      <Image className="w-full h-full pb-2" alt={participant.name} src={getImageUrl(participant.image)} height={1000} width={1000} />
+    <div className="bg-player h-full w-53.75">
+      <Image className="w-full mx-2 h-full pb-2" alt={participant.name} src={getImageUrl(participant.image)} height={1000} width={1000} />
     </div>
     <h1 className="text-2xl font-bold">{participant.name}</h1>
     <p>{participant.roleInTeam === 'LEADER' ? 'Team Leader' : 'Team Member'}</p>

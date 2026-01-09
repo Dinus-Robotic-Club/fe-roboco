@@ -1,10 +1,9 @@
 import { getAllTournaments } from '@/lib/api/tour'
-import { useQuery } from '@tanstack/react-query'
+import { useSuspenseQuery } from '@tanstack/react-query'
 
 export const useGetTournaments = () => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: ['tournaments'],
     queryFn: getAllTournaments,
-    enabled: true,
   })
 }

@@ -1,5 +1,5 @@
 import { useAuth } from '@/context/auth-context'
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState } from 'react'
 import { useGetOnGoingMatch } from '../useGetOnGoingMatch'
 import { useGetHistoryMatch } from '../useGetHistoryMatch'
 import { CATEGORIES, TABS } from '@/lib'
@@ -14,15 +14,6 @@ export const useMatchManager = () => {
   const { data: historyData, isLoading: historyLoading } = useGetHistoryMatch()
 
   // [🪝 HOOK TRIGGER] Logger
-
-  useEffect(() => {
-    console.log('[🪝 HOOK TRIGGER] File:useMatchManager.tsx Hook:useMatchManager triggered by:', {
-      activeNav,
-      hasOngoingData: !!ongoingData,
-      hasHistoryData: !!historyData,
-      isLoading: authLoading || ongoingLoading || historyLoading,
-    })
-  }, [activeNav, ongoingData, historyData, authLoading, ongoingLoading, historyLoading])
 
   // Centralized Loading State
   const isLoading = authLoading || (activeNav === TABS.ONGOING ? ongoingLoading : historyLoading)

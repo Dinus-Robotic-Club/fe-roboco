@@ -330,8 +330,8 @@ export function useMatchLogic(matchId: string) {
     }
   }
 
-  // SOCCER: Uses endRound hook
-  const checkMatchStatusAndProceed = async (currentRoundWinner: 'home' | 'away' | 'draw') => {
+  // SOCCER: Uses endRound hook - 2 halves (babak), winner by total goals
+  const checkMatchStatusAndProceed = async (_currentRoundWinner: 'home' | 'away' | 'draw') => {
     if (!matchData) return
 
     // Stop timer
@@ -339,31 +339,58 @@ export function useMatchLogic(matchId: string) {
     setIsPlaying(false)
 
     try {
-      // 1. End the current round on backend (SOCCER only)
+      // 1. End the current half on backend
       const result = (await endRound({ matchId: matchData.uid })) as { data?: IEndRoundResponse }
 
-      // 2. Check if match is finished based on backend response OR local calculation
+      // 2. Check if match is finished based on backend response
+      // SOCCER: Match selesai setelah 2 halves (babak)
       let matchFinished = result?.data?.matchFinished || result?.data?.updatedMatch?.status === 'FINISHED'
 
-      // Calculate wins including current round
-      let currentWinsA = homeRoundsWon
-      let currentWinsB = awayRoundsWon
-      if (currentRoundWinner === 'home') currentWinsA++
-      else if (currentRoundWinner === 'away') currentWinsB++
+      // Calculate current half number
+      const finishedHalves = matchData.rounds?.filter((r) => r.status === 'FINISHED').length || 0
+      const currentHalf = finishedHalves + 1 // Including the one we just finished
 
-      const bestOf = matchData.bestOf || 3
-      const winThreshold = Math.ceil(bestOf / 2)
+      // SOCCER: 2 halves total
+      const TOTAL_HALVES = 2
 
-      // Logic: Jika sudah mencapai threshold, paksa finish jika backend belum finish
-      if (!matchFinished && (currentWinsA >= winThreshold || currentWinsB >= winThreshold)) {
+      // If we've played 2 halves, match should be finished
+      if (!matchFinished && currentHalf >= TOTAL_HALVES) {
         matchFinished = true
       }
 
       if (matchFinished) {
-        // Match is over
-        const winnerName = currentWinsA >= winThreshold ? matchData.teamA?.name : matchData.teamB?.name
+        // SOCCER: Match is over - determine winner by total goals
+        // Calculate total goals from all events in the match
+        const allGoalEvents = matchData.events?.filter((e) => e.type === 'GOAL') || []
+        let totalGoalsA = 0
+        let totalGoalsB = 0
+
+        allGoalEvents.forEach((e) => {
+          if (e.teamId === matchData.teamA?.uid) totalGoalsA += e.value || 1
+          else if (e.teamId === matchData.teamB?.uid) totalGoalsB += e.value || 1
+        })
+
+        // Add current round scores
+        totalGoalsA += homeScore
+        totalGoalsB += awayScore
+
+        let winnerName: string | undefined
+        let isDraw = false
+
+        if (totalGoalsA > totalGoalsB) {
+          winnerName = matchData.teamA?.name
+        } else if (totalGoalsB > totalGoalsA) {
+          winnerName = matchData.teamB?.name
+        } else {
+          isDraw = true
+        }
+
         toast.dismiss()
-        toast.success(`PERTANDINGAN SELESAI! Pemenang: ${winnerName}`)
+        if (isDraw) {
+          toast.success(`PERTANDINGAN SELESAI! Hasil: SERI ${totalGoalsA} - ${totalGoalsB}`)
+        } else {
+          toast.success(`PERTANDINGAN SELESAI! Pemenang: ${winnerName} (${totalGoalsA} - ${totalGoalsB})`)
+        }
 
         await queryClient.invalidateQueries({ queryKey: ['match-group'] })
         await queryClient.invalidateQueries({ queryKey: ['get-ongoing-match'] })
@@ -372,9 +399,9 @@ export function useMatchLogic(matchId: string) {
           router.push('/admin/refree/match')
         }, 1500)
       } else {
-        // Match continues - create new round
+        // Match continues - create next half (half 2)
         toast.dismiss()
-        toast.loading('Menyiapkan Ronde Berikutnya...')
+        toast.loading('Menyiapkan Babak 2...')
 
         await createRound({
           tourId: matchData.tournamentId,
@@ -382,17 +409,14 @@ export function useMatchLogic(matchId: string) {
         })
 
         toast.dismiss()
-        const nextRoundNum = (currentActiveRound?.roundNumber || 0) + 1
-        toast.success(`Lanjut ke Ronde ${nextRoundNum}`)
+        toast.success('Lanjut ke Babak 2')
 
-        // Reset Local State for new round
-        const defaultDuration = isSumo ? currentActiveRound?.duration : 3
-        setSecondsLeft(defaultDuration! * 60)
+        // Reset Local State for next half (keep accumulated scores for display)
+        const defaultDuration = currentActiveRound?.duration || 3
+        setSecondsLeft(defaultDuration * 60)
         setHomeScore(0)
         setAwayScore(0)
         setTimeline([])
-        setHomeRoundsWon(currentWinsA)
-        setAwayRoundsWon(currentWinsB)
 
         refetch()
       }
@@ -410,7 +434,7 @@ export function useMatchLogic(matchId: string) {
         return
       }
 
-      toast.error('Gagal memproses hasil ronde')
+      toast.error('Gagal memproses hasil babak')
       console.error('Error in checkMatchStatusAndProceed:', error)
 
       // Restore from server on error

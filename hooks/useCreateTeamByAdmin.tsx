@@ -5,8 +5,8 @@ import { toast } from 'sonner'
 export const useCreateTeamByAdmin = () => {
   const queryClient = useQueryClient()
 
-  return useMutation<unknown, Error, ICreateTeamAdmin>({
-    mutationFn: (data: ICreateTeamAdmin) => createTeamsByAdmin(data),
+  return useMutation<unknown, Error, FormData>({
+    mutationFn: (data: FormData) => createTeamsByAdmin(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] })
       toast.success('Team created successfully')

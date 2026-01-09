@@ -1,4 +1,6 @@
 'use client'
+
+import { Suspense } from 'react'
 import FormRegistrationPlayer from '@/components/pages/register/form-player'
 import FormRegistationTeam from '@/components/pages/register/form-team'
 import Loader from '@/components/ui/loader'
@@ -12,15 +14,13 @@ import { useAuth } from '@/context/auth-context'
 import Image from 'next/image'
 import { FormEvent, useState } from 'react'
 
-function Register() {
+function RegisterContent() {
   const { user } = useAuth()
   const nav = getNavByRole(user?.role)
   const mounted = useMounted()
-  const { data: communities, isLoading: isCommunityLoading } = useGetCommunity()
-  const { data: tournaments, isLoading: isTournamentLoading } = useGetTournaments()
+  const { data: communities } = useGetCommunity()
+  const { data: tournaments } = useGetTournaments()
   const { mutate, isPending } = useCreateTeamByAdmin()
-
-  const isLoading = isCommunityLoading || isTournamentLoading
 
   const [team, setTeam] = useState<ITeamBody>({
     name: '',
@@ -61,30 +61,37 @@ function Register() {
       return
     }
 
-    const payload: ICreateTeamAdmin = {
-      // 1. Data Team (Single Value)
-      name: team.name,
-      email: team.email,
-      communityName: team.communityName || '',
-      category: team.category,
-      tournamentId: team.tournamentId,
-      password: team.password || '', // Optional di admin
+    const formData = new FormData()
 
-      // 2. Data Participants (Di-map menjadi Array of Strings)
-      participantsName: participants.map((p) => p.participantsName),
-      participantsRoleInTeam: participants.map((p) => p.participantsRoleInTeam),
-      participantsPhone: participants.map((p) => p.participantsPhone),
-      participantsTwibbon: participants.map((p) => p.participantsTwibbon || ''), // Pastikan tidak undefined
-    }
+    // 1. Data Team
+    formData.append('name', team.name)
+    formData.append('email', team.email)
+    formData.append('communityName', team.communityName || '')
+    formData.append('category', team.category)
+    formData.append('tournamentId', team.tournamentId)
+    formData.append('password', team.password || '')
+    if (team.logo) formData.append('logo', team.logo)
+    if (team.invoice) formData.append('invoice', team.invoice)
 
-    mutate(payload)
+    // 2. Data Participants
+    participants.forEach((p, index) => {
+      formData.append('participantsName', p.participantsName)
+      formData.append('participantsRoleInTeam', p.participantsRoleInTeam)
+      formData.append('participantsPhone', p.participantsPhone)
+      formData.append('participantsTwibbon', p.participantsTwibbon || '')
+      if (p.participantsIdentityCardImage) {
+        formData.append(`participantsIdentityCardImage_${index}`, p.participantsIdentityCardImage)
+      }
+    })
+
+    mutate(formData)
   }
 
   if (!mounted) return null
 
   return (
     <main className="w-full relative flex flex-col items-center bg-grid">
-      <Loader show={isPending || isLoading} />
+      <Loader show={isPending} />
       <Navbar left={nav.left} right={nav.right} />
       <div className="z-10 min-h-175 w-full shadow-lg absolute top-0 left-0 right-0 bg-white"></div>
 
@@ -123,7 +130,11 @@ function Register() {
 }
 
 const RegisterPage = () => {
-  return <Register />
+  return (
+    <Suspense fallback={<Loader show />}>
+      <RegisterContent />
+    </Suspense>
+  )
 }
 
 export default RegisterPage

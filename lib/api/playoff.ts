@@ -136,10 +136,12 @@ export const transformPlayoffToMatchBracket = (brackets: PlayoffBracket[]): IMat
 
       matches.push({
         id: matchId,
+        matchUid: match.uid, // Backend match uid for socket updates
         name: match.roundLabel ?? matchId,
         teams: [teamA, teamB],
         status,
         score: [match.scoreA, match.scoreB],
+        category: match.category,
         nextMatchWinId,
         nextMatchLoseId: null, // For single elim, no loser bracket connection
         nextMatchWinSlotIsB: match.nextMatchWinSlotIsB,

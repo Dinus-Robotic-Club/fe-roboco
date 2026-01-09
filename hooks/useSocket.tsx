@@ -32,7 +32,7 @@ export function useSocket(tournamentId?: string) {
 
   // [🪝 HOOK TRIGGER] Logger
   useEffect(() => {
-    console.log('[🪝 HOOK TRIGGER] File:useSocket.tsx Hook:useSocket triggered by:', { tournamentId, isMounted })
+    // console.log('[🪝 HOOK TRIGGER] File:useSocket.tsx Hook:useSocket triggered by:', { tournamentId, isMounted })
   }, [tournamentId, isMounted])
 
   // Only run on client after hydration
@@ -55,24 +55,24 @@ export function useSocket(tournamentId?: string) {
     const socket = socketRef.current
 
     socket.on('connect', () => {
-      console.log('[Socket] Connected:', socket.id)
+      // console.log('[Socket] Connected:', socket.id)
       setIsConnected(true)
 
       // Join tournament room if tournamentId provided
       if (tournamentId) {
         socket.emit('join-tournament', tournamentId)
-        console.log('[Socket] Joined tournament:', tournamentId)
+        // console.log('[Socket] Joined tournament:', tournamentId)
       }
     })
 
     socket.on('disconnect', () => {
-      console.log('[Socket] Disconnected')
+      // console.log('[Socket] Disconnected')
       setIsConnected(false)
     })
 
     // Listen for match-group updates
     socket.on('match-group:create', (data: ICardMatch | ICardMatch[]) => {
-      console.log('[Socket] Match group created:', data)
+      // console.log('[Socket] Match group created:', data)
       // Update ongoing matches
       queryClient.setQueryData(['all-ongoing-match', null], (old: IApiResponse<ICardMatch[]> | undefined) => {
         if (!old || !old.data) return old
@@ -89,7 +89,7 @@ export function useSocket(tournamentId?: string) {
 
     // Listen for groups generated
     socket.on('groups:generate', (data: IGroupData[]) => {
-      console.log('[Socket] Groups generated:', data)
+      // console.log('[Socket] Groups generated:', data)
       queryClient.setQueryData(['get-all-group', tournamentId, null], (old: IApiResponse<IGroupData[]> | undefined) => {
         if (!old) return { data: data, success: true, status: 200, message: 'Socket Update' }
         return { ...old, data: data }
@@ -100,7 +100,7 @@ export function useSocket(tournamentId?: string) {
 
     // Listen for playoff updates
     socket.on('playoff-generated', (data: unknown) => {
-      console.log('[Socket] Playoff generated:', data)
+      // console.log('[Socket] Playoff generated:', data)
       if (tournamentId) {
         queryClient.setQueryData(['get-playoff', tournamentId, null], () => {
           return { data: data, success: true, status: 200, message: 'Socket Update' }
@@ -111,7 +111,7 @@ export function useSocket(tournamentId?: string) {
 
     // Listen for specific match round creation
     socket.on('match-round:create', (data: { matchId: string }) => {
-      console.log('[Socket] Match round create:', data)
+      // console.log('[Socket] Match round create:', data)
       const matchId = data.matchId
       if (matchId) {
         queryClient.invalidateQueries({ queryKey: ['match-round', matchId] })
@@ -121,7 +121,7 @@ export function useSocket(tournamentId?: string) {
     // Listen for score updates
     socket.on('score:update', (data: IScoreUpdatePayload) => {
       // data contains: matchId, roundId, newScore: {teamA, teamB}, status
-      console.log('[Socket] Score update:', data)
+      // console.log('[Socket] Score update:', data)
       const { matchId, newScore, status } = data
 
       // Update match round detail if active
@@ -177,7 +177,7 @@ export function useSocket(tournamentId?: string) {
 
     // Listen for general match updates (fallback)
     socket.on('match:update', (data: ICardMatch) => {
-      console.log('[Socket] Match updated:', data)
+      // console.log('[Socket] Match updated:', data)
       queryClient.setQueryData(['all-ongoing-match'], (old: IApiResponse<ICardMatch[]> | undefined) => {
         if (!old || !old.data) return old
         return {
