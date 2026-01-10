@@ -155,7 +155,7 @@ export function ParticipantDetailModal({ participant, isOpen, onClose, onUploadC
             ) : (
               <div className="space-y-3">
                 {previewUrl ? (
-                  <div className="relative rounded-xl overflow-hidden border border-slate-200">
+                  <div className="relative h-[280px] rounded-xl overflow-hidden border border-slate-200">
                     <Image src={previewUrl} alt="Preview" width={400} height={280} className="w-full h-auto object-contain" />
                     <button
                       onClick={() => {

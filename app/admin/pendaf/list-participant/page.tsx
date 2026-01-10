@@ -25,7 +25,7 @@ const ListPage = () => {
   const { data: teams, isLoading } = useGetAllTeams()
 
   if (activeNav === 'team-list') {
-    ComponentToRender = <TeamList data={teams?.data as ITeam[]} />
+    ComponentToRender = <TeamList data={teams?.data as ITeam[]} type='admin'/>
   } else if (activeNav === 'member-list') {
     ComponentToRender = <ParticipantsList data={teams?.data as ITeam[]} />
   } else {
