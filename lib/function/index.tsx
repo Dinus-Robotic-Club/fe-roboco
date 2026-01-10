@@ -112,8 +112,18 @@ export const renderTeamInfo = (teamName: string, communityName: string | undefin
   <div className="flex items-center gap-4">
     <span className="text-sm font-medium text-slate-400 w-3">{index + 1}</span>
     <div className="flex bg-logo-team w-12 h-12 shrink-0 items-center justify-center drop-shadow-sm transition-transform group-hover:scale-105">
-      <Image src={getImageUrl(logoUrl)} alt={teamName} width={100} height={100} className="w-full h-full p-2.5 object-contain" unoptimized />
+      <Image src={getImageUrl(logoUrl)} alt={teamName} width={100} height={100} className="w-full h-full p-2.5 object-contain" />
     </div>
+    <div className="flex flex-col">
+      <p className="font-bold text-sm text-slate-900 line-clamp-1">{teamName}</p>
+      <p className="text-[10px] uppercase font-semibold text-slate-500 tracking-wide line-clamp-1">{communityName}</p>
+    </div>
+  </div>
+)
+
+export const renderTeamInfoNonImage = (teamName: string, communityName: string | undefined, index: number = 0) => (
+  <div className="flex items-center gap-4">
+    <span className="text-sm font-medium text-slate-400 w-3">{index + 1}</span>
     <div className="flex flex-col">
       <p className="font-bold text-sm text-slate-900 line-clamp-1">{teamName}</p>
       <p className="text-[10px] uppercase font-semibold text-slate-500 tracking-wide line-clamp-1">{communityName}</p>

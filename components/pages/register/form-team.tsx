@@ -2,7 +2,6 @@
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import CommunityInput from './community-input'
-import { FilePreviewCompact } from '@/components/ui/file-preview'
 
 // Tambahkan type props di sini
 interface FormRegistationTeamProps {
@@ -14,14 +13,7 @@ interface FormRegistationTeamProps {
   type?: 'user' | 'admin' // Prop baru
 }
 
-function FormRegistationTeam({
-  data,
-  setData,
-  error,
-  listTour,
-  listCommunity,
-  type = 'user', // Default value adalah 'user'
-}: FormRegistationTeamProps) {
+function FormRegistationTeam({ data, setData, error, listTour, listCommunity, type = 'user' }: FormRegistationTeamProps) {
   const [showPass, setShowPass] = useState<boolean>(false)
   const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false)
 
@@ -90,9 +82,6 @@ function FormRegistationTeam({
                     }}
                   />
                 </label>
-                {/* Logo Preview */}
-                <FilePreviewCompact file={data.logo ?? null} onRemove={() => setData({ ...data, logo: null })} />
-                {error?.logo && <p className="text-red-500 text-xs">{error.logo}</p>}
               </div>
 
               {/* INVOICE */}
@@ -118,9 +107,6 @@ function FormRegistationTeam({
                     }}
                   />
                 </label>
-                {/* Invoice Preview */}
-                <FilePreviewCompact file={data.invoice ?? null} onRemove={() => setData({ ...data, invoice: null })} />
-                {error?.invoice && <p className="text-red-500 text-xs">{error.invoice}</p>}
               </div>
             </>
           )}

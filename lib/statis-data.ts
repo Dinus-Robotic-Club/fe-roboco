@@ -32,10 +32,12 @@ export const nav_tournament = [
 export const nav_dashboard_main = createNav({
   left: [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Profile', href: '/dashboard?view=team-profile' },
-    { title: 'Match', href: '/dashboard/match' },
+    { title: 'Papan Liga', href: '/leagueboard' },
   ],
-  right: [{ title: 'Keluar', href: '/auth/login' }],
+  right: [
+    { title: 'Match', href: '/dashboard/match' },
+    { title: 'Keluar', href: '/auth/login' },
+  ],
 })
 
 export const nav_admin = createNav({

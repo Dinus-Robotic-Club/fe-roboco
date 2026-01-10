@@ -1,5 +1,5 @@
 import { ExcelRow, IParticipantRow, IRankColumn } from './types'
-import { formatDate, getImageUrl, renderTeamInfo } from './function'
+import { formatDate, getImageUrl, renderTeamInfo, renderTeamInfoNonImage } from './function'
 import Image from 'next/image'
 import { StatusBadge } from '@/components/ui/badge'
 import { GiGoalKeeper, GiSoccerBall } from 'react-icons/gi'
@@ -162,9 +162,9 @@ export const TeamColumns: IRankColumn<IRegistrationData | ITeam>[] = [
     title: 'Nama tim',
     accessor: (d, i) => {
       if ('team' in d) {
-        return renderTeamInfo(d.team?.name as string, d.team?.community?.name, d.team?.logo as string, i)
+        return renderTeamInfoNonImage(d.team?.name as string, d.team?.community?.name, i)
       } else if ('registrations' in d) {
-        return renderTeamInfo(d.name, d.community?.name, d.logo as string, i)
+        return renderTeamInfoNonImage(d.name, d.community?.name, i)
       }
     },
   },
