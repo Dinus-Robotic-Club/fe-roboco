@@ -64,15 +64,17 @@ export const nav_pendaf = createNav({
   left: [
     { title: 'Kehadiran', href: '/admin/pendaf/checking-ticket' },
     { title: 'Peserta', href: '/admin/pendaf/list-participant' },
-    { title: 'Tambah Tim', href: '/admin/pendaf/register-team' },
   ],
-  right: [{ title: 'Keluar', href: '/auth/login' }],
+  right: [
+    { title: 'Tambah Tim', href: '/admin/pendaf/register-team' },
+    { title: 'Keluar', href: '/auth/login' },
+  ],
 })
 
 // Helper function to get navbar based on user role
 export const getNavByRole = (role?: string | null): NavData => {
   switch (role) {
-    case 'REFEREE':
+    case 'REFREE':
       return nav_referee
     case 'PENDAF':
       return nav_pendaf

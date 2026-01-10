@@ -140,7 +140,7 @@ const PageComponent = ({ session }: { session: IAuthUser | null }) => {
   } else if (isActiveNav === 'group') {
     componentToRender = <GroupRank data={filteredGroups} activeFilter={filter} onFilterChange={setFilter} type="admin" onCreate={() => generateGroup()} title="GROUP RANK" />
   } else if (isActiveNav === 'match') {
-    componentToRender = <MatchList data={displayMatches as ICardMatch[]} user={session} type="admin" onCreate={() => createMatch()} />
+    componentToRender = <MatchList data={displayMatches as ICardMatch[]} user={session} type="user" onCreate={() => createMatch()} />
   } else if (isActiveNav === 'user') {
     componentToRender = <UserManagement users={allUser?.data || []} onAddUser={(data) => createUser(data)} isPending={isCreatingUser} />
   } else {

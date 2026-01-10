@@ -269,7 +269,6 @@ export function useMatchLogic(matchId: string) {
     // Stop timer
     if (timerRef.current) clearInterval(timerRef.current)
     setIsPlaying(false)
-    toast.loading('Memproses hasil ronde SUMO...')
 
     try {
       // Calculate wins including current round

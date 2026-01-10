@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense } from 'react'
+import { Suspense, useCallback } from 'react'
 import FormRegistrationPlayer from '@/components/pages/register/form-player'
 import FormRegistationTeam from '@/components/pages/register/form-team'
 import Loader from '@/components/ui/loader'
@@ -14,44 +14,54 @@ import { useAuth } from '@/context/auth-context'
 import Image from 'next/image'
 import { FormEvent, useState } from 'react'
 
+// Initial state values for reset
+const initialTeamState: ITeamBody = {
+  name: '',
+  email: '',
+  communityName: '',
+  category: '',
+  tournamentId: '',
+  password: '',
+  confirmPassword: '',
+}
+
+const initialParticipantsState: IParticipantsBody[] = [
+  {
+    participantsName: '',
+    participantsPhone: '',
+    participantsTwibbon: '',
+    participantsRoleInTeam: '',
+  },
+  {
+    participantsName: '',
+    participantsPhone: '',
+    participantsTwibbon: '',
+    participantsRoleInTeam: '',
+  },
+]
+
 function RegisterContent() {
   const { user } = useAuth()
   const nav = getNavByRole(user?.role)
   const mounted = useMounted()
   const { data: communities } = useGetCommunity()
   const { data: tournaments } = useGetTournaments()
-  const { mutate, isPending } = useCreateTeamByAdmin()
 
-  const [team, setTeam] = useState<ITeamBody>({
-    name: '',
-    email: '',
-    communityName: '',
-    category: '',
-    tournamentId: '',
-    password: '',
-    confirmPassword: '',
-  })
-
-  // State participant tetap array object
-  const [participants, setParticipants] = useState<IParticipantsBody[]>([
-    {
-      participantsName: '',
-      participantsPhone: '',
-      participantsTwibbon: '',
-      participantsRoleInTeam: '',
-    },
-    {
-      participantsName: '',
-      participantsPhone: '',
-      participantsTwibbon: '',
-      participantsRoleInTeam: '',
-    },
-  ])
-
+  const [team, setTeam] = useState<ITeamBody>(initialTeamState)
+  const [participants, setParticipants] = useState<IParticipantsBody[]>(initialParticipantsState)
   const [error, setError] = useState<RegisterError>({
     team: {},
     participants: [],
   })
+
+  // Reset form callback - passed to mutation hook
+  const resetForm = useCallback(() => {
+    setTeam(initialTeamState)
+    setParticipants([...initialParticipantsState])
+    setError({ team: {}, participants: [] })
+  }, [])
+
+  const { mutate, isPending } = useCreateTeamByAdmin(resetForm)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()

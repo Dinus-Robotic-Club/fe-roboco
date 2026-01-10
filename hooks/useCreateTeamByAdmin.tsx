@@ -2,7 +2,7 @@ import { createTeamsByAdmin } from '@/lib/api/team'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-export const useCreateTeamByAdmin = () => {
+export const useCreateTeamByAdmin = (onSuccessCallback?: () => void) => {
   const queryClient = useQueryClient()
 
   return useMutation<unknown, Error, FormData>({
@@ -10,6 +10,8 @@ export const useCreateTeamByAdmin = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] })
       toast.success('Team created successfully')
+      // Call optional callback for form reset
+      if (onSuccessCallback) onSuccessCallback()
     },
     onError: (err) => {
       console.log('Error create teams', err.message)
