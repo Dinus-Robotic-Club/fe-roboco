@@ -207,6 +207,13 @@ export const TeamColumns: IRankColumn<IRegistrationData | ITeam>[] = [
       return <StatusBadge>{isPresent ? 'Present' : 'Absent'}</StatusBadge>
     },
   },
+  {
+    header: 'Action',
+    colSpan: 1,
+    className: 'text-center text-sm font-semibold',
+    title: 'Action',
+    accessor: () => <span className="text-xs font-medium text-blue-600 hover:text-blue-800 underline">Lihat Detail</span>,
+  },
 ]
 
 export const ParticipantsColumns: IRankColumn<IParticipantRow>[] = [
@@ -249,6 +256,13 @@ export const ParticipantsColumns: IRankColumn<IParticipantRow>[] = [
     className: 'text-center text-sm font-semibold',
     title: 'Attendance',
     accessor: (row) => <StatusBadge>{row.attendanceStatus ? 'Present' : 'Absent'}</StatusBadge>,
+  },
+  {
+    header: 'Action',
+    colSpan: 1,
+    className: 'text-center text-sm font-semibold',
+    title: 'Action',
+    accessor: () => <span className="text-xs font-medium text-blue-600 hover:text-blue-800 underline">Lihat Detail</span>,
   },
 ]
 

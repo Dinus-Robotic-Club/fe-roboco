@@ -9,23 +9,50 @@ import { useGetAllTeams } from '@/hooks/useGetAllCommunity'
 import { getNavByRole } from '@/lib/statis-data'
 import { useAuth } from '@/context/auth-context'
 import Loader from '@/components/ui/loader'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useSocket } from '@/hooks/useSocket'
 import { useRegistrationSocket } from '@/hooks/custom-hooks/useRegistrationSocket'
 
 const ListPage = () => {
-  // Connect to global socket (or specific tournament if available, here we listen globally or conceptually)
   useSocket()
   useRegistrationSocket()
 
   const { user } = useAuth()
   const nav = getNavByRole(user?.role)
   const [activeNav, setActiveNav] = useState('team-list')
-  let ComponentToRender
   const { data: teams, isLoading } = useGetAllTeams()
 
+  // Transform ITeam[] to IRegistrationData[] format for admin modal
+  const registrationData = useMemo(() => {
+    if (!teams?.data) return []
+
+    return (teams.data as ITeam[]).map((team) => {
+      const registration = team.registrations?.[0]
+      return {
+        uid: registration?.uid || team.uid,
+        teamId: team.uid,
+        tournamentId: registration?.tournamentId || '',
+        status: registration?.status || 'PENDING',
+        registeredAt: registration?.registeredAt || team.createdAt,
+        invoice: registration?.invoice || null,
+        attendeance: registration?.attendeance || null,
+        createdAt: team.createdAt,
+        team: {
+          uid: team.uid,
+          name: team.name,
+          logo: team.logo,
+          category: team.category,
+          email: team.email,
+          community: team.community,
+          participants: team.participants || [],
+        },
+      } as IRegistrationData
+    })
+  }, [teams])
+
+  let ComponentToRender
   if (activeNav === 'team-list') {
-    ComponentToRender = <TeamList data={teams?.data as ITeam[]} type='admin'/>
+    ComponentToRender = <TeamList data={registrationData} type="admin" />
   } else if (activeNav === 'member-list') {
     ComponentToRender = <ParticipantsList data={teams?.data as ITeam[]} />
   } else {
@@ -35,6 +62,7 @@ const ListPage = () => {
   const handleClickNav = (key: string) => {
     setActiveNav(key)
   }
+
   return (
     <div className="bg-grid">
       <Loader show={isLoading} />

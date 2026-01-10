@@ -130,7 +130,7 @@ export function ParticipantsList({ data }: { data: ITeam[] }) {
         />
 
         {/* Generic Table Render */}
-        <GenericRankTable data={listData.paginated} columns={ParticipantsColumns} onRowClick={handleRowClick} />
+        <GenericRankTable data={listData.paginated} columns={ParticipantsColumns} onRowClick={handleRowClick} rowClassName="cursor-pointer hover:bg-slate-50 transition-colors" />
 
         {/* Pagination Controls */}
         {pagination.totalPages > 1 && (
