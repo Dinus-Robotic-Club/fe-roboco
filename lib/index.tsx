@@ -1,5 +1,5 @@
 import { ExcelRow, IParticipantRow, IRankColumn } from './types'
-import { formatDate, getImageUrl, renderTeamInfo, renderTeamInfoNonImage } from './function'
+import { formatDate, getImageUrl, renderTeamInfo } from './function'
 import Image from 'next/image'
 import { StatusBadge } from '@/components/ui/badge'
 import { GiGoalKeeper, GiSoccerBall } from 'react-icons/gi'
@@ -162,9 +162,9 @@ export const TeamColumns: IRankColumn<IRegistrationData | ITeam>[] = [
     title: 'Nama tim',
     accessor: (d, i) => {
       if ('team' in d) {
-        return renderTeamInfoNonImage(d.team?.name as string, d.team?.community?.name, i)
+        return renderTeamInfo(d.team?.name as string, d.team?.community?.name, d.team?.logo as string, i)
       } else if ('registrations' in d) {
-        return renderTeamInfoNonImage(d.name, d.community?.name, i)
+        return renderTeamInfo(d.name, d.community?.name, d.logo as string, i)
       }
     },
   },
@@ -259,10 +259,6 @@ export const basisColumns: IRankColumn<ICommunity>[] = [
     accessor: (item, index) => (
       <div className="flex items-center gap-4 w-full">
         <span className="text-lg font-semibold w-6 text-slate-400 shrink-0">{index + 1}.</span>
-
-        <div className="flex bg-logo-team w-12 h-12 shrink-0 items-center justify-center drop-shadow-sm">
-          <Image src={getImageUrl(item.team[0]?.logo)} alt="logo" width={100} height={100} className="w-full h-full p-1 object-contain" unoptimized />
-        </div>
 
         <div className="flex flex-col min-w-0">
           <p className="font-bold text-base text-slate-900 truncate">{item.name}</p>
