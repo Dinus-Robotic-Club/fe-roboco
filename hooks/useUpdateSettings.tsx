@@ -3,10 +3,11 @@ import { toast } from 'sonner'
 import { updateSetting } from '@/lib/api/tour'
 
 export interface IUpdateSettingInput {
+  defaultBestOf?: number
   groupBestOf?: number
   upperBestOf?: number
   lowerBestOf?: number
-  grandFinalBestOf?: number
+  grandFinalBO?: number
   roundDurationSoccer?: number
   roundDurationSumo?: number
 }

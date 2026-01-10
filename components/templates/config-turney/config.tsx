@@ -51,7 +51,7 @@ const TournamentRules: React.FC<TournamentRulesProps> = ({ tournamentId, tournam
       groupBestOf: config.groupBestOf,
       upperBestOf: config.upperBestOf,
       lowerBestOf: config.lowerBestOf,
-      grandFinalBestOf: config.grandFinalBestOf,
+      grandFinalBO: config.grandFinalBestOf,
       roundDurationSoccer: config.roundDurationSoccer,
       roundDurationSumo: config.roundDurationSumo,
     }
