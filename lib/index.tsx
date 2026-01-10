@@ -216,7 +216,7 @@ export const TeamColumns: IRankColumn<IRegistrationData | ITeam>[] = [
   },
 ]
 
-export const ParticipantsColumns: IRankColumn<IParticipantRow & IRegistrationData>[] = [
+export const ParticipantsColumns: IRankColumn<IParticipantRow>[] = [
   {
     header: 'Nama Member',
     colSpan: 3, // Sesuaikan span
