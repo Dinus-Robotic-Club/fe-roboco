@@ -157,7 +157,7 @@ export const sumoColumns: IRankColumn<IGroupTeamStats>[] = [
 export const TeamColumns: IRankColumn<IRegistrationData | ITeam>[] = [
   {
     header: 'Nama tim',
-    colSpan: 4,
+    colSpan: 3,
     className: 'text-sm font-semibold',
     title: 'Nama tim',
     accessor: (d, i) => {
