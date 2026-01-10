@@ -216,7 +216,7 @@ export const TeamColumns: IRankColumn<IRegistrationData | ITeam>[] = [
   },
 ]
 
-export const ParticipantsColumns: IRankColumn<IParticipantRow>[] = [
+export const ParticipantsColumns: IRankColumn<IParticipantRow & IRegistrationData>[] = [
   {
     header: 'Nama Member',
     colSpan: 3, // Sesuaikan span
@@ -238,13 +238,13 @@ export const ParticipantsColumns: IRankColumn<IParticipantRow>[] = [
   },
   {
     header: 'Role',
-    colSpan: 2,
+    colSpan: 1,
     className: 'text-center text-sm font-semibold',
     title: 'Role',
     accessor: (row) => <StatusBadge>{row.participantRole}</StatusBadge>,
   },
   {
-    header: 'Status',
+    header: 'Status regis',
     colSpan: 2,
     className: 'text-center text-sm font-semibold',
     title: 'Status',
@@ -259,7 +259,7 @@ export const ParticipantsColumns: IRankColumn<IParticipantRow>[] = [
   },
   {
     header: 'Action',
-    colSpan: 1,
+    colSpan: 2,
     className: 'text-center text-sm font-semibold',
     title: 'Action',
     accessor: () => <span className="text-xs font-medium text-blue-600 hover:text-blue-800 underline">Lihat Detail</span>,

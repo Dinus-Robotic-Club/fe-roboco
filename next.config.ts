@@ -3,7 +3,16 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: 'standalone',
-  allowedDevOrigins: ['http://localhost:3000', 'http://192.168.6.142:3000', 'http://172.20.10.4:3000', '172.20.10.4:3000'],
+  allowedDevOrigins: [
+    'http://localhost:3000',
+    'http://192.168.6.142:3000',
+    'http://172.20.10.4:3000',
+    '172.20.10.4:3000',
+    'https://test-backend.dinusrobotic.org',
+    'https://backend-dnroboco.dinusrobotic.org',
+    'https://dnroboco01.dinusrobotic.org',
+    'https://dnroboco-be.dinusrobotic.org',
+  ],
 
   images: {
     remotePatterns: [
@@ -39,6 +48,7 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'test-backend.dinusrobotic.org',
+        port: '8000',
         pathname: '/uploads/**',
       },
       {

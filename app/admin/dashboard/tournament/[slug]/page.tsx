@@ -103,7 +103,7 @@ const PageComponent = ({ session }: { session: IAuthUser | null }) => {
   } else if (isActiveNav === 'participants') {
     componentToRender = <ParticipantsList data={tournamentDetail?.data?.registrations?.map((reg) => reg.team) as ITeam[]} />
   } else if (isActiveNav === 'config') {
-    componentToRender = <Config />
+    componentToRender = <Config tournamentId={tournamentId} tournamentSlug={tournamentSlug} settings={tournamentDetail?.data?.settings} />
   } else if (isActiveNav === 'bracket') {
     const hasBrackets = soccerBracketMatches.length > 0 || sumoBracketMatches.length > 0
 
