@@ -31,12 +31,11 @@ const CardMatch = ({ data, user }: { data: ICardMatch; user: IAuthUser | null })
 
   if (isPending) return <Loader show />
 
-  const isAdmin = user?.role === 'ADMIN' || user?.role === 'REFREE'
+  const isAdmin = user?.role === 'REFREE'
   const isLive = data?.status === 'ONGOING' || data?.status === 'LIVE'
   const isFinished = data?.status === 'FINISHED'
 
   const handleCardClick = () => {
-    // If TBD match, show info toast instead of modal
     if (isTBD && isAdmin && !isFinished) {
       toast.info('Match ini menunggu hasil dari match sebelumnya', {
         description: 'Tim akan ditentukan setelah babak sebelumnya selesai.',
@@ -45,7 +44,6 @@ const CardMatch = ({ data, user }: { data: ICardMatch; user: IAuthUser | null })
     }
 
     if (isAdmin && !isFinished) {
-      // If match is already LIVE/ONGOING, go directly to match control page
       if (isLive || data.status === 'ONGOING') {
         router.push(`/admin/refree/match/${data.uid}`)
         return

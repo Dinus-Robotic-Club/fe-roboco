@@ -121,7 +121,6 @@ const PageComponent = ({ session }: { session: IAuthUser | null }) => {
     } else {
       componentToRender = (
         <div className="w-full flex flex-col items-center">
-          {/* Category Toggle */}
           <div className="flex items-center gap-2 mb-6">
             {['SOCCER', 'SUMO'].map((cat) => (
               <button

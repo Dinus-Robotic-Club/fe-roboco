@@ -11,7 +11,7 @@ function MatchList({ data, user, emptyTitle = 'COMING SOON', emptyDescription = 
         description={emptyDescription}
         variant="public"
         icon={Trophy}
-        onCreate={type === 'refree' ? onCreate : undefined}
+        onCreate={type === 'admin' ? onCreate : undefined}
         createLabel="Buat Match"
         className="w-full max-w-4xl h-auto"
       />

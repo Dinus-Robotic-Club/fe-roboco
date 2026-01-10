@@ -88,7 +88,7 @@ export interface IMatchListProps {
   user: IAuthUser | null
   emptyTitle?: string
   emptyDescription?: string
-  type?: 'refree' | 'user'
+  type?: 'admin' | 'user'
   onCreate?: () => void
 }
 

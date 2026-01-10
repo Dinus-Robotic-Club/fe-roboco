@@ -367,18 +367,40 @@ const TeamDetailModal: React.FC<IModalProps> = ({ isOpen, onClose, data, onAppro
                 </div>
               </section>
 
-              <div className="flex gap-3 pt-6 mt-6 border-t border-slate-100">
-                <button
-                  onClick={() => onReject(data.teamId)}
-                  className="flex-1 px-4 py-3 bg-white border border-red-200 text-red-600 rounded-xl font-bold hover:bg-red-50 transition-colors flex items-center justify-center gap-2">
-                  <X className="w-4 h-4" /> Reject Team
-                </button>
-                <button
-                  onClick={() => onApprove(data.teamId)}
-                  className="flex-1 px-4 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-slate-200">
-                  <Check className="w-4 h-4" /> Approve Team
-                </button>
-              </div>
+              {/* Status Actions - Only show buttons for PENDING status */}
+              {data.status === 'PENDING' ? (
+                <div className="flex gap-3 pt-6 mt-6 border-t border-slate-100">
+                  <button
+                    onClick={() => onReject(data.teamId)}
+                    className="flex-1 px-4 py-3 bg-white border border-red-200 text-red-600 rounded-xl font-bold hover:bg-red-50 transition-colors flex items-center justify-center gap-2">
+                    <X className="w-4 h-4" /> Reject Team
+                  </button>
+                  <button
+                    onClick={() => onApprove(data.teamId)}
+                    className="flex-1 px-4 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-slate-200">
+                    <Check className="w-4 h-4" /> Approve Team
+                  </button>
+                </div>
+              ) : (
+                <div className="pt-6 mt-6 border-t border-slate-100">
+                  <div
+                    className={`flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-bold ${
+                      data.status === 'APPROVED' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
+                    }`}>
+                    {data.status === 'APPROVED' ? (
+                      <>
+                        <Check className="w-5 h-5" />
+                        <span>Tim ini sudah di-APPROVE</span>
+                      </>
+                    ) : (
+                      <>
+                        <X className="w-5 h-5" />
+                        <span>Tim ini sudah di-REJECT</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
