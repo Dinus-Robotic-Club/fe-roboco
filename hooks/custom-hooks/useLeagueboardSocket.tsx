@@ -164,6 +164,16 @@ export function useLeagueboardSocket(tournamentId?: string) {
       setState((prev) => ({ ...prev, groups: data }))
     })
 
+    socket.on('groups:update', (data: IGroupData[]) => {
+      // console.log('[LeagueboardSocket] Groups updated:', data)
+      setState((prev) => ({ ...prev, groups: data }))
+    })
+
+    socket.on('community:rank-update', (data: any) => {
+      // console.log('[LeagueboardSocket] Community Rank updated:', data)
+      setState((prev) => ({ ...prev, communityRank: data }))
+    })
+
     // ==========================================
     // MATCH EVENTS
     // ==========================================

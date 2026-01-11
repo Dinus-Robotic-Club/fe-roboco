@@ -32,7 +32,7 @@ export const useMatchManager = () => {
     if (user?.role === 'REFREE') {
       const allRefereeMatches = (refereeData?.data as ICardMatch[]) || []
       if (activeNav === TABS.ONGOING) {
-        list = allRefereeMatches.filter((m) => m.status !== 'FINISHED' && m.status !== 'CANCELLED' && m.status !== 'WALKOUT')
+        list = allRefereeMatches.filter((m) => m.status === 'ONGOING' || m.status === 'SCHEDULED')
       } else {
         list = allRefereeMatches.filter((m) => m.status === 'FINISHED' || m.status === 'CANCELLED' || m.status === 'WALKOUT')
       }

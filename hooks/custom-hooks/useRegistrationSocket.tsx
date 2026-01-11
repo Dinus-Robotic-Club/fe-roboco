@@ -55,15 +55,13 @@ export const useRegistrationSocket = (tournamentId?: string, tournamentSlug?: st
       toast.info(`Absensi tim ${data.teamName} diperbarui: ${data.isPresent ? 'Hadir' : 'Tidak Hadir'}`)
     }
 
-    const onGroupsGenerate = (data: IGroupData[]) => {
-      console.log('Groups generated:', data)
+    const onGroupsGenerate = () => {
       queryClient.invalidateQueries({ queryKey: ['get-all-group'] })
       queryClient.invalidateQueries({ queryKey: ['detail-tournament'] })
       toast.success('Grup berhasil dibuat!')
     }
 
-    const onMatchGroupCreate = (data: ICardMatch[]) => {
-      console.log('Matches created:', data)
+    const onMatchGroupCreate = () => {
       queryClient.invalidateQueries({ queryKey: ['referee-matches'] })
       queryClient.invalidateQueries({ queryKey: ['all-ongoing-match'] })
       queryClient.invalidateQueries({ queryKey: ['detail-tournament'] })

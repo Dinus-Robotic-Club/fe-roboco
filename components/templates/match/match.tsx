@@ -1,6 +1,3 @@
-import { MatchStatusHeader } from '@/components/ui/header'
-import { Scoreboard } from '@/components/ui/score'
-import { TeamDisplay } from '@/components/ui/team-display'
 import { useCreateMatchRound } from '@/hooks/useCreateMatchRound'
 import { IAuthUser } from '@/lib/types/auth'
 import { useRouter } from 'next/navigation'

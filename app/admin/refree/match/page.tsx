@@ -1,14 +1,15 @@
 'use client'
 
-import { MatchListView } from '@/components/templates/match/match-list-view'
+import MatchList from '@/components/templates/match/match-list'
+import { FilterBar } from '@/components/templates/tools/filter'
 import { TabNavigation } from '@/components/templates/tab/tab-navigation'
 import { HeaderDashboard } from '@/components/ui/header'
 import Loader from '@/components/ui/loader'
 import Navbar from '@/components/ui/navbar'
+import { Pagination } from '@/components/ui/pagination'
 import { useMatchManager } from '@/hooks/custom-hooks/useMatchManager'
 import { useRegistrationSocket } from '@/hooks/custom-hooks/useRegistrationSocket'
 import { useSocket } from '@/hooks/useSocket'
-import { TABS } from '@/lib'
 import { getNavByRole } from '@/lib/statis-data'
 
 function MatchAdmin() {
@@ -32,7 +33,11 @@ function MatchAdmin() {
 
         {/* Content List with integrated filtering, sorting, pagination */}
         <div className="w-full h-auto flex flex-col items-center gap-6 mt-8 mb-20 font-plus-jakarta-sans">
-          {state.activeNav === TABS.ONGOING ? <MatchListView data={filteredData} user={user} /> : <MatchListView data={filteredData} user={user} />}
+          <FilterBar search={state.search} category={state.category} onSearchChange={setters.setSearch} onCategoryChange={setters.setCategory} />
+
+          <MatchList data={filteredData} user={user} />
+
+          <Pagination currentPage={state.page} totalPages={state.totalPages} onPageChange={setters.setPage} totalItems={state.totalItems} itemsPerPage={state.limit} />
         </div>
       </main>
     </div>

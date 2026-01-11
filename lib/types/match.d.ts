@@ -31,7 +31,7 @@ interface ICardMatch {
   nextMatchWinSlotIsB: boolean
   nextMatchLoseSlotIsB: boolean
   winnerId: string | null
-  status: 'FINISHED' | 'LIVE' | 'UPCOMING' | 'ONGOING' | 'CANCELLED' | 'PENDING' | 'WALKOUT'
+  status: 'FINISHED' | 'LIVE' | 'UPCOMING' | 'ONGOING' | 'SCHEDULED' | 'CANCELLED' | 'PENDING' | 'WALKOUT'
   roundLabel: string | null
   category: 'SOCCER' | 'SUMO' | null
   createdAt: string
