@@ -12,7 +12,7 @@ import { ParticipantsList } from '@/components/templates/table-list/list-partici
 import { TeamList } from '@/components/templates/table-list/list-team'
 import { useAuth } from '@/context/auth-context'
 import Loader from '@/components/ui/loader'
-import MatchList from '@/components/templates/match/match-list'
+import { MatchListView } from '@/components/templates/match/match-list-view'
 import { IAuthUser } from '@/lib/types/auth'
 import { CategoryFilter, GroupRank } from '@/components/templates/table-rank/group-rank'
 import { Playoff } from '@/components/templates/bracket/bracket'
@@ -139,7 +139,7 @@ const PageComponent = ({ session }: { session: IAuthUser | null }) => {
   } else if (isActiveNav === 'group') {
     componentToRender = <GroupRank data={filteredGroups} activeFilter={filter} onFilterChange={setFilter} type="admin" onCreate={() => generateGroup()} title="GROUP RANK" />
   } else if (isActiveNav === 'match') {
-    componentToRender = <MatchList data={displayMatches as ICardMatch[]} user={session} type="user" onCreate={() => createMatch()} />
+    componentToRender = <MatchListView data={displayMatches as ICardMatch[]} user={session} type="user" onCreate={() => createMatch()} />
   } else if (isActiveNav === 'user') {
     componentToRender = <UserManagement users={allUser?.data || []} onAddUser={(data) => createUser(data)} isPending={isCreatingUser} />
   } else {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, FormEvent, useMemo } from 'react'
-import { Plus, Users, Mail, User, Shield, Eye, EyeOff, Search, Trash2, Edit3 } from 'lucide-react'
+import { Plus, Users, Mail, User, Shield, Eye, EyeOff, Search, Trash2, Edit3, Target } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { GenericRankTable } from '@/components/ui/table'
 import { IRankColumn } from '@/lib/types'
@@ -27,6 +27,12 @@ const roleLabels: Record<UserRole, string> = {
   PARTICIPANT: 'Peserta',
   REFREE: 'Wasit',
   PENDAF: 'Pendaftar',
+}
+
+const refereeCategoryLabels: Record<RefreeCategory, string> = {
+  SUMO: 'Sumo',
+  SOCCER: 'Soccer',
+  BOTH: 'Keduanya',
 }
 
 // User List Columns
@@ -64,10 +70,13 @@ const userColumns: IRankColumn<IUser>[] = [
     colSpan: 2,
     className: 'text-center',
     accessor: (user: IUser) => (
-      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${roleBadgeStyles[user.role]}`}>
-        <Shield className="w-3 h-3" />
-        {roleLabels[user.role]}
-      </span>
+      <div className="flex flex-col items-center gap-1">
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${roleBadgeStyles[user.role]}`}>
+          <Shield className="w-3 h-3" />
+          {roleLabels[user.role]}
+        </span>
+        {user.role === 'REFREE' && user.refereeCategory && <span className="text-[10px] text-slate-500 font-medium">{refereeCategoryLabels[user.refereeCategory]}</span>}
+      </div>
     ),
   },
   {
@@ -99,6 +108,11 @@ const AddUserForm = ({ onSubmit, isPending, onClose }: { onSubmit: (data: IRegis
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    // Validate refereeCategory when role is REFREE
+    if (formData.role === 'REFREE' && !formData.refereeCategory) {
+      alert('Kategori wasit harus dipilih untuk role Wasit')
+      return
+    }
     onSubmit(formData)
   }
 
@@ -162,7 +176,14 @@ const AddUserForm = ({ onSubmit, isPending, onClose }: { onSubmit: (data: IRegis
             <button
               key={role}
               type="button"
-              onClick={() => setFormData((prev) => ({ ...prev, role }))}
+              onClick={() =>
+                setFormData((prev) => ({
+                  ...prev,
+                  role,
+                  // Clear refereeCategory if switching away from REFREE
+                  refereeCategory: role === 'REFREE' ? prev.refereeCategory : undefined,
+                }))
+              }
               className={`
                 px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all
                 ${formData.role === role ? 'border-[#FBFF00] bg-[#FBFF00]/10 text-slate-900' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'}
@@ -175,6 +196,34 @@ const AddUserForm = ({ onSubmit, isPending, onClose }: { onSubmit: (data: IRegis
           ))}
         </div>
       </div>
+
+      {/* Referee Category Field - Only show when REFREE is selected */}
+      {formData.role === 'REFREE' && (
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+            <Target className="w-4 h-4 text-slate-400" />
+            Kategori Wasit
+            <span className="text-red-400">*</span>
+          </label>
+          <div className="grid grid-cols-3 gap-3">
+            {(['SUMO', 'SOCCER', 'BOTH'] as RefreeCategory[]).map((category) => (
+              <button
+                key={category}
+                type="button"
+                onClick={() => setFormData((prev) => ({ ...prev, refereeCategory: category }))}
+                className={`
+                  px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all
+                  ${formData.refereeCategory === category ? 'border-amber-400 bg-amber-50 text-slate-900' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'}
+                `}>
+                <div className="flex items-center justify-center gap-2">
+                  <div className={`w-3 h-3 rounded-full border-2 transition-all ${formData.refereeCategory === category ? 'border-amber-400 bg-amber-400' : 'border-slate-300'}`} />
+                  {refereeCategoryLabels[category]}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Submit Buttons */}
       <div className="flex gap-3 pt-4">

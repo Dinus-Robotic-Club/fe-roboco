@@ -1,6 +1,6 @@
 'use client'
 
-import MatchList from '@/components/templates/match/match-list'
+import { MatchListView } from '@/components/templates/match/match-list-view'
 import { HeaderDashboard } from '@/components/ui/header'
 import Loader from '@/components/ui/loader'
 import { useAuth } from '@/context/auth-context'
@@ -10,7 +10,7 @@ import { useGetTournaments } from '@/hooks/useGetTournaments'
 import { useSocket } from '@/hooks/useSocket'
 import { IAuthUser } from '@/lib/types/auth'
 import { useSearchParams } from 'next/navigation'
-import { Suspense, useState, useEffect, useCallback } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 
 function MatchPageContent({ user }: { user: IAuthUser | null }) {
@@ -41,13 +41,13 @@ function MatchPageContent({ user }: { user: IAuthUser | null }) {
     if (onGoing?.data) {
       setOnGoingMatches(onGoing.data)
     }
-  }, [onGoing?.data])
+  }, [onGoing])
 
   useEffect(() => {
     if (history?.data) {
       setHistoryMatches(history.data)
     }
-  }, [history?.data])
+  }, [history])
 
   // Subscribe to query client updates (from useSocket hook events)
   useEffect(() => {
@@ -81,10 +81,10 @@ function MatchPageContent({ user }: { user: IAuthUser | null }) {
 
   if (activeNav === 'on-going match') {
     ComponentToRender = (
-      <MatchList data={displayOnGoing as ICardMatch[]} user={user} emptyTitle="BELUM ADA PERTANDINGAN" emptyDescription="Tim ini belum memiliki list pertandingan yang akan berlangsung." />
+      <MatchListView data={displayOnGoing as ICardMatch[]} user={user} emptyTitle="BELUM ADA PERTANDINGAN" emptyDescription="Tim ini belum memiliki list pertandingan yang akan berlangsung." />
     )
   } else if (activeNav === 'match-history') {
-    ComponentToRender = <MatchList data={displayHistory as ICardMatch[]} user={user} emptyTitle="BELUM ADA RIWAYAT" emptyDescription="Tim ini belum menyelesaikan pertandingan apapun." />
+    ComponentToRender = <MatchListView data={displayHistory as ICardMatch[]} user={user} emptyTitle="BELUM ADA RIWAYAT" emptyDescription="Tim ini belum menyelesaikan pertandingan apapun." />
   } else {
     ComponentToRender = null
   }

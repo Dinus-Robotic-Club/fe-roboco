@@ -63,3 +63,10 @@ export const endMatchRound = (matchId: string): Promise<IApiResponse<unknown>> =
     method: 'POST',
   })
 }
+
+export const getMatchesByReferee = (token?: string): Promise<IApiResponse<MatchListResponse>> => {
+  return apiFetch<IApiResponse<MatchListResponse>>(`${BASE}/api/matches/refree`, {
+    method: 'GET',
+    token,
+  })
+}

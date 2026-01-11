@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect } from 'react'
 import { Playoff } from '@/components/templates/bracket/bracket'
-import MatchList from '@/components/templates/match/match-list'
+import { MatchListView } from '@/components/templates/match/match-list-view'
 import { BasisRank } from '@/components/templates/table-rank/com-rank'
 import { GroupRank } from '@/components/templates/table-rank/group-rank'
 import { Footer } from '@/components/ui/footer'
@@ -76,9 +76,9 @@ const LeagueboardContent = ({ session }: { session: IAuthUser | null }) => {
   } else if (activeNav === 'group-rank-sumo') {
     ComponentToRender = <GroupRank data={filteredData || []} title="SUMO" />
   } else if (activeNav === 'on-going match') {
-    ComponentToRender = <MatchList data={displayOnGoing as ICardMatch[]} user={session} type="user" />
+    ComponentToRender = <MatchListView data={displayOnGoing as ICardMatch[]} user={session} type="user" />
   } else if (activeNav === 'match-history') {
-    ComponentToRender = <MatchList data={displayHistory as ICardMatch[]} user={session} type="user" />
+    ComponentToRender = <MatchListView data={displayHistory as ICardMatch[]} user={session} type="user" />
   } else if (activeNav === 'playoff-sumo') {
     ComponentToRender =
       displaySumoBracket.length > 0 ? (

@@ -10,7 +10,7 @@ export const MatchDetailContent = ({ data }: { data: ICardMatch }) => {
   const theme = getCategoryTheme(data.category ?? 'SOCCER') as IThemeConfig
 
   // Data Processing
-  const sortedEvents = [...data.events].sort((a, b) => a.minute - b.minute)
+  const sortedEvents = [...(data.events || [])].sort((a, b) => a.minute - b.minute)
   const hasEvents = sortedEvents.length > 0
   const scoreA = Number(data.scoreA) || 0
   const scoreB = Number(data.scoreB) || 0
@@ -53,9 +53,9 @@ export const MatchDetailContent = ({ data }: { data: ICardMatch }) => {
                 <StatBar label="Skor Akhir" valueA={scoreA} valueB={scoreB} total={totalScore} theme={theme} />
                 <StatBar
                   label="Dominasi Event"
-                  valueA={data.events.filter((e) => data.teamA && e.teamId === data.teamA.uid).length}
-                  valueB={data.events.filter((e) => data.teamB && e.teamId === data.teamB.uid).length}
-                  total={data.events.length}
+                  valueA={data.events?.filter((e) => data.teamA && e.teamId === data.teamA.uid).length || 0}
+                  valueB={data.events?.filter((e) => data.teamB && e.teamId === data.teamB.uid).length || 0}
+                  total={data.events?.length || 0}
                   theme={theme}
                 />
               </div>
