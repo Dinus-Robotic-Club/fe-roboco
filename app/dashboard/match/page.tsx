@@ -1,6 +1,14 @@
 'use client'
 
-import { MatchListView } from '@/components/templates/match/match-list-view'
+import MatchList from '@/components/templates/match/match-list'
+import { FilterBar } from '@/components/templates/tools/filter'
+import { Pagination } from '@/components/ui/pagination'
+import { useMatchListControl } from '@/hooks/useMatchListControl'
+import { CATEGORIES } from '@/lib'
+import { useQueryClient } from '@tanstack/react-query'
+import { IAuthUser } from '@/lib/types/auth'
+import { useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
 import { HeaderDashboard } from '@/components/ui/header'
 import Loader from '@/components/ui/loader'
 import { useAuth } from '@/context/auth-context'
@@ -9,10 +17,6 @@ import { useGetOnGoingMatchById } from '@/hooks/useOnGoingMatchById'
 import { useGetTournaments } from '@/hooks/useGetTournaments'
 import { useSocket } from '@/hooks/useSocket'
 import { useRegistrationSocket } from '@/hooks/custom-hooks/useRegistrationSocket'
-import { IAuthUser } from '@/lib/types/auth'
-import { useSearchParams } from 'next/navigation'
-import { Suspense, useState, useEffect } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
 
 function MatchPageContent({ user }: { user: IAuthUser | null }) {
   const searchParams = useSearchParams()
@@ -79,17 +83,24 @@ function MatchPageContent({ user }: { user: IAuthUser | null }) {
   const displayOnGoing = onGoingMatches.length > 0 ? onGoingMatches : onGoing?.data || []
   const displayHistory = historyMatches.length > 0 ? historyMatches : history?.data || []
 
-  let ComponentToRender
+  // Determine data and empty state based on active tab
+  const isHistory = activeNav === 'match-history'
+  const currentData = isHistory ? displayHistory : displayOnGoing
+  const emptyTitle = isHistory ? 'BELUM ADA RIWAYAT' : 'BELUM ADA PERTANDINGAN'
+  const emptyDescription = isHistory ? 'Tim ini belum menyelesaikan pertandingan apapun.' : 'Tim ini belum memiliki list pertandingan yang akan berlangsung.'
 
-  if (activeNav === 'on-going match') {
-    ComponentToRender = (
-      <MatchListView data={displayOnGoing as ICardMatch[]} user={user} emptyTitle="BELUM ADA PERTANDINGAN" emptyDescription="Tim ini belum memiliki list pertandingan yang akan berlangsung." />
-    )
-  } else if (activeNav === 'match-history') {
-    ComponentToRender = <MatchListView data={displayHistory as ICardMatch[]} user={user} emptyTitle="BELUM ADA RIWAYAT" emptyDescription="Tim ini belum menyelesaikan pertandingan apapun." />
-  } else {
-    ComponentToRender = null
-  }
+  // Use List Control Hook
+  const {
+    state,
+    setters: { setPage, setSearch, setCategory },
+  } = useMatchListControl(currentData as ICardMatch[])
+
+  // Reset pagination and filters when tab changes
+  useEffect(() => {
+    setPage(1)
+    setSearch('')
+    setCategory(CATEGORIES.ALL)
+  }, [activeNav, setPage, setSearch, setCategory])
 
   return (
     <>
@@ -114,7 +125,15 @@ function MatchPageContent({ user }: { user: IAuthUser | null }) {
             MATCH HISTORY
           </p>
         </nav>
-        <div className="w-full h-auto flex flex-col items-center gap-10 my-20">{ComponentToRender}</div>
+        <div className="w-full h-auto flex flex-col items-center gap-10 my-20">
+          <div className="w-full flex flex-col gap-6 items-center">
+            <FilterBar search={state.search} category={state.category} onSearchChange={setSearch} onCategoryChange={setCategory} />
+
+            <MatchList data={state.data} user={user} emptyTitle={emptyTitle} emptyDescription={emptyDescription} />
+
+            <Pagination currentPage={state.page} totalPages={state.totalPages} onPageChange={setPage} totalItems={state.totalItems} itemsPerPage={state.limit} />
+          </div>
+        </div>
       </div>
     </>
   )
