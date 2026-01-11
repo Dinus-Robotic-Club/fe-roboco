@@ -15,3 +15,10 @@ export const createUser = (data: IRegisterUserInput) => {
     body: JSON.stringify(data),
   })
 }
+
+export const updateUser = (data: Partial<IRegisterUserInput>): Promise<IApiResponse<IUser[]>> => {
+  return apiFetch<IApiResponse<IUser[]>>(`${BASE}/api/user/update`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+}

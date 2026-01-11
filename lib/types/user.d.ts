@@ -1,5 +1,5 @@
 type UserRole = 'ADMIN' | 'PARTICIPANT' | 'REFREE' | 'PENDAF'
-type RefreeCategory = 'SUMO' | 'SOCCER' | 'BOTH'
+type RefreeCategory = 'SUMO' | 'SOCCER'
 
 interface IRegisterUserInput {
   email: string
@@ -7,6 +7,7 @@ interface IRegisterUserInput {
   password: string
   role: UserRole
   refereeCategory?: RefreeCategory
+  uid?: string
 }
 
 interface IUser {

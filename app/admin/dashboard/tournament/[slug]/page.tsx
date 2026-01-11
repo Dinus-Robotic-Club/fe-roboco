@@ -30,6 +30,7 @@ import { Trophy } from 'lucide-react'
 import { useSocket } from '@/hooks/useSocket'
 import { useLeagueboardSocket } from '@/hooks/custom-hooks/useLeagueboardSocket'
 import { useRegistrationSocket } from '@/hooks/custom-hooks/useRegistrationSocket'
+import { useUpdateUser } from '@/hooks/useUpdateUser'
 
 const PageComponent = ({ session }: { session: IAuthUser | null }) => {
   const [isActiveNav, setIsActiveNav] = useState('overview')
@@ -52,6 +53,7 @@ const PageComponent = ({ session }: { session: IAuthUser | null }) => {
   const { mutate: generateGroup, isPending: isGenerating } = useGenerateGroups(tournamentId, tournamentSlug)
   const { mutate: createMatch, isPending: isCreating } = useCreateMatch(tournamentId, tournamentSlug)
   const { mutate: createUser, isPending: isCreatingUser } = useCreateUser()
+  const { mutate: updateUser, isPending: isUpdatingUser } = useUpdateUser()
   const { data: allUser } = useGetAllUser()
   const { data: playoffData } = useGetPlayoff(tournamentId)
   const { mutate: generatePlayoff, isPending: isGeneratingPlayoff } = useGeneratePlayoff(tournamentId, tournamentSlug)
@@ -66,7 +68,7 @@ const PageComponent = ({ session }: { session: IAuthUser | null }) => {
     }
   }, [tournamentDetail?.data?.matches, playoffData?.data, initializeData])
 
-  const isLoading = isGenerating || isCreating || isGeneratingPlayoff || isCreatingUser
+  const isLoading = isGenerating || isCreating || isGeneratingPlayoff || isCreatingUser || isUpdatingUser
 
   // Use socket data if available, fallback to query data
   const displayMatches = socketMatches.length > 0 ? socketMatches : tournamentDetail?.data?.matches || []
@@ -141,7 +143,7 @@ const PageComponent = ({ session }: { session: IAuthUser | null }) => {
   } else if (isActiveNav === 'match') {
     componentToRender = <MatchListView data={displayMatches as ICardMatch[]} user={session} type="user" onCreate={() => createMatch()} />
   } else if (isActiveNav === 'user') {
-    componentToRender = <UserManagement users={allUser?.data || []} onAddUser={(data) => createUser(data)} isPending={isCreatingUser} />
+    componentToRender = <UserManagement users={allUser?.data || []} onAddUser={(data) => createUser(data)} onUpdateUser={(data) => updateUser(data)} isPending={isCreatingUser || isUpdatingUser} />
   } else {
     componentToRender = null
   }
