@@ -7,6 +7,7 @@ import { useGetMatchRound } from '../useGetMatchRound'
 import { useUpdateScoreMatch } from '../useUpdateScoreMatch'
 import { useEndMatchRound } from '../useEndMatchRound'
 import { useCreateMatchRound } from '../useCreateMatchRound'
+import { useWalkoutMatch } from '../useWalkoutMatch'
 import { ITimelineAction } from '@/lib/types'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -20,6 +21,7 @@ export function useMatchLogic(matchId: string) {
   const { mutateAsync: updateScore } = useUpdateScoreMatch()
   const { mutateAsync: endRound } = useEndMatchRound()
   const { mutateAsync: createRound } = useCreateMatchRound()
+  const { mutateAsync: walkout } = useWalkoutMatch()
 
   const matchData = response?.data as IMatchRound | undefined
 
@@ -209,7 +211,7 @@ export function useMatchLogic(matchId: string) {
       },
     ])
 
-    if (type === 'GOAL' || type === 'PENALTY') {
+    if (type === 'GOAL') {
       if (team === 'home') setHomeScore((h) => h + 1)
       else setAwayScore((a) => a + 1)
     }
@@ -472,6 +474,31 @@ export function useMatchLogic(matchId: string) {
     }
   }
 
+  // Handle Walkout Logic
+  const handleWalkout = async (winnerId: string) => {
+    if (!matchData) return
+
+    toast.loading('Memproses Walkout...')
+    try {
+      await walkout(
+        { matchId: matchData.uid, winnerId },
+        {
+          onSuccess: () => {
+            toast.dismiss()
+            toast.success('Walkout Berhasil!')
+            setTimeout(() => {
+              router.push('/admin/refree/match')
+            }, 1000)
+          },
+        },
+      )
+    } catch (e) {
+      toast.dismiss()
+      // Error is handled by hook
+      console.error('Walkout Error:', e)
+    }
+  }
+
   return {
     matchData,
     currentRoundNumber: currentActiveRound?.roundNumber || matchData?.rounds?.length || 0,
@@ -491,6 +518,7 @@ export function useMatchLogic(matchId: string) {
       toggleTimer,
       handleAction,
       handleManualFinish,
+      handleWalkout,
     },
   }
 }

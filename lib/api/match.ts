@@ -70,3 +70,9 @@ export const getMatchesByReferee = (token?: string): Promise<IApiResponse<MatchL
     token,
   })
 }
+export const walkoutMatch = (matchId: string, winnerId: string): Promise<IApiResponse<unknown>> => {
+  return apiFetch<IApiResponse<unknown>>(`${BASE}/api/matches/walkout/${matchId}`, {
+    method: 'POST',
+    body: JSON.stringify({ winnerId }),
+  })
+}

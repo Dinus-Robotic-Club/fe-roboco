@@ -92,7 +92,7 @@ export function GroupRank({ data, activeFilter, onFilterChange, onCreate, type =
       ) : (
         // 3. Empty State View
         <EmptyState
-          title={activeFilter === 'ALL' ? 'Data Grup Kosong' : `Tidak ada Grup ${activeFilter}`}
+          title={activeFilter === 'ALL' ? 'Data grup kosong' : `Tidak ada grup ${title.toLowerCase()}`}
           description={getEmptyDescription()}
           icon={Trophy}
           onCreate={type === 'admin' ? onCreate : undefined}

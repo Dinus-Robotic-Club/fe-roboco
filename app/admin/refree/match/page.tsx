@@ -6,6 +6,7 @@ import { HeaderDashboard } from '@/components/ui/header'
 import Loader from '@/components/ui/loader'
 import Navbar from '@/components/ui/navbar'
 import { useMatchManager } from '@/hooks/custom-hooks/useMatchManager'
+import { useRegistrationSocket } from '@/hooks/custom-hooks/useRegistrationSocket'
 import { useSocket } from '@/hooks/useSocket'
 import { TABS } from '@/lib'
 import { getNavByRole } from '@/lib/statis-data'
@@ -16,6 +17,7 @@ function MatchAdmin() {
 
   // Connect to WebSocket for real-time updates
   useSocket(tournamentId)
+  useRegistrationSocket(tournamentId)
 
   if (isLoading) return <Loader show />
 

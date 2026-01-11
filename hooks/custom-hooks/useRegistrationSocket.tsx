@@ -55,8 +55,64 @@ export const useRegistrationSocket = (tournamentId?: string, tournamentSlug?: st
       toast.info(`Absensi tim ${data.teamName} diperbarui: ${data.isPresent ? 'Hadir' : 'Tidak Hadir'}`)
     }
 
+    const onGroupsGenerate = (data: IGroupData[]) => {
+      console.log('Groups generated:', data)
+      queryClient.invalidateQueries({ queryKey: ['get-all-group'] })
+      queryClient.invalidateQueries({ queryKey: ['detail-tournament'] })
+      toast.success('Grup berhasil dibuat!')
+    }
+
+    const onMatchGroupCreate = (data: ICardMatch[]) => {
+      console.log('Matches created:', data)
+      queryClient.invalidateQueries({ queryKey: ['referee-matches'] })
+      queryClient.invalidateQueries({ queryKey: ['all-ongoing-match'] })
+      queryClient.invalidateQueries({ queryKey: ['detail-tournament'] })
+      queryClient.invalidateQueries({ queryKey: ['get-all-group'] })
+      queryClient.invalidateQueries({ queryKey: ['ongoing-match-id'] }) // User specific
+      queryClient.invalidateQueries({ queryKey: ['history-match-id'] }) // User specific
+      toast.success('Match berhasil dibuat!')
+    }
+
+    // New Listeners for Real-time Match Updates
+    const invalidateMatchQueries = () => {
+      // Invalidate all potential match lists to ensure syncing
+      queryClient.invalidateQueries({ queryKey: ['referee-matches'] })
+      queryClient.invalidateQueries({ queryKey: ['all-ongoing-match'] }) // General
+      queryClient.invalidateQueries({ queryKey: ['detail-tournament'] })
+
+      // Dashboard User Keys (Must match exactly what is used in useGetOnGoingMatchById etc)
+      queryClient.invalidateQueries({ queryKey: ['all-ongoing-match-byId'] })
+      queryClient.invalidateQueries({ queryKey: ['all-history-match-byId'] })
+    }
+
+    const onMatchRoundCreate = () => {
+      // console.log('Match round created')
+      invalidateMatchQueries()
+    }
+
+    const onScoreUpdate = () => {
+      // console.log('Score updated')
+      invalidateMatchQueries()
+    }
+
+    const onEventCreate = () => {
+      // console.log('Event created')
+      invalidateMatchQueries()
+    }
+
+    const onMatchUpdate = () => {
+      // console.log('Match updated') // e.g. Finished
+      invalidateMatchQueries()
+    }
+
     socket.on('registration:update', onRegistrationUpdate)
     socket.on('attendance:update', onAttendanceUpdate)
+    socket.on('groups:generate', onGroupsGenerate)
+    socket.on('match-group:create', onMatchGroupCreate)
+    socket.on('match-round:create', onMatchRoundCreate)
+    socket.on('score:update', onScoreUpdate)
+    socket.on('event:create', onEventCreate)
+    socket.on('match:update', onMatchUpdate)
 
     return () => {
       if (tournamentId) {
@@ -64,6 +120,12 @@ export const useRegistrationSocket = (tournamentId?: string, tournamentSlug?: st
       }
       socket.off('registration:update', onRegistrationUpdate)
       socket.off('attendance:update', onAttendanceUpdate)
+      socket.off('groups:generate', onGroupsGenerate)
+      socket.off('match-group:create', onMatchGroupCreate)
+      socket.off('match-round:create', onMatchRoundCreate)
+      socket.off('score:update', onScoreUpdate)
+      socket.off('event:create', onEventCreate)
+      socket.off('match:update', onMatchUpdate)
       socket.disconnect()
     }
   }, [queryClient, tournamentId, tournamentSlug])

@@ -18,14 +18,16 @@ const HeaderDashboard = ({ title, name, className }: HeaderProps) => {
   )
 }
 
-const MatchStatusHeader = ({ isLive, isFinished, category, roundLabel }: { isLive: boolean; isFinished: boolean; category: string; roundLabel: string }) => (
+const MatchStatusHeader = ({ isLive, isFinished, category, roundLabel, status }: { isLive: boolean; isFinished: boolean; category: string; roundLabel: string; status?: string }) => (
   <div
     className={`
       relative z-10 flex items-center justify-between px-4 py-2 border-b text-xs font-semibold tracking-wider uppercase transition-colors
-      ${isLive ? 'bg-red-50 border-red-100 text-red-600' : 'bg-slate-50 border-slate-100 text-slate-500'}
+      ${status === 'WALKOUT' ? 'bg-amber-50 border-amber-100 text-amber-700' : isLive ? 'bg-red-50 border-red-100 text-red-600' : 'bg-slate-50 border-slate-100 text-slate-500'}
     `}>
     <div className="flex items-center gap-2">
-      {isLive ? (
+      {status === 'WALKOUT' ? (
+        <span className="flex items-center gap-1">⚠️ WALKOUT (WO)</span>
+      ) : isLive ? (
         <>
           <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>

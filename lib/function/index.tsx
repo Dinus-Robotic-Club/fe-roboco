@@ -72,6 +72,37 @@ export const scrollToFirstError = (issues: z.ZodIssue[]) => {
   }
 }
 
+export const getWOStatus = ({ teamId, isWalkout, data }: { teamId?: string | null; isWalkout?: boolean; data?: string | null }) => {
+  if (!isWalkout || !data) return null
+  return data === teamId ? 'WIN' : 'LOSE'
+}
+
+// Helper Component untuk Logo
+export const TeamLogo = ({ logo, name, isTBD, woStatus }: { logo?: string | null; name?: string; isTBD?: boolean; woStatus?: string | null }) => (
+  <div
+    className={`
+      relative h-16 w-16 sm:h-20 sm:w-20 rounded-full flex items-center justify-center 
+      transition-all duration-300 group-hover:scale-105
+      ${
+        isTBD
+          ? 'border-2 border-dashed border-slate-300 bg-slate-50 text-slate-400'
+          : woStatus === 'LOSE'
+          ? 'bg-slate-100 border border-slate-200 grayscale opacity-60' // Style untuk yang kalah WO
+          : 'bg-white shadow-md border border-slate-100' // Style Normal / Menang
+      }
+    `}>
+    {isTBD ? (
+      <span className="text-xs font-bold text-center leading-tight px-1">?</span>
+    ) : (
+      <Image src={getImageUrl(logo)} alt={name || ''} width={1920} height={1080} className="h-full w-full object-cover rounded-full p-1" />
+    )}
+
+    {/* Badge Winner/Loser khusus WO */}
+    {woStatus === 'WIN' && <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md shadow-sm border border-white">WIN</div>}
+    {woStatus === 'LOSE' && <div className="absolute -bottom-1 -right-1 bg-slate-400 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md shadow-sm border border-white">LOSE</div>}
+  </div>
+)
+
 // fungsi untuk mendapatkan URL lengkap gambar dari path yang diberikan
 // Jika path null/undefined, kembalikan default logo lokal tanpa API URL
 export const getImageUrl = (path?: string | null) => (path ? `${process.env.NEXT_PUBLIC_API_URL}${path}` : '/logo-only.svg')

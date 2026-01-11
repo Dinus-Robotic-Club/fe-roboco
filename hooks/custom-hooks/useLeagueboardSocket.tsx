@@ -345,7 +345,7 @@ export function useLeagueboardSocket(tournamentId?: string) {
 
       setState((prev) => {
         const existsInOngoing = prev.onGoingMatches.some((m) => m.uid === data.uid)
-        const isFinished = data.status === 'FINISHED'
+        const isFinished = data.status === 'FINISHED' || data.status === 'WALKOUT'
         const isOngoing = data.status === 'ONGOING'
 
         let updatedOnGoing = [...prev.onGoingMatches]

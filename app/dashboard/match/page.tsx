@@ -8,6 +8,7 @@ import { useGetHistoryMatchById } from '@/hooks/useHistoryMatchById'
 import { useGetOnGoingMatchById } from '@/hooks/useOnGoingMatchById'
 import { useGetTournaments } from '@/hooks/useGetTournaments'
 import { useSocket } from '@/hooks/useSocket'
+import { useRegistrationSocket } from '@/hooks/custom-hooks/useRegistrationSocket'
 import { IAuthUser } from '@/lib/types/auth'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useState, useEffect } from 'react'
@@ -26,6 +27,7 @@ function MatchPageContent({ user }: { user: IAuthUser | null }) {
 
   // Connect to socket for real-time updates
   const { isConnected } = useSocket(tournamentId)
+  useRegistrationSocket(tournamentId)
   const queryClient = useQueryClient()
 
   // Fetch user's matches
@@ -36,18 +38,18 @@ function MatchPageContent({ user }: { user: IAuthUser | null }) {
   const [onGoingMatches, setOnGoingMatches] = useState<ICardMatch[]>([])
   const [historyMatches, setHistoryMatches] = useState<ICardMatch[]>([])
 
-  // Initialize state from fetched data
-  useEffect(() => {
-    if (onGoing?.data) {
-      setOnGoingMatches(onGoing.data)
-    }
-  }, [onGoing])
+  // redundant useEffects removed to fix lint errors and rely on fallback logic
+  // useEffect(() => {
+  //   if (onGoing?.data) {
+  //     setOnGoingMatches(onGoing.data)
+  //   }
+  // }, [onGoing])
 
-  useEffect(() => {
-    if (history?.data) {
-      setHistoryMatches(history.data)
-    }
-  }, [history])
+  // useEffect(() => {
+  //   if (history?.data) {
+  //     setHistoryMatches(history.data)
+  //   }
+  // }, [history])
 
   // Subscribe to query client updates (from useSocket hook events)
   useEffect(() => {

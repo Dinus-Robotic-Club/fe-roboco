@@ -4,7 +4,8 @@ import { TeamScoreCard } from '@/components/ui/card'
 import { HeaderDashboard } from '@/components/ui/header'
 import { ValidationModal } from '@/components/ui/modal'
 import { useMatchLogic } from '@/hooks/custom-hooks/useMatchLogic'
-import { ArrowLeftIcon, FlagTriangleRightIcon, Pause, Play } from 'lucide-react'
+import { WalkoutModal } from '@/components/ui/walkout-modal'
+import { AlertTriangle, ArrowLeftIcon, FlagTriangleRightIcon, Pause, Play } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import MatchAction from './match-action'
@@ -13,6 +14,7 @@ export default function MatchControlInterface({ matchId }: { matchId: string }) 
   const router = useRouter()
   const { matchData, state, actions } = useMatchLogic(matchId)
   const [showFinishModal, setShowFinishModal] = useState(false)
+  const [showWalkoutModal, setShowWalkoutModal] = useState(false)
 
   if (!matchData) return null
 
@@ -78,6 +80,10 @@ export default function MatchControlInterface({ matchId }: { matchId: string }) 
               <ArrowLeftIcon size={20} />
             </button>
 
+            <button onClick={() => setShowWalkoutModal(true)} className="p-3 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors" title="Walkout (WO)">
+              <AlertTriangle size={20} />
+            </button>
+
             <div className="h-8 w-px bg-slate-200 mx-1" />
 
             <button
@@ -108,6 +114,9 @@ export default function MatchControlInterface({ matchId }: { matchId: string }) 
         {showFinishModal && (
           <ValidationModal setShowModalStart={setShowFinishModal} action={actions.handleManualFinish} title="Selesaikan Ronde?" desc="Aksi ini tidak dapat dibatalkan." confirm_text="Ya, Selesaikan" />
         )}
+
+        {/* Walkout Modal */}
+        <WalkoutModal isOpen={showWalkoutModal} onClose={() => setShowWalkoutModal(false)} onConfirm={(winnerId) => actions.handleWalkout(winnerId)} teamA={matchData.teamA} teamB={matchData.teamB} />
       </main>
     </div>
   )

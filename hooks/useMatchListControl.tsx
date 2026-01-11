@@ -25,8 +25,17 @@ export const useMatchListControl = (initialData: ICardMatch[]) => {
       })
     }
 
-    // 3. Sort (TBD Last, then Date Ascending)
+    // 3. Sort (WALKOUT/LIVE/ONGOING First, TBD Last, then Date Ascending)
     processData.sort((a, b) => {
+      // Priority Statuses
+      const priorityStatuses = ['WALKOUT', 'LIVE', 'ONGOING']
+      const isPriorityA = priorityStatuses.includes(a.status)
+      const isPriorityB = priorityStatuses.includes(b.status)
+
+      if (isPriorityA && !isPriorityB) return -1
+      if (!isPriorityA && isPriorityB) return 1
+
+      // TBD Check
       const isTbdA = !a.teamA || !a.teamB
       const isTbdB = !b.teamA || !b.teamB
 
