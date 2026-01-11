@@ -35,7 +35,10 @@ const ListPage = () => {
         status: registration?.status || 'PENDING',
         registeredAt: registration?.registeredAt || team.createdAt,
         invoice: registration?.invoice || null,
-        attendeance: registration?.attendeance || null,
+        qrUrl: registration?.qrUrl || null,
+        verifiedAt: registration?.verifiedAt || null,
+        updatedAt: team.updatedAt,
+        attendance: registration?.attendance || null,
         createdAt: team.createdAt,
         team: {
           uid: team.uid,

@@ -11,11 +11,11 @@ interface IRegistrationData {
   verifiedAt: string | null
   createdAt: string
   updatedAt: string
-  attendeance?: IAttendeanceData | null
+  attendance?: IAttendanceData | null
   team?: ITeam | null
 }
 
-interface IAttendeanceData {
+interface IAttendanceData {
   uid: string
   registrationId: string
   isPresent: boolean

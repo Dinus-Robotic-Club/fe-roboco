@@ -10,7 +10,7 @@ export const useAttendance = () => {
     mutationFn: ({ token }) => updateAttendeance(token),
 
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['tournaments'] })
+      queryClient.invalidateQueries({ queryKey: ['get-all-teams'] })
       toast.success(data.message)
     },
     onError: (err) => {

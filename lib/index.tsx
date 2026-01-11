@@ -202,7 +202,7 @@ export const TeamColumns: IRankColumn<IRegistrationData | ITeam>[] = [
     className: 'text-center text-sm font-semibold',
     title: 'Attendance',
     accessor: (d) => {
-      const isPresent = 'attendeance' in d ? d.attendeance?.isPresent : (d as ITeam).registrations?.[0]?.attendeance?.isPresent
+      const isPresent = 'attendance' in d ? d.attendance?.isPresent : (d as ITeam).registrations?.[0]?.attendance?.isPresent
 
       return <StatusBadge>{isPresent ? 'Present' : 'Absent'}</StatusBadge>
     },
@@ -305,7 +305,7 @@ export const teamExcelMapper = (row: IRegistrationData | ITeam): ExcelRow => {
 
   const status = isRegistration ? (row as IRegistrationData).status : (row as ITeam).registrations?.[0]?.status
 
-  const isPresent = isRegistration ? (row as IRegistrationData).attendeance?.isPresent : (row as ITeam).registrations?.[0]?.attendeance?.isPresent
+  const isPresent = isRegistration ? (row as IRegistrationData).attendance?.isPresent : (row as ITeam).registrations?.[0]?.attendance?.isPresent
 
   const participantsCount = isRegistration ? row.team?.participants?.length : (row as ITeam).participants?.length
 

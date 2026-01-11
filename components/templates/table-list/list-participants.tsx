@@ -44,7 +44,7 @@ export function ParticipantsList({ data }: { data: ITeam[] }) {
   const statusOptions = useMemo(() => {
     return generateOptions(
       data,
-      (team) => (team.registrations?.[0].attendeance?.isPresent ? 'Present' : 'Absent'),
+      (team) => (team.registrations?.[0].attendance?.isPresent ? 'Present' : 'Absent'),
       (val) => formatCapitalize(val),
     )
   }, [data])
@@ -130,7 +130,7 @@ export function ParticipantsList({ data }: { data: ITeam[] }) {
         />
 
         {/* Generic Table Render */}
-        <GenericRankTable data={listData.paginated} columns={ParticipantsColumns } onRowClick={handleRowClick} rowClassName="cursor-pointer hover:bg-slate-50 transition-colors" />
+        <GenericRankTable data={listData.paginated} columns={ParticipantsColumns} onRowClick={handleRowClick} rowClassName="cursor-pointer hover:bg-slate-50 transition-colors" />
 
         {/* Pagination Controls */}
         {pagination.totalPages > 1 && (

@@ -18,10 +18,10 @@ interface TeamListProps {
   slug?: string
 }
 
-export function TeamList({ data, type = 'user', slug }: TeamListProps) {
+export function TeamList({ data, type = 'user' }: TeamListProps) {
   const [selectedRegistration, setSelectedRegistration] = useState<IRegistrationData | null>(null)
   const mounted = useMounted()
-  const { mutate, isPending } = useUpdateStatusRegistration(slug as string)
+  const { mutate, isPending } = useUpdateStatusRegistration()
 
   const normalizedData = useMemo(() => {
     if (type === 'admin') {
@@ -76,7 +76,7 @@ export function TeamList({ data, type = 'user', slug }: TeamListProps) {
     return generateOptions(
       normalizedData,
       (item: IRegistrationData | ITeam) => {
-        const isPresent = type === 'admin' ? (item as IRegistrationData).attendeance?.isPresent : (item as ITeam).registrations?.[0]?.attendeance?.isPresent
+        const isPresent = type === 'admin' ? (item as IRegistrationData).attendance?.isPresent : (item as ITeam).registrations?.[0]?.attendance?.isPresent
         return isPresent ? 'Present' : 'Absent'
       },
       (val) => formatCapitalize(val),

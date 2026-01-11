@@ -45,13 +45,13 @@ export function useTeamList(initialData: IRegistrationData[] | ITeam[], itemsPer
         name = reg.team?.name || ''
         category = reg.team?.category || ''
         paymentStatus = reg.status
-        isPresent = reg.attendeance?.isPresent
+        isPresent = reg.attendance?.isPresent
       } else {
         const team = item as ITeam
         name = team.name || ''
         category = team.category || ''
         paymentStatus = team.registrations?.[0]?.status || ''
-        isPresent = team.registrations?.[0]?.attendeance?.isPresent
+        isPresent = team.registrations?.[0]?.attendance?.isPresent
       }
 
       const matchSearch = name.toLowerCase().includes(searchQuery.toLowerCase())

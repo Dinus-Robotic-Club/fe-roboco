@@ -277,7 +277,7 @@ export const flattenParticipants = (teams: ITeam[]): IParticipantRow[] => {
 
       // Registration fields
       registrationStatus: reg?.status || 'PENDING',
-      attendanceStatus: reg?.attendeance?.isPresent || false,
+      attendanceStatus: reg?.attendance?.isPresent || false,
     }))
   })
 }

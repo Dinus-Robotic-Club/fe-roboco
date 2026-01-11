@@ -44,13 +44,26 @@ export const useRegistrationSocket = (tournamentId?: string, tournamentSlug?: st
       toast.info(`Status registrasi tim ${data.teamName} diperbarui: ${data.status}`)
     }
 
+    const onAttendanceUpdate = (data: { teamId: string; teamName: string; isPresent: boolean }) => {
+      console.log('Attendance update received:', data)
+      queryClient.invalidateQueries({ queryKey: ['get-all-teams'] })
+
+      if (tournamentId) {
+        // Find tournament detail queries if needed, typically attendance is shown in participant list or match detail
+      }
+
+      toast.info(`Absensi tim ${data.teamName} diperbarui: ${data.isPresent ? 'Hadir' : 'Tidak Hadir'}`)
+    }
+
     socket.on('registration:update', onRegistrationUpdate)
+    socket.on('attendance:update', onAttendanceUpdate)
 
     return () => {
       if (tournamentId) {
         socket.emit('leave-tournament', tournamentId)
       }
       socket.off('registration:update', onRegistrationUpdate)
+      socket.off('attendance:update', onAttendanceUpdate)
       socket.disconnect()
     }
   }, [queryClient, tournamentId, tournamentSlug])
