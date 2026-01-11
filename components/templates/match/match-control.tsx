@@ -15,6 +15,7 @@ export default function MatchControlInterface({ matchId }: { matchId: string }) 
   const { matchData, state, actions } = useMatchLogic(matchId)
   const [showFinishModal, setShowFinishModal] = useState(false)
   const [showWalkoutModal, setShowWalkoutModal] = useState(false)
+  const [showExitModal, setShowExitModal] = useState(false)
 
   if (!matchData) return null
 
@@ -76,7 +77,7 @@ export default function MatchControlInterface({ matchId }: { matchId: string }) 
 
           {/* Bottom Floating Control Bar */}
           <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-xl bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-2xl rounded-2xl p-2 flex items-center justify-between gap-2 z-50">
-            <button onClick={() => router.back()} className="p-3 rounded-xl hover:bg-slate-100 text-slate-500 transition-colors" title="Back">
+            <button onClick={() => setShowExitModal(true)} className="p-3 rounded-xl hover:bg-slate-100 text-slate-500 transition-colors" title="Back">
               <ArrowLeftIcon size={20} />
             </button>
 
@@ -113,6 +114,17 @@ export default function MatchControlInterface({ matchId }: { matchId: string }) 
         {/* Modal Confirmation (Only for Manual Finish / Soccer) */}
         {showFinishModal && (
           <ValidationModal setShowModalStart={setShowFinishModal} action={actions.handleManualFinish} title="Selesaikan Ronde?" desc="Aksi ini tidak dapat dibatalkan." confirm_text="Ya, Selesaikan" />
+        )}
+
+        {/* Exit Confirmation Modal */}
+        {showExitModal && (
+          <ValidationModal
+            setShowModalStart={setShowExitModal}
+            action={() => router.back()}
+            title="Keluar dari Pertandingan?"
+            desc="Anda yakin ingin keluar? Pertandingan tetap berjalan di latar belakang, namun Anda mungkin melewatkan momen penting."
+            confirm_text="Ya, Keluar"
+          />
         )}
 
         {/* Walkout Modal */}

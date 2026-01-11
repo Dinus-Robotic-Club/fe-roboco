@@ -17,6 +17,7 @@ import { getWOStatus, TeamLogo } from '@/lib/function'
 const CardMatch = ({ data, user }: { data: ICardMatch; user: IAuthUser | null }) => {
   const router = useRouter()
   const [showModalStart, setShowModalStart] = useState(false)
+  const [showModalOngoing, setShowModalOngoing] = useState(false)
   const [showWalkoutModal, setShowWalkoutModal] = useState(false)
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const { mutateAsync, isPending } = useCreateMatchRound()
@@ -59,15 +60,30 @@ const CardMatch = ({ data, user }: { data: ICardMatch; user: IAuthUser | null })
       return
     }
 
-    if (isAdmin && !isFinished && !isWalkout && !isLive && !isTBD) {
-      if (isLive || data.status === 'ONGOING') {
-        router.push(`/admin/refree/match/${data.uid}`)
+    if (isAdmin) {
+      // 1. If Match is Finished or Walkout -> Toggle Details
+      if (isFinished || isWalkout) {
+        setIsDetailOpen((prev) => !prev)
         return
       }
 
+      // 2. If Match is Live/Ongoing (Reentry Logic)
+      if (isLive || data.status === 'ONGOING') {
+        // Check if I am the referee
+        if (user?.uidUser === data.refree?.uid) {
+          router.push(`/admin/refree/match/${data.uid}`) // Resume
+        } else {
+          // Show "Match Ongoing" warning
+          setShowModalOngoing(true)
+        }
+        return
+      }
+
+      // 3. If Match is Pending (Start Match)
       setShowModalStart(true)
       return
     }
+
     setIsDetailOpen((prev) => !prev)
   }
 
@@ -102,7 +118,7 @@ const CardMatch = ({ data, user }: { data: ICardMatch; user: IAuthUser | null })
               </span>
             )}
 
-            {!isWalkout && isFinished && <span className="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-[10px] font-bold">FINAL</span>}
+            {!isWalkout && isFinished && <span className="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-[10px] font-bold">{data.bestOf}</span>}
 
             {isTBD && (
               <span className="flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold">
@@ -208,6 +224,16 @@ const CardMatch = ({ data, user }: { data: ICardMatch; user: IAuthUser | null })
       {/* --- MODALS --- */}
       {showModalStart && (
         <ValidationModal setShowModalStart={setShowModalStart} action={goToMatch} title="Masuk ke Pertandingan?" desc="Anda akan masuk sebagai Admin untuk mengelola skor." confirm_text="Ya, Kelola" />
+      )}
+
+      {showModalOngoing && (
+        <ValidationModal
+          setShowModalStart={setShowModalOngoing}
+          action={() => setShowModalOngoing(false)}
+          title="Pertandingan Sedang Berlangsung"
+          desc={`Pertandingan ini sedang dipimpin oleh wasit ${data.refree?.name || 'lain'}. Anda tidak dapat mengambil alih saat ini.`}
+          confirm_text="Tutup"
+        />
       )}
 
       <WalkoutModal isOpen={showWalkoutModal} onClose={() => setShowWalkoutModal(false)} onConfirm={handleWalkoutConfirm} teamA={data.teamA} teamB={data.teamB} />
